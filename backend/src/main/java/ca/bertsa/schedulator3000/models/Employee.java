@@ -1,6 +1,7 @@
 package ca.bertsa.schedulator3000.models;
 
 import ca.bertsa.schedulator3000.dto.EmployeeDto;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 public class Employee extends User {
 
     @NotBlank
@@ -17,18 +19,9 @@ public class Employee extends User {
     @NotBlank
     private String lastName;
     @NotBlank
-    private String title;
+    private String role;
     private boolean active = true;
 
 
-    public static Employee mapFromDto(EmployeeDto employeeDto) {
-        Employee employee = new Employee();
-        employee.setEmail(employeeDto.getEmail());
-        employee.setPassword(employeeDto.getPassword());
-        employee.setPhone(employeeDto.getPhone());
-        employee.setFirstName(employeeDto.getFirstName());
-        employee.setLastName(employeeDto.getLastName());
-        employee.setTitle(employeeDto.getTitle());
-        return employee;
-    }
+
 }

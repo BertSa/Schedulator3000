@@ -1,5 +1,6 @@
 package ca.bertsa.schedulator3000.models;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @MappedSuperclass
+@EqualsAndHashCode
 public abstract class User {
 
     @Id
