@@ -3,7 +3,10 @@ package ca.bertsa.schedulator3000.utils;
 import ca.bertsa.schedulator3000.dto.EmployeeDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
+import ca.bertsa.schedulator3000.models.Shift;
+import ca.bertsa.schedulator3000.models.Schedule;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,9 +50,9 @@ public class Dummies {
         return employeeDto;
     }
 
-    public static Employee getDummyEmployee() {
+    public static Employee getDummyEmployee(long id) {
         final Employee employee = new Employee();
-        employee.setId(1L);
+        employee.setId(id);
         employee.setFirstName("John");
         employee.setLastName("Doe");
         employee.setEmail("johndoe@bertsa.ca");
@@ -58,5 +61,20 @@ public class Dummies {
         employee.setRole("ROLE_MANAGER");
 
         return employee;
+    }
+
+    public static Schedule getDummySchedule() {
+        Schedule schedule = new Schedule();
+        schedule.setId(1L);
+        for (int i = 1; i < 5; i++) {
+            schedule.addOrReplaceShift(getDummyShift(i, getDummyEmployee(1L)));
+        }
+        return schedule;
+    }
+
+    public static Shift getDummyShift(long id, Employee employee) {
+        Shift shift = new Shift(LocalDateTime.now(), LocalDateTime.now().plusHours(4), employee);
+        shift.setId(id);
+        return shift;
     }
 }

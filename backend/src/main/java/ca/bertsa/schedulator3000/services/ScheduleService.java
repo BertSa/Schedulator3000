@@ -1,9 +1,10 @@
 package ca.bertsa.schedulator3000.services;
 
+import ca.bertsa.schedulator3000.dto.ScheduleDto;
 import ca.bertsa.schedulator3000.dto.ShiftDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Shift;
-import ca.bertsa.schedulator3000.models.WeekSchedule;
+import ca.bertsa.schedulator3000.models.Schedule;
 import ca.bertsa.schedulator3000.repositories.ScheduleRepository;
 import ca.bertsa.schedulator3000.repositories.ShiftRepository;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,13 @@ public class ScheduleService {
     }
 
 
-    public WeekSchedule create() {
-        WeekSchedule weekSchedule = scheduleRepository.getFirstByOrderByStartDateDesc();
-        WeekSchedule entity;
+    public Schedule create() {
+        Schedule weekSchedule = scheduleRepository.getFirstByOrderByStartDateDesc();
+        Schedule entity;
         if (weekSchedule == null) {
-            entity = new WeekSchedule(LocalDate.now());
+            entity = new Schedule(LocalDate.now());
         } else {
-            entity = new WeekSchedule(weekSchedule.getStartDate());
+            entity = new Schedule(weekSchedule.getStartDate());
         }
 
         return scheduleRepository.save(entity);
@@ -43,7 +44,7 @@ public class ScheduleService {
         if (employee == null) {
             throw new EntityNotFoundException("Employee not found");
         }
-        WeekSchedule weekScheduleByStartDateIsBefore = scheduleRepository.getWeekScheduleByStartDateIsBetween(dto.getStartTime().toLocalDate().minusDays(7), dto.getEndTime().toLocalDate());
+        Schedule weekScheduleByStartDateIsBefore = scheduleRepository.getWeekScheduleByStartDateIsBetween(dto.getStartTime().toLocalDate().minusDays(7), dto.getEndTime().toLocalDate());
         if (weekScheduleByStartDateIsBefore == null) {
             do {
                 weekScheduleByStartDateIsBefore = create();
@@ -56,5 +57,9 @@ public class ScheduleService {
 
         weekScheduleByStartDateIsBefore.addOrReplaceShift(save);
         scheduleRepository.save(weekScheduleByStartDateIsBefore);
+    }
+
+    public ScheduleDto getScheduleFromWeekFirstDay(LocalDate weekFirstDay) {
+        return null;
     }
 }

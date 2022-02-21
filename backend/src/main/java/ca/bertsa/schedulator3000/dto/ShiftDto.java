@@ -1,16 +1,19 @@
 package ca.bertsa.schedulator3000.dto;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class ShiftDto {
-    private Long id;
+@EqualsAndHashCode
+public class ShiftDto implements Serializable {
+    private long id;
     private long idEmployee;
     private LocalDateTime startTime;
     private LocalDateTime endTime;

@@ -1,7 +1,9 @@
 package ca.bertsa.schedulator3000.models;
 
+import ca.bertsa.schedulator3000.dto.ShiftDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -9,6 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Shift {
     @Id
@@ -23,6 +26,16 @@ public class Shift {
         this.startTime = startTime;
         this.endTime = endTime;
         this.employee = employee;
+    }
+
+    public ShiftDto mapToDto() {
+        final ShiftDto dto = new ShiftDto();
+        dto.setId(getId());
+        dto.setStartTime(getStartTime());
+        dto.setEndTime(getEndTime());
+        dto.setIdEmployee(getEmployee().getId());
+
+        return dto;
     }
 
     @Override

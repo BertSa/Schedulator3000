@@ -2,6 +2,7 @@ package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dto.ConnectionDto;
 import ca.bertsa.schedulator3000.models.Employee;
+import ca.bertsa.schedulator3000.models.ResponseMessage;
 import ca.bertsa.schedulator3000.services.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class EmployeeController {
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
+                    .body(new ResponseMessage(e.getMessage()));
         }
     }
 }

@@ -1,11 +1,11 @@
 package ca.bertsa.schedulator3000.controllers;
 
-import ca.bertsa.schedulator3000.dto.ConnectionDto;
-import ca.bertsa.schedulator3000.models.Employee;
-import ca.bertsa.schedulator3000.models.Manager;
-import ca.bertsa.schedulator3000.services.EmployeeService;
+import ca.bertsa.schedulator3000.dto.ScheduleDto;
+import ca.bertsa.schedulator3000.services.ScheduleService;
 import ca.bertsa.schedulator3000.utils.Dummies;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,64 +20,63 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@WebMvcTest(EmployeeController.class)
-public class EmployeeControllerTests {
+@WebMvcTest(ScheduleController.class)
+class ScheduleControllerTests {
 
-    private final ObjectMapper MAPPER = new ObjectMapper();
+    private final ObjectMapper MAPPER = new ObjectMapper()
+            .registerModule(new JavaTimeModule());
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private EmployeeService employeeService;
+    private ScheduleService scheduleService;
 
     @Nested
-    @DisplayName("signIn")
-    class SignInTests {
+    @DisplayName("ScheduleController Tests")
+    class GetScheduleByWeekTests {
 
         @Test
-        @DisplayName("should return employee when signIn is successful")
-        public void shouldReturnEmployee() throws Exception {
+        @DisplayName("should return list of employees when getAllEmployeeOfManager is successful")
+        public void shouldReturnScheduleOfWeek() throws Exception {
             // Arrange
-            final Employee dummyEmployee = Dummies.getDummyEmployee(1L);
+            final ScheduleDto dummyScheduleDto = Dummies.getDummySchedule().mapToDto();
 
-            when(employeeService.signIn(any()))
-                    .thenReturn(dummyEmployee);
+            when(scheduleService.getScheduleFromWeekFirstDay(any()))
+                    .thenReturn(dummyScheduleDto);
 
             // Act
             MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                            .post("/api/employee/signin/")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(MAPPER.writeValueAsString(
-                                    new ConnectionDto(dummyEmployee.getEmail(), dummyEmployee.getPassword()))))
+                            .get("/api/schedule/weekof/{weekNumber}", LocalDate.now().toString())
+                            .contentType(MediaType.APPLICATION_JSON))
                     .andReturn();
 
             // Assert
             final MockHttpServletResponse response = mvcResult.getResponse();
-            var actualEmployee = MAPPER.readValue(response.getContentAsString(), Employee.class);
+            var actualSchedule = MAPPER.readValue(response.getContentAsString(), new TypeReference<ScheduleDto>() {
+            });
 
             assertThat(response.getStatus())
                     .isEqualTo(HttpStatus.OK.value());
-            assertThat(actualEmployee)
-                    .isEqualTo(dummyEmployee);
+            assertThat(actualSchedule)
+                    .isEqualTo(dummyScheduleDto);
         }
 
         @Test
-        @DisplayName("should return error message when signIn is unsuccessful")
-        public void shouldReturnError_whenSignInThrowException() throws Exception {
+        @DisplayName("should return list of employees when getAllEmployeeOfManager is successful")
+        public void shouldReturnBadRequest_whenServiceThrowException() throws Exception {
             // Arrange
-            when(employeeService.signIn(any()))
-                    .thenThrow(new EntityNotFoundException("Employee not found!"));
+            when(scheduleService.getScheduleFromWeekFirstDay(any()))
+                    .thenThrow(new EntityNotFoundException("Schedule not found!"));
 
             // Act
             MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                            .post("/api/employee/signin/")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(MAPPER.writeValueAsString(
-                                    new ConnectionDto("random@bertsa.ca", "password"))))
+                            .get("/api/schedule/weekof/{weekNumber}", LocalDate.now().toString())
+                            .contentType(MediaType.APPLICATION_JSON))
                     .andReturn();
 
             // Assert
@@ -86,7 +85,7 @@ public class EmployeeControllerTests {
             assertThat(response.getStatus())
                     .isEqualTo(HttpStatus.BAD_REQUEST.value());
             assertThat(response.getContentAsString())
-                    .contains("Employee not found!");
+                    .contains("Schedule not found!");
         }
     }
 }

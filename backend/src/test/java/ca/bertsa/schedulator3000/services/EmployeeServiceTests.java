@@ -85,7 +85,7 @@ class EmployeeServiceTests {
         @DisplayName("should return employee")
         void shouldReturnEmployee() {
             // Arrange
-            final Employee dummyEmployee = Dummies.getDummyEmployee();
+            final Employee dummyEmployee = Dummies.getDummyEmployee(1L);
 
             when(employeeRepository.getByEmailAndPassword(any(), any()))
                     .thenReturn(dummyEmployee);

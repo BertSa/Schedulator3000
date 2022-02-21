@@ -88,7 +88,7 @@ public class ManagerControllerTest {
             assertThat(response.getStatus())
                     .isEqualTo(HttpStatus.BAD_REQUEST.value());
             assertThat(response.getContentAsString())
-                    .isEqualTo("Manager not found!");
+                    .contains("Manager not found!");
         }
     }
 
@@ -149,7 +149,7 @@ public class ManagerControllerTest {
             assertThat(response.getStatus())
                     .isEqualTo(HttpStatus.BAD_REQUEST.value());
             assertThat(response.getContentAsString())
-                    .isEqualTo("Manager does not exist!");
+                    .contains("Manager does not exist!");
         }
     }
 
@@ -158,6 +158,7 @@ public class ManagerControllerTest {
     class GetAllEmployeeOfManagerTests {
 
         @Test
+        @DisplayName("should return list of employees when getAllEmployeeOfManager is successful")
         public void shouldReturnListOfEmployee() throws Exception {
             // Arrange
             final List<Employee> dummyEmployees = Dummies.getDummyEmployees();
@@ -180,6 +181,28 @@ public class ManagerControllerTest {
                     .isEqualTo(HttpStatus.OK.value());
             assertThat(actualEmployees)
                     .isEqualTo(dummyEmployees);
+        }
+
+        @Test
+        @DisplayName("should return error message when getAllEmployeeOfManager is unsuccessful")
+        public void shouldReturnBadRequest_whenServiceThrowException() throws Exception {
+            // Arrange
+            when(managerService.getAllEmployee(any()))
+                    .thenThrow(new EntityNotFoundException("Manager does not exist!"));
+
+            // Act
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .get("/api/manager/employees/{emailManager}", "manager@bertsa.ca")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andReturn();
+
+            // Assert
+            final MockHttpServletResponse response = mvcResult.getResponse();
+
+            assertThat(response.getStatus())
+                    .isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.getContentAsString())
+                    .contains("Manager does not exist!");
         }
     }
 }

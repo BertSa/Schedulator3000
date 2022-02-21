@@ -1,10 +1,14 @@
 package ca.bertsa.schedulator3000.controllers;
 
+import ca.bertsa.schedulator3000.dto.ScheduleDto;
 import ca.bertsa.schedulator3000.dto.ShiftDto;
 import ca.bertsa.schedulator3000.models.ResponseMessage;
 import ca.bertsa.schedulator3000.services.ScheduleService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @CrossOrigin
@@ -23,10 +27,12 @@ public class ScheduleController {
             scheduleService.create();
         } catch (Exception e) {
             return ResponseEntity
-                    .badRequest()
+                    .status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage(e.getMessage()));
         }
-        return ResponseEntity.ok(new ResponseMessage("Done!"));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseMessage("Done!"));
     }
 
     @PostMapping("/shift/add")
@@ -35,9 +41,26 @@ public class ScheduleController {
             scheduleService.addShift(shiftDto);
         } catch (Exception e) {
             return ResponseEntity
-                    .badRequest()
+                    .status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage(e.getMessage()));
         }
-        return ResponseEntity.ok(new ResponseMessage("Done!"));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseMessage("Done!"));
     }
+
+    @GetMapping("/weekof/{weekFirstDay}")
+    public ResponseEntity<?> getSchedule(@PathVariable String weekFirstDay) {
+        try {
+            final ScheduleDto schedule = scheduleService.getScheduleFromWeekFirstDay(LocalDate.parse(weekFirstDay));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(schedule);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
 }

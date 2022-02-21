@@ -1,6 +1,8 @@
 package ca.bertsa.schedulator3000.models;
 
+import ca.bertsa.schedulator3000.dto.ScheduleDto;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.DayOfWeek;
@@ -8,25 +10,26 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
-public class WeekSchedule {
+@Setter
+public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "week_schedule_seq")
     private Long id;
 
     @OneToMany
     private final List<Shift> shifts = new ArrayList<>();
-    @Column(unique = true)
     private final LocalDate startDate;
 
-    public WeekSchedule(LocalDate lastWeekMonday) {
-        this.startDate = lastWeekMonday.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+    public Schedule(LocalDate lastWeekSunday) {
+        this.startDate = lastWeekSunday.with(TemporalAdjusters.next(DayOfWeek.SUNDAY));
     }
 
 
-    public WeekSchedule() {
+    public Schedule() {
         this(LocalDate.now());
     }
 
@@ -36,5 +39,16 @@ public class WeekSchedule {
         } else {
             shifts.add(shift);
         }
+    }
+
+    public ScheduleDto mapToDto() {
+        final ScheduleDto dto = new ScheduleDto();
+        dto.setId(getId());
+        dto.setStartDate(getStartDate());
+        dto.setShifts(getShifts()
+                .stream()
+                .map(Shift::mapToDto)
+                .collect(Collectors.toList()));
+        return dto;
     }
 }
