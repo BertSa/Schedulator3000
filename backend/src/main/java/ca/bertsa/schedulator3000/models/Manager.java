@@ -20,6 +20,12 @@ public class Manager extends User {
     @OneToMany(cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Schedule> weekSchedules;
+    @OneToMany(cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<VacationRequest> vacationRequests;
+    @OneToMany
+    private List<Holiday> holidays;
+
 
     public void addEmployee(Employee employee) {
         this.employees.add(employee);

@@ -2,7 +2,6 @@ package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dto.ConnectionDto;
 import ca.bertsa.schedulator3000.models.Employee;
-import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.services.EmployeeService;
 import ca.bertsa.schedulator3000.utils.Dummies;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +34,7 @@ public class EmployeeControllerTests {
     private EmployeeService employeeService;
 
     @Nested
-    @DisplayName("signIn")
+    @DisplayName("POST /api/employee/signin/")
     class SignInTests {
 
         @Test

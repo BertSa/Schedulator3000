@@ -37,7 +37,7 @@ class ScheduleControllerTests {
     private ScheduleService scheduleService;
 
     @Nested
-    @DisplayName("ScheduleController Tests")
+    @DisplayName("GET /schedules")
     class GetScheduleByWeekTests {
 
         @Test

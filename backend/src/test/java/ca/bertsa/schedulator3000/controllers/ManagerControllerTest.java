@@ -37,7 +37,7 @@ public class ManagerControllerTest {
     private ManagerService managerService;
 
     @Nested
-    @DisplayName("signIn")
+    @DisplayName("POST /api/manager/signin/")
     class SignInTests {
 
         @Test
@@ -93,7 +93,7 @@ public class ManagerControllerTest {
     }
 
     @Nested
-    @DisplayName("addEmployee")
+    @DisplayName("POST /api/manager/employees/add/{emailManager}")
     class AddEmployeeTests {
 
         @Test
@@ -154,7 +154,7 @@ public class ManagerControllerTest {
     }
 
     @Nested
-    @DisplayName("getAllEmployeeOfManager")
+    @DisplayName("GET /api/manager/employees/{emailManager}")
     class GetAllEmployeeOfManagerTests {
 
         @Test
