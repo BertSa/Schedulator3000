@@ -22,7 +22,7 @@ public class EmployeeController {
     @PostMapping("signin")
     public ResponseEntity<?> signIn(@RequestBody ConnectionDto dto) {
         try {
-            final Employee employee = employeeService.signIn(dto);
+            final var employee = employeeService.signIn(dto);
 
             return ResponseEntity
                     .status(HttpStatus.OK)

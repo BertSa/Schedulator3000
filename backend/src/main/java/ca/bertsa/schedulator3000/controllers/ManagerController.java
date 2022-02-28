@@ -3,15 +3,11 @@ package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dto.ConnectionDto;
 import ca.bertsa.schedulator3000.dto.EmployeeDto;
-import ca.bertsa.schedulator3000.models.Employee;
-import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.models.ResponseMessage;
 import ca.bertsa.schedulator3000.services.ManagerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -27,7 +23,7 @@ public class ManagerController {
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody ConnectionDto dto) {
         try {
-            final Manager manager = employeeService.signIn(dto);
+            final var manager = employeeService.signIn(dto);
 
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -42,7 +38,7 @@ public class ManagerController {
     @GetMapping("/employees/{emailManager}")
     public ResponseEntity<?> getAllEmployeeOfManager(@PathVariable String emailManager) {
         try {
-            final List<Employee> employees = employeeService.getAllEmployee(emailManager);
+            final var employees = employeeService.getAllEmployee(emailManager);
 
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -55,9 +51,9 @@ public class ManagerController {
     }
 
     @PostMapping("/employees/add/{emailManager}")
-    public ResponseEntity<?> addEmployee(@PathVariable String emailManager, @RequestBody EmployeeDto employee) {
+    public ResponseEntity<?> addEmployee(@PathVariable String emailManager, @RequestBody EmployeeDto dto) {
         try {
-            final Employee employeeAdded = employeeService.addEmployee(emailManager, employee);
+            final var employeeAdded = employeeService.addEmployee(emailManager, dto);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)

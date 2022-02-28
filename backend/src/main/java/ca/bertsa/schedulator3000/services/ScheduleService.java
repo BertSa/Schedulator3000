@@ -1,16 +1,20 @@
 package ca.bertsa.schedulator3000.services;
 
+import ca.bertsa.schedulator3000.dto.RequestScheduleEmployeeDto;
 import ca.bertsa.schedulator3000.dto.ScheduleDto;
 import ca.bertsa.schedulator3000.dto.ShiftDto;
 import ca.bertsa.schedulator3000.models.Employee;
-import ca.bertsa.schedulator3000.models.Shift;
 import ca.bertsa.schedulator3000.models.Schedule;
+import ca.bertsa.schedulator3000.models.Shift;
 import ca.bertsa.schedulator3000.repositories.ScheduleRepository;
 import ca.bertsa.schedulator3000.repositories.ShiftRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService {
@@ -61,5 +65,19 @@ public class ScheduleService {
 
     public ScheduleDto getScheduleFromWeekFirstDay(LocalDate weekFirstDay) {
         return null;
+    }
+
+    public ScheduleDto getScheduleOfEmployee(RequestScheduleEmployeeDto dto) {
+        employeeService.assertExistsByEmail(dto.getEmployeeEmail());
+
+        final LocalDateTime startTime = LocalDateTime.parse(dto.getWeekStart());
+        final List<Shift> employeeShifts = shiftRepository.getAllByEmployee_EmailAndStartTimeBetween(dto.getEmployeeEmail(), startTime, startTime.plusDays(7));
+
+        final List<ShiftDto> shiftDtos = employeeShifts.stream()
+                .map(Shift::mapToDto)
+                .collect(Collectors.toList());
+        final ScheduleDto scheduleDto = new ScheduleDto();
+        scheduleDto.setShifts(shiftDtos);
+        return scheduleDto;
     }
 }

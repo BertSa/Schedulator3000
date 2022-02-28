@@ -4,10 +4,12 @@ import ca.bertsa.schedulator3000.dto.ConnectionDto;
 import ca.bertsa.schedulator3000.dto.EmployeeDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.repositories.EmployeeRepository;
+import org.hibernate.id.GUIDGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.UUID;
 
 @Service
 public class EmployeeService {
@@ -24,10 +26,11 @@ public class EmployeeService {
     public Employee create(EmployeeDto dto) {
         Assert.notNull(dto, "Employee cannot be null!");
         Assert.isTrue(
-                !employeeRepository.existsByEmail(dto.getEmail()),
+                !employeeRepository.existsByEmailIgnoreCase(dto.getEmail()),
                 "Employee with email " + dto.getEmail() + " already exists!");
 
         Employee employee = dto.mapToEmployee();
+        employee.setPassword(UUID.randomUUID().toString());
 
         return employeeRepository.save(employee);
     }
@@ -35,7 +38,7 @@ public class EmployeeService {
     public Employee signIn(ConnectionDto dto) {
         Assert.notNull(dto, "Email and password cannot be null!");
 
-        Employee employee = employeeRepository.getByEmailAndPassword(dto.getEmail(), dto.getPassword());
+        Employee employee = employeeRepository.getByEmailIgnoreCaseAndPassword(dto.getEmail(), dto.getPassword());
 
         if (employee == null) {
             throw new EntityNotFoundException("Invalid email or password!");
@@ -43,4 +46,13 @@ public class EmployeeService {
 
         return employee;
     }
+
+    public void assertExistsByEmail(String employeeEmail) {
+        Assert.notNull(employeeEmail, "Employee email cannot be null!");
+        Assert.isTrue(employeeEmail.isEmpty(), "Employee email cannot be empty!");
+        if (!employeeRepository.existsByEmailIgnoreCase(employeeEmail)) {
+            throw new EntityNotFoundException("Employee with email " + employeeEmail + " does not exist!");
+        }
+    }
 }
+

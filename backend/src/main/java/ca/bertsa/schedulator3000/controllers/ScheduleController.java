@@ -1,5 +1,6 @@
 package ca.bertsa.schedulator3000.controllers;
 
+import ca.bertsa.schedulator3000.dto.RequestScheduleEmployeeDto;
 import ca.bertsa.schedulator3000.dto.ScheduleDto;
 import ca.bertsa.schedulator3000.dto.ShiftDto;
 import ca.bertsa.schedulator3000.models.ResponseMessage;
@@ -36,9 +37,9 @@ public class ScheduleController {
     }
 
     @PostMapping("/shift/add")
-    public ResponseEntity<?> AddShift(@RequestBody ShiftDto shiftDto) {
+    public ResponseEntity<?> AddShift(@RequestBody ShiftDto dto) {
         try {
-            scheduleService.addShift(shiftDto);
+            scheduleService.addShift(dto);
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -52,7 +53,21 @@ public class ScheduleController {
     @GetMapping("/weekof/{weekFirstDay}")
     public ResponseEntity<?> getSchedule(@PathVariable String weekFirstDay) {
         try {
-            final ScheduleDto schedule = scheduleService.getScheduleFromWeekFirstDay(LocalDate.parse(weekFirstDay));
+            final var schedule = scheduleService.getScheduleFromWeekFirstDay(LocalDate.parse(weekFirstDay));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(schedule);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
+    @GetMapping("/employee/weekof")
+    public ResponseEntity<?> getScheduleOfEmployee(@RequestBody RequestScheduleEmployeeDto dto) {
+        try {
+            final var schedule = scheduleService.getScheduleOfEmployee(dto);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(schedule);

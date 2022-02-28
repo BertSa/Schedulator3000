@@ -2,6 +2,7 @@ package ca.bertsa.schedulator3000.services;
 
 import ca.bertsa.schedulator3000.dto.ConnectionDto;
 import ca.bertsa.schedulator3000.dto.EmployeeDto;
+import ca.bertsa.schedulator3000.dto.ManagerDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.ManagerRepository;
@@ -38,21 +39,21 @@ public class ManagerService {
     }
 
     private Manager getOneByEmail(String emailManager) {
-        final Manager manager = managerRepository.getByEmail(emailManager);
+        final Manager manager = managerRepository.getByEmailIgnoreCase(emailManager);
         if (manager == null) {
             throw new EntityNotFoundException("Manager with email " + emailManager + " does not exist!");
         }
         return manager;
     }
 
-    public Manager signIn(ConnectionDto dto) {
+    public ManagerDto signIn(ConnectionDto dto) {
         Assert.notNull(dto, "Email and password cannot be null!");
 
-        final Manager manager = managerRepository.getByEmailAndPassword(dto.getEmail(), dto.getPassword());
+        final Manager manager = managerRepository.getByEmailIgnoreCaseAndPassword(dto.getEmail(), dto.getPassword());
         if (manager == null) {
             throw new EntityNotFoundException("Invalid email or password!");
         }
 
-        return manager;
+        return manager.mapToDto();
     }
 }

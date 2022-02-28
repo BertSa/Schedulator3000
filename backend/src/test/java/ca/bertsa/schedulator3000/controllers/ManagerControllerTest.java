@@ -2,6 +2,7 @@ package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dto.ConnectionDto;
 import ca.bertsa.schedulator3000.dto.EmployeeDto;
+import ca.bertsa.schedulator3000.dto.ManagerDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.services.ManagerService;
@@ -44,27 +45,27 @@ public class ManagerControllerTest {
         @DisplayName("should return manager when signIn is successful")
         public void shouldReturnManager() throws Exception {
             // Arrange
-            final Manager dummyManager = Dummies.getDummyManager();
+            final ManagerDto dummyManagerDto = Dummies.getDummyManager().mapToDto();
 
             when(managerService.signIn(any()))
-                    .thenReturn(dummyManager);
+                    .thenReturn(dummyManagerDto);
 
             // Act
             MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                             .post("/api/manager/signin/")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(MAPPER.writeValueAsString(
-                                    new ConnectionDto(dummyManager.getEmail(), dummyManager.getPassword()))))
+                                    new ConnectionDto(dummyManagerDto.getEmail(), dummyManagerDto.getPassword()))))
                     .andReturn();
 
             // Assert
             final MockHttpServletResponse response = mvcResult.getResponse();
-            var actualManager = MAPPER.readValue(response.getContentAsString(), Manager.class);
+            var actualManager = MAPPER.readValue(response.getContentAsString(), ManagerDto.class);
 
             assertThat(response.getStatus())
                     .isEqualTo(HttpStatus.OK.value());
             assertThat(actualManager)
-                    .isEqualTo(dummyManager);
+                    .isEqualTo(dummyManagerDto);
         }
 
         @Test

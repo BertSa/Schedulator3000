@@ -1,5 +1,6 @@
 package ca.bertsa.schedulator3000.controllers;
 
+import ca.bertsa.schedulator3000.dto.RequestScheduleEmployeeDto;
 import ca.bertsa.schedulator3000.dto.ScheduleDto;
 import ca.bertsa.schedulator3000.services.ScheduleService;
 import ca.bertsa.schedulator3000.utils.Dummies;
@@ -37,7 +38,7 @@ class ScheduleControllerTests {
     private ScheduleService scheduleService;
 
     @Nested
-    @DisplayName("GET /schedules")
+    @DisplayName("GET /api/schedule/weekof/{weekNumber}")
     class GetScheduleByWeekTests {
 
         @Test
@@ -77,6 +78,63 @@ class ScheduleControllerTests {
             MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                             .get("/api/schedule/weekof/{weekNumber}", LocalDate.now().toString())
                             .contentType(MediaType.APPLICATION_JSON))
+                    .andReturn();
+
+            // Assert
+            final MockHttpServletResponse response = mvcResult.getResponse();
+
+            assertThat(response.getStatus())
+                    .isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.getContentAsString())
+                    .contains("Schedule not found!");
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /api/schedule/employee/weekof/")
+    class GetScheduleByEmployeeTests {
+
+        @Test
+        @DisplayName("should return list of employees when getAllEmployeeOfManager is successful")
+        public void shouldReturnScheduleOfWeek() throws Exception {
+            // Arrange
+            final RequestScheduleEmployeeDto dummyScheduleEmployee = Dummies.getDummyScheduleEmployee();
+            final ScheduleDto dummyScheduleDto = Dummies.getDummySchedule().mapToDto();
+
+            when(scheduleService.getScheduleOfEmployee(any()))
+                    .thenReturn(dummyScheduleDto);
+
+            // Act
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .get("/api/schedule/employee/weekof/")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(MAPPER.writeValueAsString(dummyScheduleEmployee)))
+                    .andReturn();
+
+            // Assert
+            final MockHttpServletResponse response = mvcResult.getResponse();
+            var actualSchedule = MAPPER.readValue(response.getContentAsString(), new TypeReference<ScheduleDto>() {
+            });
+
+            assertThat(response.getStatus())
+                    .isEqualTo(HttpStatus.OK.value());
+            assertThat(actualSchedule)
+                    .isEqualTo(dummyScheduleDto);
+        }
+
+        @Test
+        public void shouldReturnBadRequest_whenServiceThrowException() throws Exception {
+            // Arrange
+            final RequestScheduleEmployeeDto dummyScheduleEmployee = Dummies.getDummyScheduleEmployee();
+
+            when(scheduleService.getScheduleOfEmployee(any()))
+                    .thenThrow(new EntityNotFoundException("Schedule not found!"));
+
+            // Act
+            MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                            .get("/api/schedule/employee/weekof/")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(MAPPER.writeValueAsString(dummyScheduleEmployee)))
                     .andReturn();
 
             // Assert

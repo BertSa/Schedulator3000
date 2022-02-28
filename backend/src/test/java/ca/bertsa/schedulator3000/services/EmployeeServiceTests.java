@@ -39,7 +39,7 @@ class EmployeeServiceTests {
             // Arrange
             final EmployeeDto dummyEmployeeDto = Dummies.getDummyEmployeeDto();
 
-            when(employeeRepository.existsByEmail(any()))
+            when(employeeRepository.existsByEmailIgnoreCase(any()))
                     .thenReturn(false);
             final Employee mappedEmployee = dummyEmployeeDto.mapToEmployee();
             when(employeeRepository.save(any()))
@@ -59,7 +59,7 @@ class EmployeeServiceTests {
             // Arrange
             final EmployeeDto dummyEmployeeDto = Dummies.getDummyEmployeeDto();
 
-            when(employeeRepository.existsByEmail(any()))
+            when(employeeRepository.existsByEmailIgnoreCase(any()))
                     .thenReturn(true);
 
             // Act — Assert
@@ -87,7 +87,7 @@ class EmployeeServiceTests {
             // Arrange
             final Employee dummyEmployee = Dummies.getDummyEmployee(1L);
 
-            when(employeeRepository.getByEmailAndPassword(any(), any()))
+            when(employeeRepository.getByEmailIgnoreCaseAndPassword(any(), any()))
                     .thenReturn(dummyEmployee);
             // Act
             final Employee actualEmployee = employeeService.signIn(new ConnectionDto(dummyEmployee.getEmail(), dummyEmployee.getPassword()));
@@ -109,7 +109,7 @@ class EmployeeServiceTests {
         @DisplayName("should throw EntityNotFoundException when employee is not found")
         void shouldThrowEntityNotFoundException_whenDtoIsNull() {
             // Arrange
-            when(employeeRepository.getByEmailAndPassword(any(), any()))
+            when(employeeRepository.getByEmailIgnoreCaseAndPassword(any(), any()))
                     .thenReturn(null);
             // Act — Assert
             assertThrows(EntityNotFoundException.class,

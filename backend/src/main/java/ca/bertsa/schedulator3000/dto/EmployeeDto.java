@@ -17,8 +17,6 @@ public class EmployeeDto {
     @NotBlank
     private String email;
     @NotBlank
-    private String password;
-    @NotBlank
     private String phone;
     @NotBlank
     private String firstName;
@@ -30,7 +28,6 @@ public class EmployeeDto {
     public Employee mapToEmployee() {
         Employee employee = new Employee();
         employee.setEmail(this.getEmail());
-        employee.setPassword(this.getPassword());
         employee.setPhone(this.getPhone());
         employee.setFirstName(this.getFirstName());
         employee.setLastName(this.getLastName());

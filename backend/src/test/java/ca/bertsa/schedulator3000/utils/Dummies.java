@@ -1,11 +1,13 @@
 package ca.bertsa.schedulator3000.utils;
 
 import ca.bertsa.schedulator3000.dto.EmployeeDto;
+import ca.bertsa.schedulator3000.dto.RequestScheduleEmployeeDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.models.Shift;
 import ca.bertsa.schedulator3000.models.Schedule;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +46,6 @@ public class Dummies {
         employeeDto.setFirstName("John");
         employeeDto.setLastName("Doe");
         employeeDto.setEmail("dummyEmployee@email.com");
-        employeeDto.setPassword("password");
         employeeDto.setPhone("1234567890");
         employeeDto.setRole("ROLE_MANAGER");
         return employeeDto;
@@ -76,5 +77,12 @@ public class Dummies {
         Shift shift = new Shift(LocalDateTime.now(), LocalDateTime.now().plusHours(4), employee);
         shift.setId(id);
         return shift;
+    }
+
+    public static RequestScheduleEmployeeDto getDummyScheduleEmployee() {
+        final RequestScheduleEmployeeDto requestScheduleEmployeeDto = new RequestScheduleEmployeeDto();
+        requestScheduleEmployeeDto.setEmployeeEmail("employee@bertsa.ca");
+        requestScheduleEmployeeDto.setWeekStart(LocalDate.now().toString());
+        return requestScheduleEmployeeDto;
     }
 }

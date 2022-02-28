@@ -20,7 +20,7 @@ public class Employee extends User {
     private String lastName;
     @NotBlank
     private String role;
-    private boolean active = true;
+    private Boolean active = null;
 
 
 

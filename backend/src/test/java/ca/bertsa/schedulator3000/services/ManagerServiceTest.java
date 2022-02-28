@@ -46,7 +46,7 @@ class ManagerServiceTest {
             final List<Employee> dummyEmployees = Dummies.getDummyEmployees();
             dummyManager.setEmployees(dummyEmployees);
 
-            when(managerRepository.getByEmail(any()))
+            when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(dummyManager);
 
             // Act
@@ -62,7 +62,7 @@ class ManagerServiceTest {
         public void shouldThrowIllegalArgumentException_whenManagerNotFound() {
             // Arrange
             final String emailManager = "random@email.com";
-            when(managerRepository.getByEmail(any()))
+            when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(null);
 
             // Act — Assert
@@ -84,7 +84,7 @@ class ManagerServiceTest {
             final EmployeeDto dummyEmployeeDto = Dummies.getDummyEmployeeDto();
             final Employee employee = dummyEmployeeDto.mapToEmployee();
 
-            when(managerRepository.getByEmail(any()))
+            when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(dummyManager);
             when(employeeService.create(any()))
                     .thenReturn(employee);
@@ -102,7 +102,7 @@ class ManagerServiceTest {
         public void shouldThrowEntityNotFoundException() {
             // Arrange
             final String emailManager = "random@email.com";
-            when(managerRepository.getByEmail(any()))
+            when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(null);
 
             // Act — Assert
@@ -116,7 +116,7 @@ class ManagerServiceTest {
         public void shouldThrowIllegalArgumentException() {
             // Arrange
             final Manager dummyManager = Dummies.getDummyManager();
-            when(managerRepository.getByEmail(any()))
+            when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(dummyManager);
             when(employeeService.create(any()))
                     .thenThrow(new IllegalArgumentException("Employee cannot be null!"));
@@ -137,7 +137,7 @@ class ManagerServiceTest {
             // Arrange
             final Manager dummyManager = Dummies.getDummyManager();
 
-            when(managerRepository.getByEmailAndPassword(any(), any()))
+            when(managerRepository.getByEmailIgnoreCaseAndPassword(any(), any()))
                     .thenReturn(dummyManager);
             // Act
             final var actualManager = managerService.signIn(new ConnectionDto(dummyManager.getEmail(), dummyManager.getPassword()));
@@ -159,7 +159,7 @@ class ManagerServiceTest {
         @DisplayName("should throw EntityNotFoundException when employee is not found")
         void shouldThrowEntityNotFoundException_whenDtoIsNull() {
             // Arrange
-            when(managerRepository.getByEmailAndPassword(any(), any()))
+            when(managerRepository.getByEmailIgnoreCaseAndPassword(any(), any()))
                     .thenReturn(null);
             // Act — Assert
             assertThrows(EntityNotFoundException.class,
