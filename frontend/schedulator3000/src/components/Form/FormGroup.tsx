@@ -1,9 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
+import {FormControl} from '@mui/material';
 
 export function FormGroup(props:FormGroupProps) {
     const {children, className} = props;
-    return <div className={`form-group row mb-2 mx-auto ${className}`}>{children}</div>
+    return <FormControl  fullWidth className={`row ${className}`}>{children}</FormControl>
 }
 type FormGroupProps = {
     children: React.ReactNode;

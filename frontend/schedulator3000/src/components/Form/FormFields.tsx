@@ -1,37 +1,40 @@
-import PropTypes from "prop-types";
-import {FieldErrors} from 'react-hook-form';
+import PropTypes from 'prop-types';
+
+import {TextField} from '@mui/material';
+import React from 'react';
 
 FieldInput.propTypes = {
     register: PropTypes.func.isRequired,
-    error: PropTypes.object,
+    errors: PropTypes.object,
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    placeholder: PropTypes.string,
-    type: PropTypes.oneOf(['text', 'number', 'tel', 'email', 'password', 'date', 'time']).isRequired,
+    type: PropTypes.string.isRequired,
     validation: PropTypes.object.isRequired,
     autoComplete: PropTypes.string
 };
 type FieldInputProps = {
     register: Function,
-    error?:  FieldErrors,
+    errors: any,
     name: string,
     label: string,
-    placeholder?: string,
-    type: 'text'|'number'|'tel'|'email'|'password'| 'date'| 'time'
+    type: React.InputHTMLAttributes<unknown>['type'],
     validation: object,
-    autoComplete?: string
-};
-FieldInput.defaultProps = {
-    placeholder: "",
+    autoComplete?: React.InputHTMLAttributes<unknown>['autoComplete'],
+    defaultValue?: string
 };
 
 export function FieldInput(props: FieldInputProps) {
-    const {register, error, label, name, placeholder, type, validation, autoComplete} = props;
-    return <div className="form-floating mb-2">
-    <input id={name} name={name} placeholder={placeholder} className={"form-control" + (error ? " is-invalid" : "")}
-    type={type} {...register(name, validation)} defaultValue={(type === "number" ? 0 : "")}
-    autoComplete={autoComplete}/>
-    <label htmlFor={name}>{label}</label>
-    {error && <span className="text-danger">{error.message}</span>}
-        </div>
-    }
+    const {register, errors, label, name, type, validation, autoComplete, defaultValue} = props;
+    return <TextField
+        type={type}
+        label={label}
+        name={name}
+        className=""
+        autoComplete={autoComplete}
+        {...register(name, validation)}
+        fullWidth
+        error={!!errors[name]}
+        helperText={errors[name]?.message ?? ' '}
+        defaultValue={defaultValue}
+    />;
+}

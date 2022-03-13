@@ -4,6 +4,15 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+const backup = console.error;
+console.error = function filter(msg) {
+    const supressedWarnings = ['Warning: Using UNSAFE_component','Warning: %s is deprecated in StrictMode'];
+
+    if (!supressedWarnings.some(entry => msg.includes(entry))) {
+        backup.apply(console, [msg]);
+    }
+};
+
 ReactDOM.render(
   <React.StrictMode>
     <App />

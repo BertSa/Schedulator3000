@@ -2,7 +2,24 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {AuthProvider, RequireAuth, RequireNoAuth} from './hooks/use-auth';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
-import {Dashboards} from './Dashboards';
+import {Dashboards} from './components/Dashboards';
+import {Schedule} from './components/Schedule';
+import {createTheme, CssBaseline, ThemeOptions, ThemeProvider} from '@mui/material';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DateAdapter from '@mui/lab/AdapterDateFns';
+
+
+export const themeOptions: ThemeOptions = createTheme({
+    palette: {
+        mode: 'dark',
+        primary: {
+            main: '#00796b'
+        },
+        secondary: {
+            main: '#b2ebf2'
+        }
+    }
+});
 
 function App() {
     let Register = (): React.ReactElement => {
@@ -10,16 +27,22 @@ function App() {
     };
     return (
         <AuthProvider>
-            <Router>
-                <div className="container">
-                    <RequiredRoute path="/manager" required>
-                        <Dashboards />
-                    </RequiredRoute>
-                    <RequiredRoute path="/register" required>
-                        <Register/>
-                    </RequiredRoute>
-                </div>
-            </Router>
+            <LocalizationProvider dateAdapter={DateAdapter}>
+                <ThemeProvider theme={themeOptions}>
+                    <CssBaseline/>
+                    <Router>
+                        <div className="container">
+                            <Schedule/>
+                            <RequiredRoute path="/manager" required>
+                                <Dashboards/>
+                            </RequiredRoute>
+                            <RequiredRoute path="/register" required>
+                                <Register/>
+                            </RequiredRoute>
+                        </div>
+                    </Router>
+                </ThemeProvider>
+            </LocalizationProvider>
         </AuthProvider>);
 }
 

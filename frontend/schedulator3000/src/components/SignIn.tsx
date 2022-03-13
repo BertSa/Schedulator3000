@@ -32,9 +32,8 @@ export function SignIn() {
                         <FieldInput label="Your email"
                                     name="email"
                                     type="email"
-                                    placeholder="Your email"
                                     register={register}
-                                    error={errors.email}
+                                    errors={errors}
                                     validation={{
                                         required: 'This field is required',
                                         pattern: {
@@ -48,9 +47,8 @@ export function SignIn() {
                         <FieldInput label="Your password"
                                     name="password"
                                     type="password"
-                                    placeholder="Your password"
                                     register={register}
-                                    error={errors.password}
+                                    errors={errors}
                                     validation={{
                                         required: 'This field is required'
                                     }}

@@ -1,15 +1,15 @@
 import {Route, useHistory, useRouteMatch} from 'react-router-dom';
-import {SignIn} from './components/SignIn';
+import {SignIn} from './SignIn';
 import React, {useEffect} from 'react';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {useAuth} from './hooks/use-auth';
-import {Column} from './components/Colums';
-import {FieldInput} from './components/Form/FormFields';
-import {FormGroup} from './components/Form/FormGroup';
-import {regexEmail, regexPhone} from './utilities';
-import {addEmployee, getEmployees} from './services/ManagerService';
-import {Employee} from './models/user';
-import {Table, TableHeader, TableRow} from './components/Table';
+import {useAuth} from '../hooks/use-auth';
+import {Column} from './Colums';
+import {FieldInput} from './Form/FormFields';
+import {FormGroup} from './Form/FormGroup';
+import {regexEmail, regexPhone} from '../utilities';
+import {addEmployee, getEmployees} from '../services/ManagerService';
+import {Employee} from '../models/user';
+import {Table, TableHeader, TableRow} from './Table';
 
 export function Dashboards() {
     const {path} = useRouteMatch();
@@ -101,11 +101,10 @@ function RegisterEmployee() {
                 <FormGroup>
                     <Column col={{lg: 6}}>
                         <FieldInput register={register}
-                                    error={errors.firstName}
+                                    errors={errors}
                                     name="firstName"
                                     label="First Name"
                                     autoComplete="given-name"
-                                    placeholder="First name"
                                     type="text"
                                     validation={{
                                         required: 'Ce champ est obligatoire!',
@@ -117,10 +116,9 @@ function RegisterEmployee() {
                     </Column>
                     <Column col={{lg: 6}}>
                         <FieldInput register={register}
-                                    error={errors.lastName}
+                                    errors={errors}
                                     name="lastName"
                                     label="Last Name"
-                                    placeholder="Last Name"
                                     type="text"
                                     autoComplete="family-name"
                                     validation={{
@@ -141,19 +139,17 @@ function RegisterEmployee() {
                                         }
                                     }}
                                     register={register}
-                                    error={errors.email}
+                                    errors={errors}
                                     name="email"
                                     autoComplete="email"
-                                    placeholder="Email"
                                     type="email"
                         />
                     </Column>
                     <Column>
                         <FieldInput register={register}
-                                    error={errors.phone}
+                                    errors={errors}
                                     name="phone"
                                     label="Phone Number"
-                                    placeholder="000 000 000"
                                     type="tel"
                                     autoComplete="tel-country-code"
                                     validation={{
@@ -164,10 +160,9 @@ function RegisterEmployee() {
                                         }
                                     }}/>
                         <FieldInput register={register}
-                                    error={errors.role}
+                                    errors={errors}
                                     name="role"
                                     label="Role"
-                                    placeholder="HR"
                                     type="text"
                                     autoComplete="role"
                                     validation={{
