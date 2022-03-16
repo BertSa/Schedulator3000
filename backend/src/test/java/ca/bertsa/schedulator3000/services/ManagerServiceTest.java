@@ -44,7 +44,7 @@ class ManagerServiceTest {
             // Arrange
             final Manager dummyManager = Dummies.getDummyManager();
             final List<Employee> dummyEmployees = Dummies.getDummyEmployees();
-            dummyManager.setEmployees(dummyEmployees);
+//            dummyManager.setEmployees(dummyEmployees);
 
             when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(dummyManager);

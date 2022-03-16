@@ -19,7 +19,7 @@ public class Shift {
     private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Employee employee;
 
     public Shift(LocalDateTime startTime, LocalDateTime endTime, Employee employee) {
@@ -30,7 +30,6 @@ public class Shift {
 
     public ShiftDto mapToDto() {
         final ShiftDto dto = new ShiftDto();
-        dto.setId(getId());
         dto.setStartTime(getStartTime());
         dto.setEndTime(getEndTime());
         dto.setIdEmployee(getEmployee().getId());

@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeDto {
+    private Long id;
     @Email
     @NotBlank
     private String email;
@@ -24,6 +25,7 @@ public class EmployeeDto {
     private String lastName;
     @NotBlank
     private String role;
+    private Boolean active;
 
     public Employee mapToEmployee() {
         Employee employee = new Employee();

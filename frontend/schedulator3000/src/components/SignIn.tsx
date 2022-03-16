@@ -20,7 +20,7 @@ export function SignIn() {
         const {email, password} = data;
         auth.signInManager(email, password).then(() => {
             if (auth.user)
-                history.push('/manager');
+                history.push('/manager/dashboard');
         });
     };
 

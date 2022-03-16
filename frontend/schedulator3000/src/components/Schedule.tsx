@@ -3,50 +3,23 @@ import format from 'date-fns/format';
 import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
-import enUS from 'date-fns/locale/en-US';
-import React, {ComponentType, useState} from 'react';
+import enCA from 'date-fns/locale/en-CA';
+import React, {ComponentType, useEffect, useState} from 'react';
 import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addons/dragAndDrop';
 import addHours from 'date-fns/addHours';
-import startOfHour from 'date-fns/startOfHour';
-import {FieldInput} from './Form/FormFields';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {Button, Dialog, Grid, InputAdornment, MenuItem, TextField} from '@mui/material';
+import {Avatar, Button, Dialog, Grid, InputAdornment, MenuItem, TextField} from '@mui/material';
 import {DateTimePicker} from '@mui/lab';
 import {AccountCircle} from '@mui/icons-material';
+import {Employee} from '../models/user';
+import {useAuth} from '../hooks/use-auth';
+import {getEmployees} from '../services/ManagerService';
+import {addShift, getWeekOf} from '../services/ScheduleService';
+import {Shift} from '../models/Shift';
+import {stringAvatar} from '../utilities';
 
-
-let users = [
-    {
-        id: 1,
-        name: 'John Doe'
-    },
-    {
-        id: 2,
-        name: 'Jane Doe'
-    },
-    {
-        id: 3,
-        name: 'Jack Doe'
-    },
-    {
-        id: 4,
-        name: 'Jill Doe'
-    },
-    {
-        id: 5,
-        name: 'Joe Doe'
-    },
-    {
-        id: 6,
-        name: 'Jenny Doe'
-    },
-    {
-        id: 7,
-        name: 'Dill Doe'
-    }
-];
 const locales = {
-    'en-US': enUS
+    'en-CA': enCA
 };
 
 const localizer = dateFnsLocalizer({
@@ -56,10 +29,6 @@ const localizer = dateFnsLocalizer({
     getDay,
     locales
 });
-const endOfHour = (date: Date): Date => addHours(startOfHour(date), 1);
-const now = new Date();
-const start = endOfHour(now);
-const end = addHours(start, 1);
 const DnDCalendar = withDragAndDrop(Calendar as ComponentType<CalendarProps<any>>);
 const customSlotPropGetter = (date: Date) => {
     if (date.getDate() === 6 || date.getDate() === 15)
@@ -83,72 +52,59 @@ const preferences = {
 };
 
 
-export const Schedule = (props: any) => {
+export const Schedule = () => {
     const {setValue, register, handleSubmit, formState: {errors}} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
     });
-    let [start, setStart] = useState<any>('2018-01-01T00:00:00.000');
-    let [end, setEnd] = useState<any>('2018-01-01T00:00:00.000');
-    let [opene, setOpene] = useState<boolean>(false);
+    const [start, setStart] = useState<any>('2018-01-01T00:00:00.000');
+    const [end, setEnd] = useState<any>('2018-01-01T00:00:00.000');
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [events, setEvents] = useState<Event[]>([]);
 
+    let user = useAuth().getManager();
 
-    const [events, setEvents] = useState<Event[]>([
-        {
-            title: 'Learn cool stuff',
-            start,
-            end,
-            resource: {
-                id: 1,
-                user:users[0].id
-            }
-        },
-        {
-            title: 'Learn cool stuff',
-            start,
-            end,
-            resource: {
-                id: 2,
-                user:users[0].id
-            }
-        },
-        {
-            title: 'Learn cool stuff',
-            start,
-            end,
-            resource: {
-                id: 3,
-                user:users[2].id
-            }
-        },
-        {
-            title: 'Learn cool stuff',
-            start,
-            end,
-            resource: {
-                id: 4,
-                user:users[6].id
-            }
-        },
-        {
-            title: 'Learn cool stuff',
-            start,
-            end,
-            resource: {
-                id: 5,
-                user:users[4].id
-            }
-        },
-        {
-            title: 'Learn cool stuff',
-            start,
-            end,
-            resource: {
-                id: 6,
-                user:users[3].id
-            }
-        }
-    ]);
+    useEffect(() => {
+        let email = user.email ?? '';
+        getEmployees(email).then(
+            employees => {
+                user.employees = employees;
+                setEmployees(employees);
+
+                getWeekOf(new Date().toLocaleDateString('en-CA', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric'
+                })).then(
+                    week => {
+                        if (week === null) {
+                            setEvents([]);
+                            return;
+                        }
+                        let events = week.shifts.map(shift => {
+                            let employee1 = employees.find(employee => {
+                                if (employee.id === shift.idEmployee) {
+                                    return true;
+                                }
+                                return employee.id === shift.idEmployee;
+                            });
+                            let event: Event = {
+                                title: employee1?.lastName + ' ' + employee1?.firstName,
+                                start: new Date(new Date(shift.startTime).getTime() - new Date(shift.startTime).getTimezoneOffset() * 60000),
+                                end: new Date(new Date(shift.endTime).getTime() - new Date(shift.endTime).getTimezoneOffset() * 60000),
+                                resource: {
+                                    id: shift.id,
+                                    employeeId: shift.idEmployee
+                                }
+                            };
+                            return event;
+                        });
+                        setEvents(events);
+                    });
+            });
+    }, []);
+
 
     function updateEvent(data: { event: Event; start: stringOrDate; end: stringOrDate; isAllDay: boolean }) {
         const {start, end, isAllDay, event} = data;
@@ -174,26 +130,40 @@ export const Schedule = (props: any) => {
         setValue('end', slotInfo.end);
         setStart(slotInfo.start);
         setEnd(slotInfo.end);
-        setOpene(true);
+        setDialogOpen(true);
     };
 
     const submit: SubmitHandler<FieldValues> = (data, event) => {
         event?.preventDefault();
-        console.log(data);
         const {
             start,
             end,
-            title,
-            user,
+            userId
         } = data;
-        const newEvent: Event = {
-            title,
-            start: new Date(start),
-            end: new Date(end),
-            resource: {id:(Math.random() * 100), user: user}
+        const newEvent: any = {
+            startTime: new Date(new Date(start).toISOString()),
+            endTime: new Date(new Date(end).toISOString()),
+            idEmployee: userId
         };
-        setEvents([...events, newEvent]);
-        setOpene(false);
+
+        addShift(newEvent).then(
+            (shift: Shift | null) => {
+                if (shift === null)
+                    return;
+                let employee1 = employees.find(employee => employee.id === shift.idEmployee);
+                let event: Event = {
+                    title: employee1?.lastName + ' ' + employee1?.firstName,
+                    start: new Date(shift.startTime),
+                    end: new Date(shift.endTime),
+                    resource: {
+                        id: shift.id,
+                        employeeId: shift.idEmployee
+                    }
+                };
+                setEvents((currentEvents: Event[]) => [...currentEvents, event]);
+                setDialogOpen(false);
+            }
+        );
     };
 
     // noinspection RequiredAttributes
@@ -242,30 +212,14 @@ export const Schedule = (props: any) => {
                 }}
                 onSelecting={() => true}
             />
-            <Dialog open={opene} title="dadad" onClose={() => setOpene(false)}>
-                <Grid container columnSpacing={2} padding={2} component="form" onSubmit={handleSubmit(submit)}
+            <Dialog open={dialogOpen} title="dadad" onClose={() => setDialogOpen(false)}>
+                <Grid container columnSpacing={2} rowSpacing={2} padding={2} component="form"
+                      onSubmit={handleSubmit(submit)}
                       noValidate>
-                    <Grid item xs={6}>
-                        <FieldInput label="title"
-                                    validation={{
-                                        required: 'Ce champ est obligatoire!',
-                                        pattern: {
-                                            value: /^[a-zA-Z ]{5,35}$/,
-                                            message: 'Le prénom doit contenir que des lettres!'
-                                        }
-                                    }}
-                                    name="title"
-                                    register={register}
-                                    errors={errors}
-                                    type="text"
-                                    defaultValue={''}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12}>
                         <TextField
                             select
                             label="Select"
-                            defaultValue="0"
                             fullWidth
                             SelectProps={{
                                 startAdornment: (
@@ -274,10 +228,14 @@ export const Schedule = (props: any) => {
                                     </InputAdornment>
                                 )
                             }}
-                            {...register("user")}
+                            {...register('userId', {
+                                required: true
+                            })}
+                            helperText={errors.userId ?? ' '}
+                            error={!!errors.userId}
                         >
-                            <MenuItem hidden value="0">Choisir un utilisateur</MenuItem>
-                            {users.map(user => <MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>)}
+                            {employees.map(user => <MenuItem key={user.id}
+                                                             value={user.id}><Avatar {...stringAvatar(user.firstName+ " " + user.lastName)} /> {user.firstName} {user.lastName}</MenuItem>)}
                         </TextField>
                     </Grid>
                     <Grid item xs={6}>
@@ -308,4 +266,3 @@ export const Schedule = (props: any) => {
         </>
     );
 };
-

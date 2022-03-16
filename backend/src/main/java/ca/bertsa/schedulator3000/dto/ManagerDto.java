@@ -19,4 +19,5 @@ public class ManagerDto {
     @NotBlank
     private String phone;
     private List<Holiday> holidays;
+    private List<EmployeeDto> employees;
 }

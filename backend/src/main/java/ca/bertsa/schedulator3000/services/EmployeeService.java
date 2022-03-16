@@ -3,12 +3,14 @@ package ca.bertsa.schedulator3000.services;
 import ca.bertsa.schedulator3000.dto.ConnectionDto;
 import ca.bertsa.schedulator3000.dto.EmployeeDto;
 import ca.bertsa.schedulator3000.models.Employee;
+import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.EmployeeRepository;
 import org.hibernate.id.GUIDGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.UUID;
 
 @Service

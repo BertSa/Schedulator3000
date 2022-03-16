@@ -1,12 +1,13 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {AuthProvider, RequireAuth, RequireNoAuth} from './hooks/use-auth';
-import {BrowserRouter as Router, Route} from 'react-router-dom';
+import {AuthProvider, RequireAdmin, RequireAuth, RequireNoAuth} from './hooks/use-auth';
+import {BrowserRouter as Router, Route, useRouteMatch} from 'react-router-dom';
 import {Dashboards} from './components/Dashboards';
 import {Schedule} from './components/Schedule';
 import {createTheme, CssBaseline, ThemeOptions, ThemeProvider} from '@mui/material';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DateAdapter from '@mui/lab/AdapterDateFns';
+import {SignIn} from './components/SignIn';
 
 
 export const themeOptions: ThemeOptions = createTheme({
@@ -25,6 +26,20 @@ function App() {
     let Register = (): React.ReactElement => {
         return <h1>Register</h1>;
     };
+    let ManagerRoute = (): React.ReactElement => {
+        const {path} = useRouteMatch();
+
+        return <>
+            <Route exact path={`${path}/signin`}>
+                <RequireNoAuth>
+                    <SignIn/>
+                </RequireNoAuth>
+            </Route>
+            <RequireAdmin>
+                <Dashboards/>
+            </RequireAdmin>
+        </>;
+    };
     return (
         <AuthProvider>
             <LocalizationProvider dateAdapter={DateAdapter}>
@@ -32,10 +47,8 @@ function App() {
                     <CssBaseline/>
                     <Router>
                         <div className="container">
-                            <Schedule/>
-                            <RequiredRoute path="/manager" required>
-                                <Dashboards/>
-                            </RequiredRoute>
+                            <Route path="/schedule" component={Schedule}/>
+                            <Route path="/manager" component={ManagerRoute}/>
                             <RequiredRoute path="/register" required>
                                 <Register/>
                             </RequiredRoute>

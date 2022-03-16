@@ -1,4 +1,5 @@
 export class User {
+    public id?: number | undefined;
     public email: string;
     public phone: string;
     public password?: string;
@@ -26,4 +27,5 @@ export class Employee extends User {
 
 
 export class Manager extends User {
+    public employees: Employee[] = [];
 }

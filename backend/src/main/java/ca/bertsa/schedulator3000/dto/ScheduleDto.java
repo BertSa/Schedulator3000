@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 public class ScheduleDto implements Serializable {
-    private long id;
+    private Long id;
     private List<ShiftDto> shifts;
     private LocalDate startDate;
 }

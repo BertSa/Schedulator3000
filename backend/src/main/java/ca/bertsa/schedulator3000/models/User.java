@@ -4,21 +4,21 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
 @Getter
 @Setter
-@MappedSuperclass
+@Entity
+@SequenceGenerator(name = "user_seq", initialValue = 6)
 @EqualsAndHashCode
-public abstract class User {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class User implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
     private Long id;
 
     @Email

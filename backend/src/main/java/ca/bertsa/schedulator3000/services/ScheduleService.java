@@ -11,8 +11,10 @@ import ca.bertsa.schedulator3000.repositories.ShiftRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +66,19 @@ public class ScheduleService {
     }
 
     public ScheduleDto getScheduleFromWeekFirstDay(LocalDate weekFirstDay) {
-        return null;
+        final LocalDate with = weekFirstDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        final Schedule weekScheduleByStartDateIsBetween = scheduleRepository.getWeekScheduleByStartDateIsBetween(with, with.plusDays(7));
+        if (weekScheduleByStartDateIsBetween == null) {
+            return createEmptySchedule(with);
+        }
+        return weekScheduleByStartDateIsBetween.mapToDto();
+    }
+
+    private ScheduleDto createEmptySchedule(LocalDate weekFirstDay) {
+        ScheduleDto scheduleDto = new ScheduleDto();
+        scheduleDto.setStartDate(weekFirstDay);
+        scheduleDto.setShifts(List.of());
+        return scheduleDto;
     }
 
     public ScheduleDto getScheduleOfEmployee(RequestScheduleEmployeeDto dto) {

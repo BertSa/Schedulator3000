@@ -1,8 +1,7 @@
 import {Route, useHistory, useRouteMatch} from 'react-router-dom';
-import {SignIn} from './SignIn';
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {useAuth} from '../hooks/use-auth';
+import {RequireAdmin, useAuth} from '../hooks/use-auth';
 import {Column} from './Colums';
 import {FieldInput} from './Form/FormFields';
 import {FormGroup} from './Form/FormGroup';
@@ -10,12 +9,18 @@ import {regexEmail, regexPhone} from '../utilities';
 import {addEmployee, getEmployees} from '../services/ManagerService';
 import {Employee} from '../models/user';
 import {Table, TableHeader, TableRow} from './Table';
+import {Link} from '@mui/material';
+import {Schedule} from './Schedule';
 
 export function Dashboards() {
     const {path} = useRouteMatch();
     return <>
-        <Route exact path={`${path}/signin`} component={SignIn}/>
-        <Route path={`${path}/employees`} component={EmployeeManagement}/>
+        <RequireAdmin>
+            <Link href={`${path}/employees`}>Employee Management</Link>
+            <Link href={`${path}/schedule`}>Schedule</Link>
+            <Route path={`${path}/employees`} component={EmployeeManagement}/>
+            <Route path={`${path}/schedule`} component={Schedule}/>
+        </RequireAdmin>
     </>;
 }
 
@@ -28,17 +33,17 @@ function EmployeeManagement(): React.ReactElement {
 }
 
 function EmployeeList() {
-    const [employees, setEmployees] = React.useState<Employee[]>([]);
-    let {user} = useAuth();
-
+    const [employees, setEmployees] = useState<Employee[]>([])
+    let user = useAuth().getManager();
     useEffect(() => {
-        let email = user?.email ?? '';
+        let email = user.email ?? '';
         getEmployees(email).then(
             employees => {
-                console.log(employees);
+                user.employees = employees;
                 setEmployees(employees);
             });
     }, []);
+
     return <Table>
         <TableHeader>
             <th>#</th>
@@ -49,7 +54,7 @@ function EmployeeList() {
             <th>Role</th>
         </TableHeader>
         {employees.map((employee,index) => <TableRow key={index}>
-            <td>{index}</td>
+            <td>{employee.id ?? "N/A"}</td>
             <td>{employee.firstName ?? "N/A"}</td>
             <td>{employee.lastName ?? "N/A"}</td>
             <td>{employee.email ?? "N/A"}</td>
@@ -66,7 +71,7 @@ function RegisterEmployee() {
         reValidateMode: 'onSubmit'
     });
     let history = useHistory();
-    let {user} = useAuth();
+    let user = useAuth().getManager();
 
     const submit: SubmitHandler<FieldValues> = (data, event) => {
         event?.preventDefault();
@@ -85,11 +90,10 @@ function RegisterEmployee() {
             phone,
             role
         };
-        if (!user) {
-            return;
-        }
-        addEmployee(user.email, employee).then(() => {
-            history.push('/manager/employees');
+        addEmployee(user.email, employee).then(({ok, body}) => {
+            if (ok) {
+                user.employees.push(body as Employee);
+            }
         });
     };
 

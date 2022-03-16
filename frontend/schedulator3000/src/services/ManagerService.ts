@@ -12,7 +12,7 @@ export async function addEmployee(emailManager: string, employee: Employee) {
                     } else if (response.status === 400) {
                         toastError.fire({title: body.message});
                     }
-                    return body;
+                    return {ok: response.ok, body};
                 }));
 }
 

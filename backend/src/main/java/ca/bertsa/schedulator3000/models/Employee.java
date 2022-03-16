@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 
 @Entity
@@ -21,7 +23,17 @@ public class Employee extends User {
     @NotBlank
     private String role;
     private Boolean active = null;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Manager manager;
 
 
-
+    public EmployeeDto mapToDto() {
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setId(this.getId());
+        employeeDto.setFirstName(this.getFirstName());
+        employeeDto.setLastName(this.getLastName());
+        employeeDto.setRole(this.getRole());
+        employeeDto.setActive(this.getActive());
+        return employeeDto;
+    }
 }
