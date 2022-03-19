@@ -13,8 +13,19 @@ import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addo
 import {addDays, format, getDay, parse, startOfWeek} from 'date-fns';
 import enCA from 'date-fns/locale/en-CA';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {Avatar, Button, Grid, InputAdornment, MenuItem, Stack, TextField, Typography} from '@mui/material';
-import {AccountCircle, ArrowBack, ArrowForward} from '@mui/icons-material';
+import {
+    Avatar,
+    Button,
+    Grid,
+    InputAdornment,
+    ListItemIcon,
+    Menu,
+    MenuItem,
+    Stack,
+    TextField,
+    Typography
+} from '@mui/material';
+import {AccountCircle, ArrowBack, ArrowForward, Delete} from '@mui/icons-material';
 import {DateTimePicker} from '@mui/lab';
 import {Employee} from '../models/user';
 import {useAuth} from '../hooks/use-auth';
@@ -78,6 +89,11 @@ export const Schedule = () => {
             employeeId: -1
         }
     });
+    const [contextMenu, setContextMenu] = React.useState<{
+        mouseX: number;
+        mouseY: number;
+        shiftEvent: ShiftEvent;
+    } | null>(null);
     const user = useAuth().getManager();
 
     useEffect(() => {
@@ -318,6 +334,28 @@ export const Schedule = () => {
         openMyDialog(SubmitType.CREATE);
     };
 
+
+    const handleContextMenu = (event: React.MouseEvent, shiftEvent:ShiftEvent) => {
+        event.preventDefault();
+        setContextMenu(
+            contextMenu === null
+                ? {
+                    mouseX: event.clientX - 2,
+                    mouseY: event.clientY - 4,
+                    shiftEvent: shiftEvent,
+                }
+                : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
+                  // Other native context menus might behave different.
+                  // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+                null,
+        );
+    };
+
+    const handleClose = () => {
+        setContextMenu(null);
+    };
+
+
     return (<>
             <DnDCalendar
                 defaultView={Views.WEEK}
@@ -377,7 +415,7 @@ export const Schedule = () => {
                             <div
                                 onContextMenu={
                                     e => {
-                                        alert(`${event.title} is clicked.`);
+                                        handleContextMenu(e, event);
                                         e.preventDefault();
                                     }
                                 }>
@@ -396,6 +434,26 @@ export const Schedule = () => {
                     }
                 }
             />
+            <Menu
+                open={contextMenu !== null}
+                onClose={handleClose}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    contextMenu !== null
+                        ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                        : undefined
+                }
+            >
+                <MenuItem onClick={handleClose}>Print</MenuItem>
+                <MenuItem onClick={handleClose}>Highlight</MenuItem>
+                <MenuItem onClick={handleClose}>Email</MenuItem>
+                <MenuItem sx={{alignContent:"center"}} onClick={()=>{
+                    deleteShift(contextMenu?.shiftEvent.resourceId).then(deleted =>
+                        deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent.resourceId))
+                    );
+                    handleClose();
+                }}><Delete fontSize="small" /> Delete</MenuItem>
+            </Menu>
         </>
     );
 };
