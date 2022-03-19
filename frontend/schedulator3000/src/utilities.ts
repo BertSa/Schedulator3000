@@ -55,3 +55,16 @@ export function stringAvatar(name: string) {
 export function getCurrentTimezoneDate(date: Date) {
    return new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000)
 }
+export function getBeginningOfWeek(d:Date) {
+    d = new Date(d);
+    let day = d.getDay();
+    let diff = d.getDate() - day;
+    return new Date(d.setDate(diff));
+}
+export function toLocalDateString(date: Date) {
+    return date.toLocaleDateString('en-CA', {
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric'
+    });
+}
