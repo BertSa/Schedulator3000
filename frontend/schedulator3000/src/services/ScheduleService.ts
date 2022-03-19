@@ -1,5 +1,5 @@
 import {METHODS, requestInit} from '../serviceUtils';
-import {toastError} from '../utilities';
+import {toastError, toastSuccess} from '../utilities';
 import {Shift} from '../models/Shift';
 
 export async function getWeekOf(body: any): Promise<Shift[]> {
@@ -24,6 +24,7 @@ export async function create(body: any): Promise<Shift|null> {
             response.json().then(
                 body => {
                     if (response.status === 201) {
+                        toastSuccess.fire({title: 'Shift created'});
                         return body as Shift;
                     }
                     if (response.status === 400) {

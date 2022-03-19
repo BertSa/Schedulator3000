@@ -79,7 +79,7 @@ export const Schedule = () => {
         let body = {
             managerEmail: user.email,
             from: toLocalDateString(addDays(curentWeek, -7)),
-            to: toLocalDateString(addDays(curentWeek, 14)),
+            to: toLocalDateString(addDays(curentWeek, 14))
         };
         getEmployees(user.email ?? '').then(
             list => {
@@ -117,9 +117,9 @@ export const Schedule = () => {
     }
 
     function Toolbar(props: { onView: any, date: any, view: any, onNavigate: any }) {
-        useEffect(()=>{
+        useEffect(() => {
             setCurrentWeek(getBeginningOfWeek(props.date));
-        },[props.date]);
+        }, [props.date]);
 
         return <>
             <div className="d-inline-block">
@@ -242,8 +242,8 @@ export const Schedule = () => {
         );
     };
 
-    function updateEvent(data: { event: any; start: stringOrDate; end: stringOrDate; isAllDay: boolean }) {
-        const {start, end, isAllDay, event: {resourceId, resource, title, allDay}} = data;
+    function updateEvent(data: { event: ShiftEvent; start: stringOrDate; end: stringOrDate; isAllDay: boolean }) {
+        const {start, end, event: {resourceId, resource}} = data;
 
         setValue('start', start as Date);
         setValue('end', end as Date);
@@ -252,10 +252,8 @@ export const Schedule = () => {
         openMyDialog(update, 'Modify shift');
     }
 
-    const onEventResize: withDragAndDropProps['onEventResize'] = data => {
-        updateEvent(data);
-    };
-    const onEventDrop: withDragAndDropProps['onEventDrop'] = data => updateEvent(data);
+    const onEventResize: withDragAndDropProps<ShiftEvent, any>['onEventResize'] = data => updateEvent(data);
+    const onEventDrop: withDragAndDropProps<ShiftEvent, any>['onEventDrop'] = data => updateEvent(data);
 
     const submitCreate: SubmitHandler<FieldValues> = ({start, end, employeeId}, event) => {
         event?.preventDefault();
@@ -321,7 +319,11 @@ export const Schedule = () => {
                 startAccessor={(event: Event) => new Date(event.start as Date)}
                 onSelectEvent={(data, event) => {
                     console.log(event.nativeEvent);
-                    console.log(data);
+                    setValue('start', data.start as Date);
+                    setValue('end', data.end as Date);
+                    setValue('employeeId', data.resource.employeeId);
+                    setValue('shiftId', data.resourceId);
+                    openMyDialog(update, 'Modify shift');
                 }}
                 onSelectSlot={handleSelect}
                 min={new Date('2022-03-19T04:00:00.000Z')}
@@ -344,10 +346,6 @@ export const Schedule = () => {
                     }
 
                     return eventProps;
-                }}
-                onSelecting={() => {
-                    console.log('onSelecting');
-                    return true;
                 }}
                 components={
                     {
