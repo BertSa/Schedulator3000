@@ -44,6 +44,10 @@ public class ShiftService {
         return shiftRepository.save(shift).mapToDto();
     }
 
+    public void delete(Long id) {
+        shiftRepository.deleteById(id);
+    }
+
     public List<ShiftDto> getAllFromTo(ShiftsFromTo dto) {
         return shiftRepository.getAllByManager_EmailAndStartTimeBetween(dto.getManagerEmail(), dto.getFrom().atTime(0, 0), dto.getTo().atTime(0, 0))
                 .stream()

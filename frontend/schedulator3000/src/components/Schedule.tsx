@@ -19,7 +19,7 @@ import {DateTimePicker} from '@mui/lab';
 import {Employee} from '../models/user';
 import {useAuth} from '../hooks/use-auth';
 import {getEmployees} from '../services/ManagerService';
-import {create, getWeekOf, updateShift} from '../services/ScheduleService';
+import {create, deleteShift, getWeekOf, updateShift} from '../services/ScheduleService';
 import {getBeginningOfWeek, getCurrentTimezoneDate, stringAvatar, stringToColor, toLocalDateString} from '../utilities';
 import {useDialog} from '../hooks/use-dialog';
 import {Shift} from '../models/Shift';
@@ -201,6 +201,7 @@ export const Schedule = () => {
                         </Grid>
                         <Grid item>
                             <Button type="submit" color="primary" variant="contained">Submit</Button>
+                            <Button value={"delete"} type="submit" color="error" variant="contained">Delete</Button>
                         </Grid>
                     </Grid>
                 </>
@@ -208,8 +209,16 @@ export const Schedule = () => {
         });
     }
 
-    const update: SubmitHandler<FieldValues> = ({start, end, employeeId, shiftId}, event) => {
+    const update: SubmitHandler<FieldValues> = ({start, end, employeeId, shiftId}, event:any) => {
         event?.preventDefault();
+        const submitter = event.nativeEvent.submitter.value
+
+        if (submitter === 'delete') {
+            deleteShift(shiftId).then(deleted =>
+                deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== shiftId))
+            );
+            return;
+        }
         let employee = employees.find(employee => employee.id === employeeId);
 
         const newShift: Shift = {

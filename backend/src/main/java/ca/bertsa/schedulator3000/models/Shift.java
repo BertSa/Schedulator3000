@@ -19,9 +19,9 @@ public class Shift {
     private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Employee employee;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Manager manager;
 
     public Shift(LocalDateTime startTime, LocalDateTime endTime, Employee employee, Manager manager) {

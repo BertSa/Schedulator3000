@@ -46,6 +46,20 @@ public class ScheduleController {
         }
     }
 
+    @DeleteMapping("/manager/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            shiftService.delete(id);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage(e.getMessage()));
+        }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseMessage("Shift deleted"));
+    }
+
     @PostMapping("/manager")
     public ResponseEntity<?> getAll(@RequestBody ShiftsFromTo dto) {
         try {

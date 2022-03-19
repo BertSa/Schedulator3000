@@ -40,11 +40,27 @@ export async function updateShift(body: any): Promise<Shift|null> {
             response.json().then(
                 body => {
                     if (response.status === 200) {
+                        toastSuccess.fire({title: 'Shift updated'});
                         return body as Shift;
                     }
                     if (response.status === 400) {
                         toastError.fire({title: body.message});
                     }
                     return null;
+                }));
+}
+export async function deleteShift(id: any): Promise<boolean> {
+    return await fetch(`/shifts/manager/delete/${id}`, requestInit(METHODS.DELETE)).then(
+        response =>
+            response.json().then(
+                body => {
+                    if (response.status === 200) {
+                        toastSuccess.fire({title: 'Shift deleted'});
+                        return true;
+                    }
+                    if (response.status === 400) {
+                        toastError.fire({title: body.message});
+                    }
+                    return false;
                 }));
 }
