@@ -1,34 +1,35 @@
-import {Calendar, CalendarProps, dateFnsLocalizer, Event, SlotInfo, stringOrDate, Views} from 'react-big-calendar';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
-import enCA from 'date-fns/locale/en-CA';
 import React, {ComponentType, useEffect, useState} from 'react';
+import {Calendar, CalendarProps, dateFnsLocalizer, Event, SlotInfo, stringOrDate, Views} from 'react-big-calendar';
 import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addons/dragAndDrop';
-import addHours from 'date-fns/addHours';
+import {addDays, addHours, format, getDay, parse, startOfWeek} from 'date-fns';
+import enCA from 'date-fns/locale/en-CA';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
 import {Avatar, Button, Dialog, Grid, InputAdornment, MenuItem, TextField} from '@mui/material';
-import {DateTimePicker} from '@mui/lab';
 import {AccountCircle} from '@mui/icons-material';
+import {DateTimePicker} from '@mui/lab';
 import {Employee} from '../models/user';
 import {useAuth} from '../hooks/use-auth';
 import {getEmployees} from '../services/ManagerService';
-import {addShift, getWeekOf} from '../services/ScheduleService';
-import {stringAvatar, stringToColor} from '../utilities';
-
-const locales = {
-    'en-CA': enCA
-};
+import {create, getWeekOf} from '../services/ScheduleService';
+import {getCurrentTimezoneDate, stringAvatar, stringToColor} from '../utilities';
 
 const localizer = dateFnsLocalizer({
     format,
     parse,
     startOfWeek,
     getDay,
-    locales
+    locales: {
+        'en-CA': enCA
+    }
 });
-const DnDCalendar = withDragAndDrop(Calendar as ComponentType<CalendarProps<any>>);
+
+type Ress = {
+    id: number,
+    employeeId: number,
+}
+
+const DnDCalendar = withDragAndDrop<Event, Ress>(Calendar as ComponentType<CalendarProps<Event, Ress>>);
+
 const customSlotPropGetter = (date: Date) => {
     if (date.getDate() === 6 || date.getDate() === 15)
         return {
@@ -41,64 +42,18 @@ const customSlotPropGetter = (date: Date) => {
 
 const preferences = {
     calendar: {
-        step: 15,
+        step: 30,
         timeslots: 2,
-        scrollToTime: new Date(1970, 1, 1, 6)
+        scrollToTime: new Date(1970, 1, 1, 6),
+        toolbar: true
     }
 };
 
 
 export const Schedule = () => {
-    const user = useAuth().getManager();
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [events, setEvents] = useState<Event[]>([]);
-
-    useEffect(() => {
-        function getCurrentWeek(weekFirstDay: string, employees: Employee[]) {
-            getWeekOf(weekFirstDay).then(
-                week => {
-                    if (!week) {
-                        setEvents([]);
-                        return;
-                    }
-                    let events = week.shifts.map(shift => {
-                        let employee1 = employees.find(employee => employee.id === shift.idEmployee);
-
-                        let event: Event = {
-                            title: employee1?.lastName + ' ' + employee1?.firstName,
-                            start: new Date(new Date(shift.startTime).getTime() - new Date(shift.startTime).getTimezoneOffset() * 60000),
-                            end: new Date(new Date(shift.endTime).getTime() - new Date(shift.endTime).getTimezoneOffset() * 60000),
-                            resource: {
-                                id: shift.id,
-                                employeeId: shift.idEmployee
-                            }
-                        };
-                        return event;
-                    });
-                    setEvents(events);
-                });
-        }
-
-        if (user) {
-            getEmployees(user.email ?? '').then(
-                employees => {
-                    setEmployees(employees);
-
-                    let weekFirstDay = new Date().toLocaleDateString('en-CA', {
-                        month: '2-digit',
-                        day: '2-digit',
-                        year: 'numeric'
-                    });
-                    getCurrentWeek(weekFirstDay, employees);
-                });
-        }
-    }, []);
-
-    if (!user) {
-        return null;
-    }
-
     const {setValue, getValues, register, handleSubmit, formState: {errors}} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
@@ -108,7 +63,56 @@ export const Schedule = () => {
             employeeId: -1
         }
     });
+    const user = useAuth().getManager();
 
+    useEffect(() => {
+
+        getEmployees(user.email ?? '').then(
+            employees => {
+                setEmployees(employees);
+
+                let body = {
+                    managerEmail: user.email,
+                    from: addDays(new Date(), -7).toLocaleDateString('en-CA', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: 'numeric'
+                    }),
+                    to: addDays(new Date(), 7).toLocaleDateString('en-CA', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: 'numeric'
+                    })
+                };
+
+                getWeekOf(body).then(
+                    shifts => {
+                        if (shifts.length === 0) {
+                            setEvents([]);
+                            return;
+                        }
+                        let events = shifts.map(shift => {
+                            let employee = employees.find(employee => employee.email === shift.emailEmployee);
+
+                            let event: Event = {
+                                title: employee?.lastName + ' ' + employee?.firstName,
+                                start: getCurrentTimezoneDate(shift.startTime),
+                                end: getCurrentTimezoneDate(shift.endTime),
+                                resource: {
+                                    id: shift.id,
+                                    employeeId: employee?.id
+                                }
+                            };
+                            return event;
+                        });
+                        setEvents(events);
+                    });
+            });
+    }, []);
+
+    if (!user) {
+        return null;
+    }
 
     function updateEvent(data: { event: Event; start: stringOrDate; end: stringOrDate; isAllDay: boolean }) {
         const {start, end, isAllDay, event} = data;
@@ -137,26 +141,28 @@ export const Schedule = () => {
 
     const submit: SubmitHandler<FieldValues> = ({start, end, employeeId}, event) => {
         event?.preventDefault();
+        let employee = employees.find(employee => employee.id === employeeId);
+
         const newShift: any = {
             startTime: new Date(new Date(start).toISOString()),
             endTime: new Date(new Date(end).toISOString()),
-            idEmployee: employeeId
+            emailEmployee: employee?.email ?? '',
+            emailManager: user.email ?? ''
         };
 
-        addShift(newShift).then(
+        create(newShift).then(
             shift => {
-                if (!shift){
+                if (!shift) {
                     return;
                 }
 
-                let employee1 = employees.find(employee => employee.id === shift.idEmployee);
                 let event: Event = {
-                    title: employee1?.lastName + ' ' + employee1?.firstName,
-                    start: new Date(shift.startTime),
-                    end: new Date(shift.endTime),
+                    title: employee?.lastName + ' ' + employee?.firstName,
+                    start: getCurrentTimezoneDate(shift.startTime),
+                    end: getCurrentTimezoneDate(shift.endTime),
                     resource: {
                         id: shift.id,
-                        employeeId: shift.idEmployee
+                        employeeId: employeeId
                     }
                 };
                 setEvents((currentEvents: Event[]) => [...currentEvents, event]);
@@ -170,6 +176,7 @@ export const Schedule = () => {
     return (<>
             <DnDCalendar
                 defaultView={Views.WEEK}
+                defaultDate={new Date('2022-11-06T04:00:00.000Z')}
                 views={[Views.WEEK, Views.DAY]}
                 events={events}
                 localizer={localizer}
@@ -185,13 +192,15 @@ export const Schedule = () => {
                 scrollToTime={preferences.calendar.scrollToTime}
                 showMultiDayTimes={true}
                 allDayAccessor={'allDay'}
-                selectable
+                selectable={'ignoreEvents'}
                 popup
-                toolbar={false}
+                toolbar={preferences.calendar.toolbar}
                 startAccessor={(event: Event) => new Date(event.start as Date)}
                 onSelectEvent={data => alert(data)}
                 onSelectSlot={handleSelect}
                 dayPropGetter={customSlotPropGetter}
+                min={new Date('2022-03-19T04:00:00.000Z')}
+                max={new Date('2022-03-20T03:59:00.000Z')}
                 resizable
                 dayLayoutAlgorithm={'overlap'}
                 eventPropGetter={(event: Event) => {
@@ -212,6 +221,7 @@ export const Schedule = () => {
                     return eventProps;
                 }}
                 onSelecting={() => true}
+
             />
             <Dialog open={dialogOpen} title="dadad" onClose={() => setDialogOpen(false)}>
                 <Grid container columnSpacing={2} rowSpacing={2} padding={2} component="form"

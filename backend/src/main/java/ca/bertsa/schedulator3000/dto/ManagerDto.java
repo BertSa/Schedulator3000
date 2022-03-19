@@ -11,6 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 public class ManagerDto {
+    private Long id;
     @Email
     @NotBlank
     private String email;

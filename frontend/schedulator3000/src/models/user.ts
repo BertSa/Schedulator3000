@@ -1,10 +1,11 @@
 export class User {
-    public id?: number | undefined;
+    public id: number;
     public email: string;
     public phone: string;
     public password?: string;
 
-    constructor(email: string, phone: string, password?: string) {
+    constructor(id:number, email: string, phone: string, password?: string) {
+        this.id = id;
         this.email = email;
         this.phone = phone;
         this.password = password;
@@ -17,8 +18,8 @@ export class Employee extends User {
     public role: string;
     public active?: boolean;
 
-    constructor(email: string, phone: string,firstName: string, lastName: string, role: string, password?: string) {
-        super(email, phone, password);
+    constructor(id:number, email: string, phone: string,firstName: string, lastName: string, role: string, password?: string) {
+        super(id, email, phone, password);
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;

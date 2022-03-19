@@ -21,18 +21,22 @@ public class Shift {
     private LocalDateTime endTime;
     @OneToOne(cascade = CascadeType.ALL)
     private Employee employee;
+    @OneToOne(cascade = CascadeType.ALL)
+    private Manager manager;
 
-    public Shift(LocalDateTime startTime, LocalDateTime endTime, Employee employee) {
+    public Shift(LocalDateTime startTime, LocalDateTime endTime, Employee employee, Manager manager) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.employee = employee;
+        this.manager = manager;
     }
 
     public ShiftDto mapToDto() {
         final ShiftDto dto = new ShiftDto();
         dto.setStartTime(getStartTime());
         dto.setEndTime(getEndTime());
-        dto.setIdEmployee(getEmployee().getId());
+        dto.setEmailEmployee(getEmployee().getEmail());
+        dto.setEmailManager(getManager().getEmail());
 
         return dto;
     }

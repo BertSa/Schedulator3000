@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -14,7 +15,10 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 public class ShiftDto implements Serializable {
     private Long id;
-    private long idEmployee;
+    @Email
+    private String emailEmployee;
+    @Email
+    private String emailManager;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 }

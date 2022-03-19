@@ -25,6 +25,16 @@ public class EmployeeService {
         return employeeRepository.getById(id);
     }
 
+    public Employee getOneByEmail(String email) {
+        final Employee employee = employeeRepository.getByEmailIgnoreCase(email);
+
+        if (employee == null) {
+            throw new EntityNotFoundException("Employee not found");
+        }
+
+        return employee;
+    }
+
     public Employee create(EmployeeDto dto) {
         Assert.notNull(dto, "Employee cannot be null!");
         Assert.isTrue(

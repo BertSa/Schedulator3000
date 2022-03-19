@@ -23,9 +23,6 @@ public class Manager extends User {
     private List<Employee> employees = new ArrayList<>();
     @OneToMany(cascade = CascadeType.REMOVE)
     @JsonIgnore
-    private List<Schedule> weekSchedules;
-    @OneToMany(cascade = CascadeType.REMOVE)
-    @JsonIgnore
     private List<VacationRequest> vacationRequests;
     @OneToMany
     private List<Holiday> holidays;
@@ -41,6 +38,7 @@ public class Manager extends User {
         managerDto.setPassword(this.getPassword());
         managerDto.setPhone(this.getPhone());
         managerDto.setHolidays(this.getHolidays());
+        managerDto.setId(this.getId());
         return managerDto;
     }
 }

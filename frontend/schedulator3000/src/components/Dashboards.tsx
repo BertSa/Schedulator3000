@@ -81,6 +81,7 @@ function RegisterEmployee() {
         } = data;
 
         let employee: Employee = {
+            id: 0,
             firstName,
             lastName,
             email,

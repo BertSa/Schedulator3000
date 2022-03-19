@@ -38,7 +38,7 @@ public class ManagerService {
         return employee;
     }
 
-    private Manager getOneByEmail(String emailManager) {
+     public Manager getOneByEmail(String emailManager) {
         final Manager manager = managerRepository.getByEmailIgnoreCase(emailManager);
         if (manager == null) {
             throw new EntityNotFoundException("Manager with email " + emailManager + " does not exist!");
@@ -55,5 +55,9 @@ public class ManagerService {
         }
 
         return manager.mapToDto();
+    }
+
+    public Manager update(Manager manager) {
+        return managerRepository.save(manager);
     }
 }

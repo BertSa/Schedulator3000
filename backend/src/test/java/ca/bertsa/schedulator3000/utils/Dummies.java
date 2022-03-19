@@ -5,7 +5,6 @@ import ca.bertsa.schedulator3000.dto.RequestScheduleEmployeeDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.models.Shift;
-import ca.bertsa.schedulator3000.models.Schedule;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,17 +63,8 @@ public class Dummies {
         return employee;
     }
 
-    public static Schedule getDummySchedule() {
-        Schedule schedule = new Schedule();
-        schedule.setId(1L);
-        for (int i = 1; i < 5; i++) {
-            schedule.addOrReplaceShift(getDummyShift(i, getDummyEmployee(1L)));
-        }
-        return schedule;
-    }
-
     public static Shift getDummyShift(long id, Employee employee) {
-        Shift shift = new Shift(LocalDateTime.now(), LocalDateTime.now().plusHours(4), employee);
+        Shift shift = new Shift(LocalDateTime.now(), LocalDateTime.now().plusHours(4), employee, getDummyManager());
         shift.setId(id);
         return shift;
     }

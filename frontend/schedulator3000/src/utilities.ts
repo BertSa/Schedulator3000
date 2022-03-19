@@ -50,3 +50,8 @@ export function stringAvatar(name: string) {
         children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
     };
 }
+
+
+export function getCurrentTimezoneDate(date: Date) {
+   return new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000)
+}

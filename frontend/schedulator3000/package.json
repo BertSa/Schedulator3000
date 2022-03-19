@@ -58,6 +58,6 @@
     ]
   },
   "devDependencies": {
-    "@types/react-big-calendar": "^0.36.2"
+    "@types/react-big-calendar": "^0.36.4"
   }
 }
