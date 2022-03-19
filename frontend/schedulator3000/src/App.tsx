@@ -30,11 +30,10 @@ function App() {
         const {path} = useRouteMatch();
 
         return <>
-            <Route exact path={`${path}/signin`}>
-                <RequireNoAuth>
-                    <SignIn/>
-                </RequireNoAuth>
-            </Route>
+            <h2>Hello</h2>
+            <RequireNoAuth>
+                <SignIn/>
+            </RequireNoAuth>
             <RequireAdmin>
                 <Dashboards/>
             </RequireAdmin>

@@ -39,15 +39,27 @@ public class ScheduleController {
     @PostMapping("/shift/add")
     public ResponseEntity<?> AddShift(@RequestBody ShiftDto dto) {
         try {
-            scheduleService.addShift(dto);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(scheduleService.addShift(dto));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage(e.getMessage()));
         }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ResponseMessage("Done!"));
+    }
+
+    @PutMapping("/shift/update")
+    public ResponseEntity<?> update(@RequestBody ShiftDto dto) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(scheduleService.update(dto));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage(e.getMessage()));
+        }
     }
 
     @GetMapping("/weekof/{weekFirstDay}")

@@ -45,7 +45,7 @@ public class ScheduleService {
         return scheduleRepository.save(entity);
     }
 
-    public void addShift(ShiftDto dto) {
+    public Shift addShift(ShiftDto dto) {
         Employee employee = employeeService.getOneById(dto.getIdEmployee());
         if (employee == null) {
             throw new EntityNotFoundException("Employee not found");
@@ -63,6 +63,8 @@ public class ScheduleService {
 
         weekScheduleByStartDateIsBefore.addOrReplaceShift(save);
         scheduleRepository.save(weekScheduleByStartDateIsBefore);
+
+        return save;
     }
 
     public ScheduleDto getScheduleFromWeekFirstDay(LocalDate weekFirstDay) {
@@ -93,5 +95,15 @@ public class ScheduleService {
         final ScheduleDto scheduleDto = new ScheduleDto();
         scheduleDto.setShifts(shiftDtos);
         return scheduleDto;
+    }
+
+    public Shift update(ShiftDto dto) {
+        Shift shift = shiftRepository.getById(dto.getId());
+        shift.setStartTime(dto.getStartTime());
+        shift.setEndTime(dto.getEndTime());
+        shift.setEmployee(employeeService.getOneById(dto.getIdEmployee()));
+        final Shift save = shiftRepository.save(shift);
+
+        return save;
     }
 }

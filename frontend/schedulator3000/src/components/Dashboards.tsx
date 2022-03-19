@@ -1,7 +1,7 @@
-import {Route, useHistory, useRouteMatch} from 'react-router-dom';
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {Route, useRouteMatch} from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {RequireAdmin, useAuth} from '../hooks/use-auth';
+import {useAuth} from '../hooks/use-auth';
 import {Column} from './Colums';
 import {FieldInput} from './Form/FormFields';
 import {FormGroup} from './Form/FormGroup';
@@ -12,15 +12,13 @@ import {Table, TableHeader, TableRow} from './Table';
 import {Link} from '@mui/material';
 import {Schedule} from './Schedule';
 
-export function Dashboards() {
+export function Dashboards(): React.ReactElement {
     const {path} = useRouteMatch();
     return <>
-        <RequireAdmin>
-            <Link href={`${path}/employees`}>Employee Management</Link>
-            <Link href={`${path}/schedule`}>Schedule</Link>
-            <Route path={`${path}/employees`} component={EmployeeManagement}/>
-            <Route path={`${path}/schedule`} component={Schedule}/>
-        </RequireAdmin>
+        <Link href={`${path}/employees`}>Employee Management</Link>
+        <Link href={`${path}/schedule`}>Schedule</Link>
+        <Route path={`${path}/employees`} component={EmployeeManagement}/>
+        <Route path={`${path}/schedule`} component={Schedule}/>
     </>;
 }
 
@@ -33,7 +31,7 @@ function EmployeeManagement(): React.ReactElement {
 }
 
 function EmployeeList() {
-    const [employees, setEmployees] = useState<Employee[]>([])
+    const [employees, setEmployees] = useState<Employee[]>([]);
     let user = useAuth().getManager();
     useEffect(() => {
         let email = user.email ?? '';
@@ -53,16 +51,16 @@ function EmployeeList() {
             <th>Phone</th>
             <th>Role</th>
         </TableHeader>
-        {employees.map((employee,index) => <TableRow key={index}>
-            <td>{employee.id ?? "N/A"}</td>
-            <td>{employee.firstName ?? "N/A"}</td>
-            <td>{employee.lastName ?? "N/A"}</td>
-            <td>{employee.email ?? "N/A"}</td>
-            <td>{employee.phone ?? "N/A"}</td>
-            <td>{employee.role ?? "N/A"}</td>
+        {employees.map((employee, index) => <TableRow key={index}>
+            <td>{employee.id ?? 'N/A'}</td>
+            <td>{employee.firstName ?? 'N/A'}</td>
+            <td>{employee.lastName ?? 'N/A'}</td>
+            <td>{employee.email ?? 'N/A'}</td>
+            <td>{employee.phone ?? 'N/A'}</td>
+            <td>{employee.role ?? 'N/A'}</td>
 
         </TableRow>)}
-    </Table>
+    </Table>;
 }
 
 function RegisterEmployee() {
@@ -70,7 +68,6 @@ function RegisterEmployee() {
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
     });
-    let history = useHistory();
     let user = useAuth().getManager();
 
     const submit: SubmitHandler<FieldValues> = (data, event) => {

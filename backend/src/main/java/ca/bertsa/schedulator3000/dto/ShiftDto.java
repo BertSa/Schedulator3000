@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class ShiftDto implements Serializable {
+    private Long id;
     private long idEmployee;
     private LocalDateTime startTime;
     private LocalDateTime endTime;

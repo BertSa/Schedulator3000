@@ -15,8 +15,7 @@ import {Employee} from '../models/user';
 import {useAuth} from '../hooks/use-auth';
 import {getEmployees} from '../services/ManagerService';
 import {addShift, getWeekOf} from '../services/ScheduleService';
-import {Shift} from '../models/Shift';
-import {stringAvatar} from '../utilities';
+import {stringAvatar, stringToColor} from '../utilities';
 
 const locales = {
     'en-CA': enCA
@@ -45,65 +44,70 @@ const preferences = {
         step: 15,
         timeslots: 2,
         scrollToTime: new Date(1970, 1, 1, 6)
-
     }
-
-
 };
 
 
 export const Schedule = () => {
-    const {setValue, register, handleSubmit, formState: {errors}} = useForm({
-        mode: 'onSubmit',
-        reValidateMode: 'onSubmit'
-    });
-    const [start, setStart] = useState<any>('2018-01-01T00:00:00.000');
-    const [end, setEnd] = useState<any>('2018-01-01T00:00:00.000');
-    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+    const user = useAuth().getManager();
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [events, setEvents] = useState<Event[]>([]);
 
-    let user = useAuth().getManager();
-
     useEffect(() => {
-        let email = user.email ?? '';
-        getEmployees(email).then(
-            employees => {
-                user.employees = employees;
-                setEmployees(employees);
+        function getCurrentWeek(weekFirstDay: string, employees: Employee[]) {
+            getWeekOf(weekFirstDay).then(
+                week => {
+                    if (!week) {
+                        setEvents([]);
+                        return;
+                    }
+                    let events = week.shifts.map(shift => {
+                        let employee1 = employees.find(employee => employee.id === shift.idEmployee);
 
-                getWeekOf(new Date().toLocaleDateString('en-CA', {
-                    month: '2-digit',
-                    day: '2-digit',
-                    year: 'numeric'
-                })).then(
-                    week => {
-                        if (week === null) {
-                            setEvents([]);
-                            return;
-                        }
-                        let events = week.shifts.map(shift => {
-                            let employee1 = employees.find(employee => {
-                                if (employee.id === shift.idEmployee) {
-                                    return true;
-                                }
-                                return employee.id === shift.idEmployee;
-                            });
-                            let event: Event = {
-                                title: employee1?.lastName + ' ' + employee1?.firstName,
-                                start: new Date(new Date(shift.startTime).getTime() - new Date(shift.startTime).getTimezoneOffset() * 60000),
-                                end: new Date(new Date(shift.endTime).getTime() - new Date(shift.endTime).getTimezoneOffset() * 60000),
-                                resource: {
-                                    id: shift.id,
-                                    employeeId: shift.idEmployee
-                                }
-                            };
-                            return event;
-                        });
-                        setEvents(events);
+                        let event: Event = {
+                            title: employee1?.lastName + ' ' + employee1?.firstName,
+                            start: new Date(new Date(shift.startTime).getTime() - new Date(shift.startTime).getTimezoneOffset() * 60000),
+                            end: new Date(new Date(shift.endTime).getTime() - new Date(shift.endTime).getTimezoneOffset() * 60000),
+                            resource: {
+                                id: shift.id,
+                                employeeId: shift.idEmployee
+                            }
+                        };
+                        return event;
                     });
-            });
+                    setEvents(events);
+                });
+        }
+
+        if (user) {
+            getEmployees(user.email ?? '').then(
+                employees => {
+                    setEmployees(employees);
+
+                    let weekFirstDay = new Date().toLocaleDateString('en-CA', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: 'numeric'
+                    });
+                    getCurrentWeek(weekFirstDay, employees);
+                });
+        }
     }, []);
+
+    if (!user) {
+        return null;
+    }
+
+    const {setValue, getValues, register, handleSubmit, formState: {errors}} = useForm({
+        mode: 'onSubmit',
+        reValidateMode: 'onSubmit',
+        defaultValues: {
+            start: new Date(),
+            end: new Date(),
+            employeeId: -1
+        }
+    });
 
 
     function updateEvent(data: { event: Event; start: stringOrDate; end: stringOrDate; isAllDay: boolean }) {
@@ -125,31 +129,26 @@ export const Schedule = () => {
     const onEventResize: withDragAndDropProps['onEventResize'] = data => updateEvent(data);
     const onEventDrop: withDragAndDropProps['onEventDrop'] = data => updateEvent(data);
 
-    const handleSelect: CalendarProps['onSelectSlot'] = (slotInfo: SlotInfo) => {
-        setValue('start', slotInfo.start);
-        setValue('end', slotInfo.end);
-        setStart(slotInfo.start);
-        setEnd(slotInfo.end);
+    const handleSelect: CalendarProps['onSelectSlot'] = ({start, end}: SlotInfo): void => {
+        setValue('start', start as Date);
+        setValue('end', end as Date);
         setDialogOpen(true);
     };
 
-    const submit: SubmitHandler<FieldValues> = (data, event) => {
+    const submit: SubmitHandler<FieldValues> = ({start, end, employeeId}, event) => {
         event?.preventDefault();
-        const {
-            start,
-            end,
-            userId
-        } = data;
-        const newEvent: any = {
+        const newShift: any = {
             startTime: new Date(new Date(start).toISOString()),
             endTime: new Date(new Date(end).toISOString()),
-            idEmployee: userId
+            idEmployee: employeeId
         };
 
-        addShift(newEvent).then(
-            (shift: Shift | null) => {
-                if (shift === null)
+        addShift(newShift).then(
+            shift => {
+                if (!shift){
                     return;
+                }
+
                 let employee1 = employees.find(employee => employee.id === shift.idEmployee);
                 let event: Event = {
                     title: employee1?.lastName + ' ' + employee1?.firstName,
@@ -196,19 +195,21 @@ export const Schedule = () => {
                 resizable
                 dayLayoutAlgorithm={'overlap'}
                 eventPropGetter={(event: Event) => {
-                    let eee = {
+                    let employee = employees.find(employee => employee.id === event.resource.employeeId);
+                    let fullName = employee?.lastName + ' ' + employee?.firstName;
+                    let eventProps = {
                         style: {
-                            backgroundColor: event.resource.user % 6 === 0 ? '#f44336' : event.resource.user % 5 === 0 ? '#2196f3' : event.resource.user % 4 === 0 ? '#4caf50' : event.resource.user % 3 === 0 ? '#ff9800' : event.resource.user % 2 === 0 ? '#ffeb3b' : '#9c27b0',
+                            backgroundColor: stringToColor(fullName),
                             color: '#fff',
                             border: 'none'
                         }
                     };
                     if (event.start?.getDay() === 6 || event.start?.getDay() === 15) {
-                        eee.style.backgroundColor = '#f44336';
-                        eee.style.color = '#fff';
+                        eventProps.style.backgroundColor = '#f44336';
+                        eventProps.style.color = '#fff';
                     }
 
-                    return eee;
+                    return eventProps;
                 }}
                 onSelecting={() => true}
             />
@@ -221,6 +222,7 @@ export const Schedule = () => {
                             select
                             label="Select"
                             fullWidth
+                            defaultValue={'-1'}
                             SelectProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -228,33 +230,33 @@ export const Schedule = () => {
                                     </InputAdornment>
                                 )
                             }}
-                            {...register('userId', {
+                            {...register('employeeId', {
                                 required: true
                             })}
-                            helperText={errors.userId ?? ' '}
-                            error={!!errors.userId}
+                            helperText={errors.employeeId ?? ' '}
+                            error={!!errors.employeeId}
                         >
+                            <MenuItem hidden aria-hidden value={-1}/>
                             {employees.map(user => <MenuItem key={user.id}
-                                                             value={user.id}><Avatar {...stringAvatar(user.firstName+ " " + user.lastName)} /> {user.firstName} {user.lastName}</MenuItem>)}
+                                                             value={user.id}><Avatar {...stringAvatar(user.firstName + ' ' + user.lastName)} /> {user.firstName} {user.lastName}
+                            </MenuItem>)}
                         </TextField>
                     </Grid>
                     <Grid item xs={6}>
-                        <DateTimePicker value={start}
+                        <DateTimePicker value={getValues().start}
                                         renderInput={(props) => <TextField {...props} />}
                                         label="DateTimePicker"
                                         onChange={(date) => {
-                                            setStart(date);
-                                            setValue('start', date);
+                                            setValue('start', date as Date);
                                         }}
                         />
                     </Grid>
                     <Grid item xs={6}>
-                        <DateTimePicker value={end}
+                        <DateTimePicker value={getValues().end}
                                         renderInput={(props) => <TextField {...props} />}
                                         label="DateTimePicker"
                                         onChange={(date) => {
-                                            setEnd(end);
-                                            setValue('end', date);
+                                            setValue('end', date as Date);
                                         }}
                         />
                     </Grid>

@@ -2,7 +2,6 @@ import React, {createContext, useContext, useEffect, useState} from 'react';
 import {METHODS, requestInit} from '../serviceUtils';
 import {Employee, Manager} from '../models/user';
 import {toastError, toastSuccess} from '../utilities';
-import {useHistory} from 'react-router-dom';
 
 const authContext: React.Context<IProviderAuth> = createContext({} as IProviderAuth);
 
@@ -17,10 +16,8 @@ export const useAuth = () => {
 
 export function RequireAuth({children}: { children: React.ReactNode }): any {
     let auth = useAuth();
-    let locationStateHistory = useHistory();
 
-    if (!auth.user) {
-        locationStateHistory.replace('/signin');
+    if (auth.isAuthenticated()) {
         return null;
     }
 
@@ -29,31 +26,22 @@ export function RequireAuth({children}: { children: React.ReactNode }): any {
 
 export function RequireAdmin({children}: { children: React.ReactNode }): any {
     let auth = useAuth();
-    let locationStateHistory = useHistory();
 
-    if (!auth.isManager()) {
-        locationStateHistory.replace('/manager/signin');
-        return null;
+    if (auth.isManager()){
+        return children;
     }
 
-    return children;
+    return null;
 }
 
 export function RequireNoAuth({children}: { children: React.ReactNode }): any {
     let auth = useAuth();
-    let locationStateHistory = useHistory();
 
-    if (!auth.user) {
-        return children;
+    if (auth.isAuthenticated()) {
+        return null;
     }
 
-    if (auth.isManager()) {
-        locationStateHistory.replace('/manager');
-    } else if (auth.isEmployee()) {
-        locationStateHistory.replace('/dashboard');
-    }
-    return null;
-
+    return children;
 }
 
 function useProvideAuth(): IProviderAuth {
@@ -113,19 +101,21 @@ function useProvideAuth(): IProviderAuth {
     };
 
     const isManager = (): boolean => {
-        return user instanceof Manager;
+        return isAuthenticated() && user instanceof Manager;
     };
 
     const isEmployee = (): boolean => {
-        return user instanceof Employee;
+        return isAuthenticated() && user instanceof Employee;
+    };
+
+    const isAuthenticated = (): boolean => {
+        return user !== undefined && user !== null;
     };
 
     const getManager = (): Manager => {
         if (isManager())
             return user as Manager;
-        console.log('Not a manager');
-        return user as Manager;
-        // throw new Error('User is not a manager');
+        return null as unknown as Manager;
     };
     return {
         user,
@@ -133,7 +123,8 @@ function useProvideAuth(): IProviderAuth {
         signOut,
         isManager,
         isEmployee,
-        getManager
+        getManager,
+        isAuthenticated,
     };
 }
 
@@ -144,4 +135,5 @@ type IProviderAuth = {
     isManager: () => boolean;
     isEmployee: () => boolean;
     getManager: () => Manager;
+    isAuthenticated: () => boolean;
 }
