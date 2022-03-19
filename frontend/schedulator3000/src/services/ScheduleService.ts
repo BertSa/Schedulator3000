@@ -33,7 +33,7 @@ export async function create(body: any): Promise<Shift|null> {
                 }));
 }
 
-export async function update(body: any): Promise<Shift|null> {
+export async function updateShift(body: any): Promise<Shift|null> {
     return await fetch(`/shifts/manager/update`, requestInit(METHODS.PUT, body)).then(
         response =>
             response.json().then(

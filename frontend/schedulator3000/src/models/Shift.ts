@@ -1,9 +1,9 @@
 export class Shift {
-    public id: number;
+    public id?: number;
     public startTime: Date;
     public endTime: Date;
     public emailEmployee: string;
-    private emailManager: string;
+    public emailManager: string;
 
     constructor(id: number, startTime: Date, endTime: Date, emailEmployee: string, emailManager:string) {
         this.id = id;

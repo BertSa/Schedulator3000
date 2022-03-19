@@ -8,6 +8,7 @@ import {createTheme, CssBaseline, ThemeOptions, ThemeProvider} from '@mui/materi
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DateAdapter from '@mui/lab/AdapterDateFns';
 import {SignIn} from './components/SignIn';
+import DialogProvider from './hooks/use-dialog';
 
 
 export const themeOptions: ThemeOptions = createTheme({
@@ -23,6 +24,9 @@ export const themeOptions: ThemeOptions = createTheme({
 });
 
 function App() {
+    document.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+    });
     let Register = (): React.ReactElement => {
         return <h1>Register</h1>;
     };
@@ -43,16 +47,18 @@ function App() {
         <AuthProvider>
             <LocalizationProvider dateAdapter={DateAdapter}>
                 <ThemeProvider theme={themeOptions}>
-                    <CssBaseline/>
-                    <Router>
-                        <div className="container">
-                            <Route path="/schedule" component={Schedule}/>
-                            <Route path="/manager" component={ManagerRoute}/>
-                            <RequiredRoute path="/register" required>
-                                <Register/>
-                            </RequiredRoute>
-                        </div>
-                    </Router>
+                    <DialogProvider>
+                        <CssBaseline/>
+                        <Router>
+                            <div className="container">
+                                <Route path="/schedule" component={Schedule}/>
+                                <Route path="/manager" component={ManagerRoute}/>
+                                <RequiredRoute path="/register" required>
+                                    <Register/>
+                                </RequiredRoute>
+                            </div>
+                        </Router>
+                    </DialogProvider>
                 </ThemeProvider>
             </LocalizationProvider>
         </AuthProvider>);

@@ -33,6 +33,7 @@ public class Shift {
 
     public ShiftDto mapToDto() {
         final ShiftDto dto = new ShiftDto();
+        dto.setId(getId());
         dto.setStartTime(getStartTime());
         dto.setEndTime(getEndTime());
         dto.setEmailEmployee(getEmployee().getEmail());
