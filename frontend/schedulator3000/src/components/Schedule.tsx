@@ -13,7 +13,7 @@ import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addo
 import {addDays, format, getDay, parse, startOfWeek} from 'date-fns';
 import enCA from 'date-fns/locale/en-CA';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {Avatar, Button, Grid, InputAdornment, MenuItem, TextField, Typography} from '@mui/material';
+import {Avatar, Button, Grid, InputAdornment, MenuItem, Stack, TextField, Typography} from '@mui/material';
 import {AccountCircle, ArrowBack, ArrowForward} from '@mui/icons-material';
 import {DateTimePicker} from '@mui/lab';
 import {Employee} from '../models/user';
@@ -33,6 +33,11 @@ const localizer = dateFnsLocalizer({
         'en-CA': enCA
     }
 });
+
+enum SubmitType {
+    CREATE,
+    UPDATE
+}
 
 type Ress = {
     employeeId: number,
@@ -147,14 +152,15 @@ export const Schedule = () => {
         </>;
     }
 
-    function openMyDialog(submit: SubmitHandler<FieldValues>, title: string) {
+    function openMyDialog(submitType: SubmitType) {
         // noinspection RequiredAttributes
         openDialog({
             children: (
                 <>
-                    <Typography variant="h5" component="h5">{title}</Typography>
+                    <Typography variant="h5"
+                                component="h5">{submitType === SubmitType.CREATE ? 'Create Shift' : 'Modify Shift'}</Typography>
                     <Grid container columnSpacing={2} rowSpacing={2} padding={2} component="form"
-                          onSubmit={handleSubmit(submit)}
+                          onSubmit={handleSubmit(submitType === SubmitType.CREATE ? submitCreate : update)}
                           noValidate>
                         <Grid item xs={12}>
                             <TextField
@@ -199,9 +205,18 @@ export const Schedule = () => {
                                             }}
                             />
                         </Grid>
-                        <Grid item>
-                            <Button type="submit" color="primary" variant="contained">Submit</Button>
-                            <Button value={"delete"} type="submit" color="error" variant="contained">Delete</Button>
+                        <Grid item alignSelf={'center'} marginX={'auto'}>
+                            <Stack spacing={2} direction="row">
+                                <Button type="submit" color="primary"
+                                        variant="contained">{submitType === SubmitType.CREATE ? 'Submit' : 'Update'}</Button>
+                                {submitType === SubmitType.UPDATE &&
+                                    <Button value="delete" type="submit" color="error"
+                                            variant="contained">Delete</Button>}
+                                <Button value="cancel" type="button" color="primary" variant="text" onClick={()=>{
+                                    closeDialog();
+                                    reset();
+                                }}>Cancel</Button>
+                            </Stack>
                         </Grid>
                     </Grid>
                 </>
@@ -209,9 +224,9 @@ export const Schedule = () => {
         });
     }
 
-    const update: SubmitHandler<FieldValues> = ({start, end, employeeId, shiftId}, event:any) => {
+    const update: SubmitHandler<FieldValues> = ({start, end, employeeId, shiftId}, event: any) => {
         event?.preventDefault();
-        const submitter = event.nativeEvent.submitter.value
+        const submitter = event.nativeEvent.submitter.value;
 
         if (submitter === 'delete') {
             deleteShift(shiftId).then(deleted =>
@@ -258,7 +273,7 @@ export const Schedule = () => {
         setValue('end', end as Date);
         setValue('employeeId', resource.employeeId);
         setValue('shiftId', resourceId);
-        openMyDialog(update, 'Modify shift');
+        openMyDialog(SubmitType.UPDATE);
     }
 
     const onEventResize: withDragAndDropProps<ShiftEvent, any>['onEventResize'] = data => updateEvent(data);
@@ -300,7 +315,7 @@ export const Schedule = () => {
     const handleSelect: CalendarProps['onSelectSlot'] = ({start, end}: SlotInfo): void => {
         setValue('start', start as Date);
         setValue('end', end as Date);
-        openMyDialog(submitCreate, 'Create shift');
+        openMyDialog(SubmitType.CREATE);
     };
 
     return (<>
@@ -332,7 +347,7 @@ export const Schedule = () => {
                     setValue('end', data.end as Date);
                     setValue('employeeId', data.resource.employeeId);
                     setValue('shiftId', data.resourceId);
-                    openMyDialog(update, 'Modify shift');
+                    openMyDialog(SubmitType.UPDATE);
                 }}
                 onSelectSlot={handleSelect}
                 min={new Date('2022-03-19T04:00:00.000Z')}

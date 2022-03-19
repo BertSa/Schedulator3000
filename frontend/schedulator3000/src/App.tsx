@@ -31,8 +31,6 @@ function App() {
         return <h1>Register</h1>;
     };
     let ManagerRoute = (): React.ReactElement => {
-        const {path} = useRouteMatch();
-
         return <>
             <h2>Hello</h2>
             <RequireNoAuth>
