@@ -23,7 +23,7 @@ export async function create(body: any): Promise<Shift|null> {
         response =>
             response.json().then(
                 body => {
-                    if (response.status === 200) {
+                    if (response.status === 201) {
                         return body as Shift;
                     }
                     if (response.status === 400) {

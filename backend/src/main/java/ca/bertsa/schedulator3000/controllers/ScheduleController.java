@@ -24,21 +24,8 @@ public class ScheduleController {
     public ResponseEntity<?> create(@RequestBody ShiftDto dto) {
         try {
             return ResponseEntity
-                    .status(HttpStatus.OK)
+                    .status(HttpStatus.CREATED)
                     .body(shiftService.create(dto));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
-    }
-
-    @PostMapping("/manager")
-    public ResponseEntity<?> getAll(@RequestBody ShiftsFromTo dto) {
-        try {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(shiftService.getAllFromTo(dto));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -52,6 +39,19 @@ public class ScheduleController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(shiftService.update(dto));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/manager")
+    public ResponseEntity<?> getAll(@RequestBody ShiftsFromTo dto) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(shiftService.getAllFromTo(dto));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

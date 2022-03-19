@@ -30,16 +30,6 @@ type Ress = {
 
 const DnDCalendar = withDragAndDrop<Event, Ress>(Calendar as ComponentType<CalendarProps<Event, Ress>>);
 
-const customSlotPropGetter = (date: Date) => {
-    if (date.getDate() === 6 || date.getDate() === 15)
-        return {
-            className: 'special-day',
-            onEventDrop: null,
-            onEventResize: null
-        };
-    else return {};
-};
-
 const preferences = {
     calendar: {
         step: 30,
@@ -115,8 +105,13 @@ export const Schedule = () => {
     }
 
     function updateEvent(data: { event: Event; start: stringOrDate; end: stringOrDate; isAllDay: boolean }) {
-        const {start, end, isAllDay, event} = data;
-        const {resource, title, allDay} = event;
+        const {start, end, isAllDay, event:{resource, title, allDay}} = data;
+
+        setValue('start', start as Date);
+        setValue('end', end as Date);
+        setValue('employeeId', resource.employeeId);
+        setDialogOpen(true);
+
 
         setEvents((currentEvents: Event[]) => {
             const modifiedEvent: Event = {
@@ -198,11 +193,10 @@ export const Schedule = () => {
                 startAccessor={(event: Event) => new Date(event.start as Date)}
                 onSelectEvent={data => alert(data)}
                 onSelectSlot={handleSelect}
-                dayPropGetter={customSlotPropGetter}
                 min={new Date('2022-03-19T04:00:00.000Z')}
                 max={new Date('2022-03-20T03:59:00.000Z')}
                 resizable
-                dayLayoutAlgorithm={'overlap'}
+                dayLayoutAlgorithm={'no-overlap'}
                 eventPropGetter={(event: Event) => {
                     let employee = employees.find(employee => employee.id === event.resource.employeeId);
                     let fullName = employee?.lastName + ' ' + employee?.firstName;
