@@ -13,27 +13,15 @@ import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addo
 import {addDays, format, getDay, parse, startOfWeek} from 'date-fns';
 import enCA from 'date-fns/locale/en-CA';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {
-    Avatar,
-    Button,
-    Grid,
-    InputAdornment,
-    ListItemIcon,
-    Menu,
-    MenuItem,
-    Stack,
-    TextField,
-    Typography
-} from '@mui/material';
+import {Avatar, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography} from '@mui/material';
 import {AccountCircle, ArrowBack, ArrowForward, Delete} from '@mui/icons-material';
 import {DateTimePicker} from '@mui/lab';
 import {Employee} from '../models/user';
 import {useAuth} from '../hooks/use-auth';
-import {getEmployees} from '../services/ManagerService';
-import {create, deleteShift, getWeekOf, updateShift} from '../services/ScheduleService';
 import {getBeginningOfWeek, getCurrentTimezoneDate, stringAvatar, stringToColor, toLocalDateString} from '../utilities';
 import {useDialog} from '../hooks/use-dialog';
 import {Shift} from '../models/Shift';
+import {useServices} from '../hooks/use-services';
 
 const localizer = dateFnsLocalizer({
     format,
@@ -95,6 +83,7 @@ export const Schedule = () => {
         shiftEvent: ShiftEvent;
     } | null>(null);
     const user = useAuth().getManager();
+    const {managerService, shiftService} = useServices();
 
     useEffect(() => {
         let body = {
@@ -102,10 +91,10 @@ export const Schedule = () => {
             from: toLocalDateString(addDays(curentWeek, -7)),
             to: toLocalDateString(addDays(curentWeek, 14))
         };
-        getEmployees(user.email ?? '').then(
+        managerService.getEmployees(user.email ?? '').then(
             list => {
                 setEmployees(list);
-                getWeekOf(body).then(
+                shiftService.getShifts(body).then(
                     shifts => {
                         if (shifts.length === 0) {
                             setEvents([]);
@@ -228,7 +217,7 @@ export const Schedule = () => {
                                 {submitType === SubmitType.UPDATE &&
                                     <Button value="delete" type="submit" color="error"
                                             variant="contained">Delete</Button>}
-                                <Button value="cancel" type="button" color="primary" variant="text" onClick={()=>{
+                                <Button value="cancel" type="button" color="primary" variant="text" onClick={() => {
                                     closeDialog();
                                     reset();
                                 }}>Cancel</Button>
@@ -245,9 +234,10 @@ export const Schedule = () => {
         const submitter = event.nativeEvent.submitter.value;
 
         if (submitter === 'delete') {
-            deleteShift(shiftId).then(deleted =>
+            shiftService.deleteShift(shiftId).then(deleted =>
                 deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== shiftId))
             );
+            closeDialog();
             return;
         }
         let employee = employees.find(employee => employee.id === employeeId);
@@ -260,7 +250,7 @@ export const Schedule = () => {
             emailManager: user.email ?? ''
         };
 
-        updateShift(newShift).then(
+        shiftService.updateShift(newShift).then(
             shift => {
                 if (!shift?.id) {
                     return;
@@ -306,7 +296,7 @@ export const Schedule = () => {
             emailManager: user.email ?? ''
         };
 
-        create(newShift).then(
+        shiftService.create(newShift).then(
             shift => {
                 if (!shift) {
                     return;
@@ -335,19 +325,19 @@ export const Schedule = () => {
     };
 
 
-    const handleContextMenu = (event: React.MouseEvent, shiftEvent:ShiftEvent) => {
+    const handleContextMenu = (event: React.MouseEvent, shiftEvent: ShiftEvent) => {
         event.preventDefault();
         setContextMenu(
             contextMenu === null
                 ? {
                     mouseX: event.clientX - 2,
                     mouseY: event.clientY - 4,
-                    shiftEvent: shiftEvent,
+                    shiftEvent: shiftEvent
                 }
                 : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
                   // Other native context menus might behave different.
                   // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-                null,
+                null
         );
     };
 
@@ -440,19 +430,19 @@ export const Schedule = () => {
                 anchorReference="anchorPosition"
                 anchorPosition={
                     contextMenu !== null
-                        ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                        ? {top: contextMenu.mouseY, left: contextMenu.mouseX}
                         : undefined
                 }
             >
                 <MenuItem onClick={handleClose}>Print</MenuItem>
                 <MenuItem onClick={handleClose}>Highlight</MenuItem>
                 <MenuItem onClick={handleClose}>Email</MenuItem>
-                <MenuItem sx={{alignContent:"center"}} onClick={()=>{
-                    deleteShift(contextMenu?.shiftEvent.resourceId).then(deleted =>
+                <MenuItem sx={{alignContent: 'center'}} onClick={() => {
+                    shiftService.deleteShift(contextMenu?.shiftEvent.resourceId).then(deleted =>
                         deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent.resourceId))
                     );
                     handleClose();
-                }}><Delete fontSize="small" /> Delete</MenuItem>
+                }}><Delete fontSize="small"/> Delete</MenuItem>
             </Menu>
         </>
     );

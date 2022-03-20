@@ -6,11 +6,11 @@ import {Column} from './Colums';
 import {FieldInput} from './Form/FormFields';
 import {FormGroup} from './Form/FormGroup';
 import {regexEmail, regexPhone} from '../utilities';
-import {addEmployee, getEmployees} from '../services/ManagerService';
 import {Employee} from '../models/user';
 import {Table, TableHeader, TableRow} from './Table';
 import {Link} from '@mui/material';
 import {Schedule} from './Schedule';
+import {useServices} from '../hooks/use-services';
 
 export function Dashboards(): React.ReactElement {
     const {path} = useRouteMatch();
@@ -32,10 +32,11 @@ function EmployeeManagement(): React.ReactElement {
 
 function EmployeeList() {
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const {managerService} = useServices();
     let user = useAuth().getManager();
     useEffect(() => {
         let email = user.email ?? '';
-        getEmployees(email).then(
+        managerService.getEmployees(email).then(
             employees => {
                 user.employees = employees;
                 setEmployees(employees);
@@ -68,7 +69,8 @@ function RegisterEmployee() {
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
     });
-    let user = useAuth().getManager();
+    const user = useAuth().getManager();
+    const {managerService} = useServices();
 
     const submit: SubmitHandler<FieldValues> = (data, event) => {
         event?.preventDefault();
@@ -88,7 +90,7 @@ function RegisterEmployee() {
             phone,
             role
         };
-        addEmployee(user.email, employee).then(({ok, body}) => {
+        managerService.addEmployee(user.email, employee).then(({ok, body}) => {
             if (ok) {
                 user.employees.push(body as Employee);
             }

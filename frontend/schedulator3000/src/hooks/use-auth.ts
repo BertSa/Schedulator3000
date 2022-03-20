@@ -1,7 +1,7 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
 import {METHODS, requestInit} from '../serviceUtils';
 import {Employee, Manager} from '../models/user';
-import {toastError, toastSuccess} from '../utilities';
+import { useSnackbar } from 'notistack';
 
 const authContext: React.Context<IProviderAuth> = createContext({} as IProviderAuth);
 
@@ -45,6 +45,7 @@ export function RequireNoAuth({children}: { children: React.ReactNode }): any {
 }
 
 function useProvideAuth(): IProviderAuth {
+    const { enqueueSnackbar } = useSnackbar();
     const [user, setUser] = useState<Manager | Employee | undefined>(() => {
         if (sessionStorage.length === 0) {
             return null;
@@ -82,11 +83,17 @@ function useProvideAuth(): IProviderAuth {
                     body => {
                         if (response.status === 200) {
                             setUser(Object.setPrototypeOf(body, Manager.prototype));
-                            toastSuccess.fire({title: 'Connected!'}).then();
+                            enqueueSnackbar('You are connected!', {
+                                variant: 'default',
+                                autoHideDuration: 3000,
+                            });
                             return true;
                         }
                         if (response.status === 400) {
-                            toastError.fire({title: body.message});
+                            enqueueSnackbar(body.message, {
+                                variant: 'default',
+                                autoHideDuration: 3000,
+                            });
                         }
                         return false;
                     }
@@ -98,6 +105,10 @@ function useProvideAuth(): IProviderAuth {
         setUser(undefined);
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('type');
+        enqueueSnackbar('You are now disconnected.', {
+            variant: 'default',
+            autoHideDuration: 3000,
+        });
     };
 
     const isManager = (): boolean => {
