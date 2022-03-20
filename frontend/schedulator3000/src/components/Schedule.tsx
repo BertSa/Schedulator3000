@@ -12,9 +12,16 @@ import {
 import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addons/dragAndDrop';
 import {addDays, format, getDay, parse, startOfWeek} from 'date-fns';
 import enCA from 'date-fns/locale/en-CA';
-import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
+import {UnpackNestedValue, useForm} from 'react-hook-form';
 import {Avatar, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography} from '@mui/material';
-import {AccountCircle, ArrowBack, ArrowForward, Delete} from '@mui/icons-material';
+import {
+    AccountCircle,
+    ArrowBack,
+    ArrowForward,
+    ContentCopy,
+    Delete,
+    Edit
+} from '@mui/icons-material';
 import {DateTimePicker} from '@mui/lab';
 import {Employee} from '../models/user';
 import {useAuth} from '../hooks/use-auth';
@@ -63,7 +70,7 @@ export const Schedule = () => {
     const [events, setEvents] = useState<ShiftEvent[]>([]);
     const [curentWeek, setCurrentWeek] = useState<Date>(getBeginningOfWeek(getCurrentTimezoneDate(new Date())));
     const [openDialog, closeDialog] = useDialog();
-    const {setValue, getValues, register, handleSubmit, formState: {errors}, reset} = useForm<{
+    const {setValue, getValues, register, handleSubmit, formState: {errors}, reset, watch} = useForm<{
         start: Date,
         end: Date,
         employeeId: number,
@@ -157,9 +164,91 @@ export const Schedule = () => {
         </>;
     }
 
+
     function openMyDialog(submitType: SubmitType) {
-        // noinspection RequiredAttributes
-        openDialog({
+        let id: number;
+
+        function submitCreate({start, end, employeeId}: { start: Date, end: Date, employeeId: number }, event: any) {
+            event?.preventDefault();
+            let employee = employees.find(employee => employee.id === employeeId);
+
+            const newShift: Shift = {
+                startTime: new Date(new Date(start).toISOString()),
+                endTime: new Date(new Date(end).toISOString()),
+                emailEmployee: employee?.email ?? '',
+                emailManager: user.email ?? ''
+            };
+
+            shiftService.create(newShift).then(
+                shift => {
+                    if (!shift) {
+                        return;
+                    }
+
+                    let event: any = {
+                        resourceId: shift.id,
+                        title: employee?.lastName + ' ' + employee?.firstName,
+                        start: getCurrentTimezoneDate(shift.startTime),
+                        end: getCurrentTimezoneDate(shift.endTime),
+                        resource: {
+                            employeeId: employeeId
+                        }
+                    };
+                    setEvents((currentEvents: any[]) => [...currentEvents, event]);
+                    closeDialog(id);
+                    reset();
+                }
+            );
+        }
+
+        function update(data: UnpackNestedValue<any>, event?: any) {
+            event?.preventDefault();
+            const submitter = event?.nativeEvent.submitter.value;
+            const {start, end, employeeId, shiftId} = data;
+
+            if (submitter === 'delete') {
+                shiftService.deleteShift(shiftId).then(deleted => {
+                        if (deleted) {
+                            setEvents(curent => curent.filter(shift => shift.resourceId !== shiftId));
+                            closeDialog(id);
+                        }
+                    }
+                );
+                return;
+            }
+            let employee = employees.find(employee => employee.id === employeeId);
+
+            const newShift: Shift = {
+                id: shiftId,
+                startTime: new Date(new Date(start).toISOString()),
+                endTime: new Date(new Date(end).toISOString()),
+                emailEmployee: employee?.email ?? '',
+                emailManager: user.email ?? ''
+            };
+
+            shiftService.updateShift(newShift).then(
+                shift => {
+                    if (!shift?.id) {
+                        return;
+                    }
+
+                    let event: ShiftEvent = {
+                        resourceId: shift.id,
+                        title: employee?.lastName + ' ' + employee?.firstName,
+                        start: getCurrentTimezoneDate(shift.startTime),
+                        end: getCurrentTimezoneDate(shift.endTime),
+                        resource: {
+                            employeeId: employeeId
+                        }
+                    };
+                    closeDialog(id);
+                    reset();
+                    setEvents((currentEvents: ShiftEvent[]) => [...currentEvents.filter(event => event.resourceId !== shiftId), event]);
+                }
+            );
+        }
+
+        id = openDialog({
             children: (
                 <>
                     <Typography variant="h5"
@@ -218,7 +307,7 @@ export const Schedule = () => {
                                     <Button value="delete" type="submit" color="error"
                                             variant="contained">Delete</Button>}
                                 <Button value="cancel" type="button" color="primary" variant="text" onClick={() => {
-                                    closeDialog();
+                                    closeDialog(id);
                                     reset();
                                 }}>Cancel</Button>
                             </Stack>
@@ -227,50 +316,9 @@ export const Schedule = () => {
                 </>
             )
         });
+        console.log(id);
     }
 
-    const update: SubmitHandler<FieldValues> = ({start, end, employeeId, shiftId}, event: any) => {
-        event?.preventDefault();
-        const submitter = event.nativeEvent.submitter.value;
-
-        if (submitter === 'delete') {
-            shiftService.deleteShift(shiftId).then(deleted =>
-                deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== shiftId))
-            );
-            closeDialog();
-            return;
-        }
-        let employee = employees.find(employee => employee.id === employeeId);
-
-        const newShift: Shift = {
-            id: shiftId,
-            startTime: new Date(new Date(start).toISOString()),
-            endTime: new Date(new Date(end).toISOString()),
-            emailEmployee: employee?.email ?? '',
-            emailManager: user.email ?? ''
-        };
-
-        shiftService.updateShift(newShift).then(
-            shift => {
-                if (!shift?.id) {
-                    return;
-                }
-
-                let event: ShiftEvent = {
-                    resourceId: shift.id,
-                    title: employee?.lastName + ' ' + employee?.firstName,
-                    start: getCurrentTimezoneDate(shift.startTime),
-                    end: getCurrentTimezoneDate(shift.endTime),
-                    resource: {
-                        employeeId: employeeId
-                    }
-                };
-                closeDialog();
-                reset();
-                setEvents((currentEvents: ShiftEvent[]) => [...currentEvents.filter(event => event.resourceId !== shiftId), event]);
-            }
-        );
-    };
 
     function updateEvent(data: { event: ShiftEvent; start: stringOrDate; end: stringOrDate; isAllDay: boolean }) {
         const {start, end, event: {resourceId, resource}} = data;
@@ -285,38 +333,6 @@ export const Schedule = () => {
     const onEventResize: withDragAndDropProps<ShiftEvent, any>['onEventResize'] = data => updateEvent(data);
     const onEventDrop: withDragAndDropProps<ShiftEvent, any>['onEventDrop'] = data => updateEvent(data);
 
-    const submitCreate: SubmitHandler<FieldValues> = ({start, end, employeeId}, event) => {
-        event?.preventDefault();
-        let employee = employees.find(employee => employee.id === employeeId);
-
-        const newShift: Shift = {
-            startTime: new Date(new Date(start).toISOString()),
-            endTime: new Date(new Date(end).toISOString()),
-            emailEmployee: employee?.email ?? '',
-            emailManager: user.email ?? ''
-        };
-
-        shiftService.create(newShift).then(
-            shift => {
-                if (!shift) {
-                    return;
-                }
-
-                let event: any = {
-                    resourceId: shift.id,
-                    title: employee?.lastName + ' ' + employee?.firstName,
-                    start: getCurrentTimezoneDate(shift.startTime),
-                    end: getCurrentTimezoneDate(shift.endTime),
-                    resource: {
-                        employeeId: employeeId
-                    }
-                };
-                setEvents((currentEvents: any[]) => [...currentEvents, event]);
-                closeDialog();
-                reset();
-            }
-        );
-    };
 
     const handleSelect: CalendarProps['onSelectSlot'] = ({start, end}: SlotInfo): void => {
         setValue('start', start as Date);
@@ -434,9 +450,28 @@ export const Schedule = () => {
                         : undefined
                 }
             >
-                <MenuItem onClick={handleClose}>Print</MenuItem>
-                <MenuItem onClick={handleClose}>Highlight</MenuItem>
-                <MenuItem onClick={handleClose}>Email</MenuItem>
+                {/*<MenuItem onClick={handleClose}>Print</MenuItem>*/}
+                <MenuItem onClick={() => {
+                    if (contextMenu !== null) {
+                        let shiftEvent = contextMenu.shiftEvent;
+                        setValue('start', shiftEvent.start as Date);
+                        setValue('end', shiftEvent.end as Date);
+                        setValue('employeeId', shiftEvent.resource.employeeId);
+                        setValue('shiftId', shiftEvent.resourceId);
+                        openMyDialog(SubmitType.UPDATE);
+                    }
+                    handleClose();
+                }}><Edit fontSize="small" /> Edit</MenuItem>
+                <MenuItem onClick={() => {
+                    if (contextMenu !== null) {
+                        let shiftEvent = contextMenu.shiftEvent;
+                        setValue('start', shiftEvent.start as Date);
+                        setValue('end', shiftEvent.end as Date);
+                        setValue('employeeId', shiftEvent.resource.employeeId);
+                        openMyDialog(SubmitType.CREATE);
+                    }
+                    handleClose();
+                }}><ContentCopy fontSize="small"/> Duplicate</MenuItem>
                 <MenuItem sx={{alignContent: 'center'}} onClick={() => {
                     shiftService.deleteShift(contextMenu?.shiftEvent.resourceId).then(deleted =>
                         deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent.resourceId))

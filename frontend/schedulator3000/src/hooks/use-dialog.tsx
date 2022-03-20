@@ -1,23 +1,26 @@
 import React from 'react';
 import {Dialog} from '@mui/material';
 
-type ProviderContext = readonly [(option: DialogOption) => void, () => void];
+type ProviderContext = readonly [(option: DialogParams) => number, (id?: number) => void];
 
 const EMPTY_FUNC = () => {
 };
 const DialogContext = React.createContext<ProviderContext>([
-    EMPTY_FUNC,
+    (): number => {
+        return 0;
+    },
     EMPTY_FUNC
 ]);
 export const useDialog = () => React.useContext(DialogContext);
 
 type DialogParams = {
+    idDialog?: number;
     children: React.ReactNode;
-    open: boolean;
+    open?: boolean;
     onClose?: Function;
     onExited?: Function;
 };
-type DialogOption = Omit<DialogParams, 'open'>;
+// type DialogOption = Omit<DialogParams, 'open'>;
 type DialogContainerProps = DialogParams & {
     onClose: () => void;
     onKill: () => void;
@@ -27,7 +30,7 @@ function DialogContainer(props: DialogContainerProps) {
     const {children, open, onClose, onKill} = props;
 
     return (
-        <Dialog open={open}
+        <Dialog open={open ?? false}
                 onClose={onClose}
                 onEnded={onKill}>
             {children}
@@ -37,16 +40,32 @@ function DialogContainer(props: DialogContainerProps) {
 
 export default function DialogProvider({children}: { children: React.ReactNode }) {
     const [dialogs, setDialogs] = React.useState<DialogParams[]>([]);
-    const createDialog = (option: DialogOption) => {
-        const dialog = {...option, open: true};
+    let id = 0;
+    const createDialog = (option: DialogParams): number => {
+        id++;
+        const dialog = {...option, open: true, idDialog: id};
         setDialogs((dialogs) => [...dialogs, dialog]);
+        return id;
     };
-    const closeDialog = () => {
+
+    const closeDialog = (id?: number) => {
         setDialogs((dialogs) => {
-            const latestDialog = dialogs.pop();
-            if (!latestDialog) return dialogs;
-            if (latestDialog.onClose) latestDialog.onClose();
-            return [...dialogs].concat({...latestDialog, open: false});
+            let latestDialog;
+            if (id) {
+                let index = dialogs.findIndex((d) => d.idDialog === id);
+                latestDialog = dialogs.at(index);
+                dialogs.splice(index, 1);
+            } else {
+                latestDialog = dialogs.pop();
+            }
+            if (!latestDialog) {
+                return dialogs;
+            }
+            if (latestDialog.onClose) {
+                latestDialog.onClose();
+            }
+
+            return [...dialogs, {...latestDialog, open: false}];
         });
     };
     const contextValue = React.useRef([createDialog, closeDialog] as const);
@@ -61,6 +80,7 @@ export default function DialogProvider({children}: { children: React.ReactNode }
                     setDialogs((dialogs) => dialogs.slice(0, dialogs.length - 1));
                 };
 
+                // noinspection RequiredAttributes
                 return (
                     <DialogContainer
                         key={i}
