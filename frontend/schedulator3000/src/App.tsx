@@ -1,11 +1,10 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import {RequireAdmin, RequireNoAuth} from './hooks/use-auth';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import {Dashboards} from './components/Dashboards';
 import {Schedule} from './components/Schedule';
 import {SignIn} from './components/SignIn';
-import {DateTimePicker} from '@mui/lab';
 
 
 export default function App() {
