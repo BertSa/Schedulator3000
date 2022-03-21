@@ -12,16 +12,9 @@ import {
 import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addons/dragAndDrop';
 import {addDays, format, getDay, parse, startOfWeek} from 'date-fns';
 import enCA from 'date-fns/locale/en-CA';
-import {UnpackNestedValue, useForm} from 'react-hook-form';
+import {Controller, UnpackNestedValue, useForm} from 'react-hook-form';
 import {Avatar, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography} from '@mui/material';
-import {
-    AccountCircle,
-    ArrowBack,
-    ArrowForward,
-    ContentCopy,
-    Delete,
-    Edit
-} from '@mui/icons-material';
+import {AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit} from '@mui/icons-material';
 import {DateTimePicker} from '@mui/lab';
 import {Employee} from '../models/user';
 import {useAuth} from '../hooks/use-auth';
@@ -29,6 +22,8 @@ import {getBeginningOfWeek, getCurrentTimezoneDate, stringAvatar, stringToColor,
 import {useDialog} from '../hooks/use-dialog';
 import {Shift} from '../models/Shift';
 import {useServices} from '../hooks/use-services';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 const localizer = dateFnsLocalizer({
     format,
@@ -64,18 +59,12 @@ const preferences = {
     }
 };
 
-
 export const Schedule = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [events, setEvents] = useState<ShiftEvent[]>([]);
     const [curentWeek, setCurrentWeek] = useState<Date>(getBeginningOfWeek(getCurrentTimezoneDate(new Date())));
     const [openDialog, closeDialog] = useDialog();
-    const {setValue, getValues, register, handleSubmit, formState: {errors}, reset, watch} = useForm<{
-        start: Date,
-        end: Date,
-        employeeId: number,
-        shiftId?: number,
-    }>({
+    const {setValue, getValues, register, handleSubmit, formState: {errors}, reset, control} = useForm<any>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
         defaultValues: {
@@ -282,21 +271,47 @@ export const Schedule = () => {
                             </TextField>
                         </Grid>
                         <Grid item xs={6}>
-                            <DateTimePicker value={getValues().start}
-                                            renderInput={(props) => <TextField {...props} />}
-                                            label="DateTimePicker"
-                                            onChange={(date) => {
-                                                setValue('start', date as Date);
-                                            }}
+                            <Controller
+                                name="start"
+                                control={control}
+                                rules={{
+                                    required: true
+                                }}
+                                render={({fieldState, formState, field}) => (
+                                    <DateTimePicker
+                                        label="Start Time"
+                                        renderInput={(props) => <TextField {...props} helperText={errors.start ?? ' '}
+                                                                           error={!!errors.start}/>}
+                                        {...field}
+                                        {...fieldState}
+                                        {...formState}
+                                    />
+                                )}
                             />
                         </Grid>
                         <Grid item xs={6}>
-                            <DateTimePicker value={getValues().end}
-                                            renderInput={(props) => <TextField {...props} />}
-                                            label="DateTimePicker"
-                                            onChange={(date) => {
-                                                setValue('end', date as Date);
-                                            }}
+                            <Controller
+                                name="end"
+                                control={control}
+                                rules={{
+                                    required: true,
+                                    validate: (value) => {
+                                        if (value < getValues().start) {
+                                            return 'End time must be after start time';
+                                        }
+                                    }
+                                }}
+                                render={({fieldState, formState, field}) => (
+                                    <DateTimePicker
+                                        label="End Time"
+                                        renderInput={(props) => <TextField helperText={errors.end?.message ?? ' dd'}
+                                                                           error={!!errors.end}
+                                                                           {...props} />}
+                                        {...field}
+                                        {...fieldState}
+                                        {...formState}
+                                    />
+                                )}
                             />
                         </Grid>
                         <Grid item alignSelf={'center'} marginX={'auto'}>
@@ -450,7 +465,6 @@ export const Schedule = () => {
                         : undefined
                 }
             >
-                {/*<MenuItem onClick={handleClose}>Print</MenuItem>*/}
                 <MenuItem onClick={() => {
                     if (contextMenu !== null) {
                         let shiftEvent = contextMenu.shiftEvent;
@@ -461,7 +475,12 @@ export const Schedule = () => {
                         openMyDialog(SubmitType.UPDATE);
                     }
                     handleClose();
-                }}><Edit fontSize="small" /> Edit</MenuItem>
+                }}>
+                    <ListItemIcon>
+                        <Edit fontSize="small"/>
+                    </ListItemIcon>
+                    <ListItemText>Edit</ListItemText>
+                </MenuItem>
                 <MenuItem onClick={() => {
                     if (contextMenu !== null) {
                         let shiftEvent = contextMenu.shiftEvent;
@@ -471,13 +490,23 @@ export const Schedule = () => {
                         openMyDialog(SubmitType.CREATE);
                     }
                     handleClose();
-                }}><ContentCopy fontSize="small"/> Duplicate</MenuItem>
+                }}>
+                    <ListItemIcon>
+                        <ContentCopy fontSize="small"/>
+                    </ListItemIcon>
+                    <ListItemText>Duplicate</ListItemText>
+                </MenuItem>
                 <MenuItem sx={{alignContent: 'center'}} onClick={() => {
                     shiftService.deleteShift(contextMenu?.shiftEvent.resourceId).then(deleted =>
                         deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent.resourceId))
                     );
                     handleClose();
-                }}><Delete fontSize="small"/> Delete</MenuItem>
+                }}>
+                    <ListItemIcon>
+                        <Delete fontSize="small"/>
+                    </ListItemIcon>
+                    <ListItemText>Delete</ListItemText>
+                </MenuItem>
             </Menu>
         </>
     );
