@@ -7,7 +7,6 @@ export function stringToColor(string: string) {
     let hash = 0;
     let i;
 
-    /* eslint-disable no-bitwise */
     for (i = 0; i < string.length; i += 1) {
         hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
@@ -18,7 +17,6 @@ export function stringToColor(string: string) {
         const value = (hash >> (i * 8)) & 0xff;
         color += `00${value.toString(16)}`.substr(-2);
     }
-    /* eslint-enable no-bitwise */
 
     return color;
 }
@@ -36,11 +34,11 @@ export function stringAvatar(name: string) {
 export function getCurrentTimezoneDate(date: Date) {
    return new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000)
 }
-export function getBeginningOfWeek(d:Date) {
-    d = new Date(d);
-    let day = d.getDay();
-    let diff = d.getDate() - day;
-    return new Date(d.setDate(diff));
+export function getBeginningOfWeek(date: string | Date) {
+    date = new Date(date);
+    let day = date.getDay();
+    let diff = date.getDate() - day;
+    return new Date(date.setDate(diff));
 }
 export function toLocalDateString(date: Date) {
     return date.toLocaleDateString('en-CA', {
@@ -49,8 +47,3 @@ export function toLocalDateString(date: Date) {
         year: 'numeric'
     });
 }
-// export function uuidv4() {
-//     return (1e7 + '-' + 1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-//         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-//     );
-// }

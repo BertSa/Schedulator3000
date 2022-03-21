@@ -1,31 +1,29 @@
 import React, {BaseSyntheticEvent} from 'react';
-import {Link as RouterLink, useHistory, useLocation} from 'react-router-dom';
+import {Link as RouterLink} from 'react-router-dom';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {useAuth} from '../hooks/use-auth';
-import {FieldInput} from './Form/FormFields';
-import {regexEmail} from '../utilities';
+import {FieldInput} from './form/FormFields';
+import {regexEmail} from '../../utilities';
 import {Avatar, Button, Container, Grid, Link, Typography} from '@mui/material';
 import {LockOutlined} from '@mui/icons-material';
 
-export function SignIn() {
+
+type SignInProps = {
+    signIn: Function;
+}
+
+export function SignIn({signIn}: SignInProps) {
     const {register, handleSubmit, formState: {errors}} = useForm({
         mode: 'onSubmit'
     });
-    let location = useLocation();
-    const history = useHistory();
-    let auth = useAuth();
 
     const connect: SubmitHandler<FieldValues> = (data, event?: BaseSyntheticEvent) => {
         event?.preventDefault();
         const {email, password} = data;
-        auth.signInManager(email, password).then(() => {
-            if (auth.user)
-                history.push('/manager/dashboard');
-        });
+        signIn(email, password);
     };
 
     return (
-        <Container component="main" maxWidth="xs">
+        <Container maxWidth="xs">
             <Grid container
                   sx={{
                       display: 'flex',
@@ -79,14 +77,14 @@ export function SignIn() {
                 <Grid container>
                     <Grid item xs>
                         <Typography fontSize="smaller">
-                            <Link component={RouterLink} to={{pathname: '/forgot_password', state: {from: location}}}>
+                            <Link component={RouterLink} to={{pathname: '/forgot_password'}}>
                                 Forgot password ?
                             </Link>
                         </Typography>
                     </Grid>
                     <Grid item>
                         <Typography fontSize="smaller"> Do you have an account ?
-                            <Link component={RouterLink} to={{pathname: '/forgot_password', state: {from: location}}}>
+                            <Link component={RouterLink} to={{pathname: '/forgot_password'}}>
                                 Sign Up
                             </Link>
                         </Typography>

@@ -1,7 +1,7 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
-import {METHODS, requestInit} from '../serviceUtils';
-import {Employee, Manager} from '../models/user';
+import {Employee, Manager} from '../models/User';
 import { useSnackbar } from 'notistack';
+import {METHODS, requestInit} from './use-services';
 
 const authContext: React.Context<IProviderAuth> = createContext({} as IProviderAuth);
 

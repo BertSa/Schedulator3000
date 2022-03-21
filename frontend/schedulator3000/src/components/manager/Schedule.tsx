@@ -16,12 +16,12 @@ import {Controller, UnpackNestedValue, useForm} from 'react-hook-form';
 import {Avatar, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography} from '@mui/material';
 import {AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit} from '@mui/icons-material';
 import {DateTimePicker} from '@mui/lab';
-import {Employee} from '../models/user';
-import {useAuth} from '../hooks/use-auth';
-import {getBeginningOfWeek, getCurrentTimezoneDate, stringAvatar, stringToColor, toLocalDateString} from '../utilities';
-import {useDialog} from '../hooks/use-dialog';
-import {Shift} from '../models/Shift';
-import {useServices} from '../hooks/use-services';
+import {Employee} from '../../models/User';
+import {useAuth} from '../../hooks/use-auth';
+import {getBeginningOfWeek, getCurrentTimezoneDate, stringAvatar, stringToColor, toLocalDateString} from '../../utilities';
+import {useDialog} from '../../hooks/use-dialog';
+import {Shift} from '../../models/Shift';
+import {useServices} from '../../hooks/use-services';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 

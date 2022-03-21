@@ -2,25 +2,28 @@ import PropTypes from 'prop-types';
 
 import {TextField} from '@mui/material';
 import React from 'react';
+import {FieldErrors} from 'react-hook-form';
+import {RegisterOptions} from 'react-hook-form/dist/types/validator';
 
 FieldInput.propTypes = {
-    register: PropTypes.func.isRequired,
-    errors: PropTypes.object,
-    name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
+    autoComplete: PropTypes.string,
+    defaultValue: PropTypes.string,
+    register: PropTypes.func.isRequired,
+    errors: PropTypes.object.isRequired,
     validation: PropTypes.object.isRequired,
-    autoComplete: PropTypes.string
 };
 type FieldInputProps = {
-    register: Function,
-    errors: any,
-    name: string,
     label: string,
+    name: string,
     type: React.InputHTMLAttributes<unknown>['type'],
-    validation: object,
     autoComplete?: React.InputHTMLAttributes<unknown>['autoComplete'],
     defaultValue?: string
+    register: Function,
+    errors: FieldErrors,
+    validation: RegisterOptions,
 };
 
 export function FieldInput(props: FieldInputProps) {
@@ -29,7 +32,6 @@ export function FieldInput(props: FieldInputProps) {
         type={type}
         label={label}
         name={name}
-        className=""
         autoComplete={autoComplete}
         {...register(name, validation)}
         fullWidth

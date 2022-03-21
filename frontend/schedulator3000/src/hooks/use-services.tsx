@@ -1,10 +1,34 @@
 import React, {createContext, useContext} from 'react';
-import {METHODS, requestInit} from '../serviceUtils';
 import {useSnackbar} from 'notistack';
-import {Employee} from '../models/user';
+import {Employee} from '../models/User';
 import {Shift} from '../models/Shift';
 import {useDialog} from './use-dialog';
 import {Button, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
+
+export enum METHODS {
+    POST = 'POST',
+    GET = 'GET',
+    PUT = 'PUT',
+    DELETE = 'DELETE'
+}
+
+export const requestInit = (method: METHODS, body?: any | string, isString?: boolean) => {
+    let value : RequestInit = {
+        method: method,
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    };
+
+    if (body && (method === METHODS.POST || method === METHODS.PUT)) {
+        value.body = isString ? body : JSON.stringify(body);
+    }
+    return value;
+};
 
 const authContext: React.Context<IProviderServices> = createContext({} as IProviderServices);
 
