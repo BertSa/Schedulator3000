@@ -1,6 +1,6 @@
 package ca.bertsa.schedulator3000.models;
 
-import ca.bertsa.schedulator3000.dto.ShiftDto;
+import ca.bertsa.schedulator3000.dtos.ShiftDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

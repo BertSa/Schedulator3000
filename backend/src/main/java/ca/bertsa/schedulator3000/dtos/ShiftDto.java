@@ -1,4 +1,4 @@
-package ca.bertsa.schedulator3000.dto;
+package ca.bertsa.schedulator3000.dtos;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

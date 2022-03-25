@@ -1,6 +1,7 @@
-package ca.bertsa.schedulator3000.dto;
+package ca.bertsa.schedulator3000.dtos;
 
 import ca.bertsa.schedulator3000.models.Holiday;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Setter
 @Getter
+@EqualsAndHashCode
 public class ManagerDto {
     private Long id;
     @Email

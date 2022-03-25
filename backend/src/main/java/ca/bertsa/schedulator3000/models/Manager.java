@@ -1,6 +1,6 @@
 package ca.bertsa.schedulator3000.models;
 
-import ca.bertsa.schedulator3000.dto.ManagerDto;
+import ca.bertsa.schedulator3000.dtos.ManagerDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -11,7 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Setter

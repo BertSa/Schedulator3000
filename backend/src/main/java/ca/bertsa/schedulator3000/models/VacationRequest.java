@@ -1,5 +1,6 @@
 package ca.bertsa.schedulator3000.models;
 
+import ca.bertsa.schedulator3000.enums.VacationRequestStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +23,3 @@ public class VacationRequest {
     private VacationRequestStatus status = VacationRequestStatus.PENDING;
 }
 
-enum VacationRequestStatus {
-    PENDING, APPROVED, REJECTED, CANCELLED
-}

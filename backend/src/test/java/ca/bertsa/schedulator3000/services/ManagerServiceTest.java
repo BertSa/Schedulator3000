@@ -1,7 +1,7 @@
 package ca.bertsa.schedulator3000.services;
 
-import ca.bertsa.schedulator3000.dto.ConnectionDto;
-import ca.bertsa.schedulator3000.dto.EmployeeDto;
+import ca.bertsa.schedulator3000.dtos.ConnectionDto;
+import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.ManagerRepository;
@@ -44,7 +44,7 @@ class ManagerServiceTest {
             // Arrange
             final Manager dummyManager = Dummies.getDummyManager();
             final List<Employee> dummyEmployees = Dummies.getDummyEmployees();
-//            dummyManager.setEmployees(dummyEmployees);
+            dummyManager.setEmployees(dummyEmployees);
 
             when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(dummyManager);
@@ -143,7 +143,7 @@ class ManagerServiceTest {
             final var actualManager = managerService.signIn(new ConnectionDto(dummyManager.getEmail(), dummyManager.getPassword()));
             // Assert
             assertThat(actualManager)
-                    .isEqualTo(dummyManager);
+                    .isEqualTo(dummyManager.mapToDto());
         }
 
         @Test

@@ -1,27 +1,24 @@
 package ca.bertsa.schedulator3000.services;
 
-import ca.bertsa.schedulator3000.dto.ConnectionDto;
-import ca.bertsa.schedulator3000.dto.EmployeeDto;
-import ca.bertsa.schedulator3000.dto.ManagerDto;
+import ca.bertsa.schedulator3000.dtos.ConnectionDto;
+import ca.bertsa.schedulator3000.dtos.EmployeeDto;
+import ca.bertsa.schedulator3000.dtos.ManagerDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.ManagerRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class ManagerService {
     private final EmployeeService employeeService;
 
     private final ManagerRepository managerRepository;
-
-    public ManagerService(EmployeeService employeeService, ManagerRepository managerRepository) {
-        this.employeeService = employeeService;
-        this.managerRepository = managerRepository;
-    }
 
     public List<Employee> getAllEmployee(String emailManager) {
         final Manager manager = getOneByEmail(emailManager);
@@ -38,7 +35,7 @@ public class ManagerService {
         return employee;
     }
 
-     public Manager getOneByEmail(String emailManager) {
+    public Manager getOneByEmail(String emailManager) {
         final Manager manager = managerRepository.getByEmailIgnoreCase(emailManager);
         if (manager == null) {
             throw new EntityNotFoundException("Manager with email " + emailManager + " does not exist!");
@@ -55,9 +52,5 @@ public class ManagerService {
         }
 
         return manager.mapToDto();
-    }
-
-    public Manager update(Manager manager) {
-        return managerRepository.save(manager);
     }
 }

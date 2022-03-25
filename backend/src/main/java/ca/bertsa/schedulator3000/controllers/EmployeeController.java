@@ -1,9 +1,9 @@
 package ca.bertsa.schedulator3000.controllers;
 
-import ca.bertsa.schedulator3000.dto.ConnectionDto;
-import ca.bertsa.schedulator3000.models.Employee;
+import ca.bertsa.schedulator3000.dtos.ConnectionDto;
 import ca.bertsa.schedulator3000.models.ResponseMessage;
 import ca.bertsa.schedulator3000.services.EmployeeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/employee")
+@RequiredArgsConstructor
 public class EmployeeController {
     private final EmployeeService employeeService;
-
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
-    }
-
 
     @PostMapping("signin")
     public ResponseEntity<?> signIn(@RequestBody ConnectionDto dto) {

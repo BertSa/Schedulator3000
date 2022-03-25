@@ -1,8 +1,8 @@
 package ca.bertsa.schedulator3000.controllers;
 
-import ca.bertsa.schedulator3000.dto.ConnectionDto;
-import ca.bertsa.schedulator3000.dto.EmployeeDto;
-import ca.bertsa.schedulator3000.dto.ManagerDto;
+import ca.bertsa.schedulator3000.dtos.ConnectionDto;
+import ca.bertsa.schedulator3000.dtos.EmployeeDto;
+import ca.bertsa.schedulator3000.dtos.ManagerDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.services.ManagerService;

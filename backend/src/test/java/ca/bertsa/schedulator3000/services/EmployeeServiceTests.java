@@ -1,7 +1,7 @@
 package ca.bertsa.schedulator3000.services;
 
-import ca.bertsa.schedulator3000.dto.ConnectionDto;
-import ca.bertsa.schedulator3000.dto.EmployeeDto;
+import ca.bertsa.schedulator3000.dtos.ConnectionDto;
+import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.repositories.EmployeeRepository;
 import ca.bertsa.schedulator3000.utils.Dummies;

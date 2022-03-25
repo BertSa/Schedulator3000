@@ -1,30 +1,26 @@
 package ca.bertsa.schedulator3000.services;
 
-import ca.bertsa.schedulator3000.dto.RequestScheduleEmployeeDto;
-import ca.bertsa.schedulator3000.dto.ShiftDto;
+import ca.bertsa.schedulator3000.dtos.RequestScheduleEmployeeDto;
+import ca.bertsa.schedulator3000.dtos.ShiftDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.models.Shift;
 import ca.bertsa.schedulator3000.models.ShiftsFromTo;
 import ca.bertsa.schedulator3000.repositories.ShiftRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class ShiftService {
 
     private final ShiftRepository shiftRepository;
     private final EmployeeService employeeService;
     private final ManagerService managerService;
-
-    public ShiftService(ShiftRepository shiftRepository, EmployeeService employeeService, ManagerService managerService) {
-        this.shiftRepository = shiftRepository;
-        this.employeeService = employeeService;
-        this.managerService = managerService;
-    }
 
     public ShiftDto create(ShiftDto dto) {
         final Employee employee = employeeService.getOneByEmail(dto.getEmailEmployee());

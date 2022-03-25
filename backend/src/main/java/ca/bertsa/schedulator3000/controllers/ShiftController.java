@@ -1,10 +1,11 @@
 package ca.bertsa.schedulator3000.controllers;
 
-import ca.bertsa.schedulator3000.dto.RequestScheduleEmployeeDto;
-import ca.bertsa.schedulator3000.dto.ShiftDto;
+import ca.bertsa.schedulator3000.dtos.RequestScheduleEmployeeDto;
+import ca.bertsa.schedulator3000.dtos.ShiftDto;
 import ca.bertsa.schedulator3000.models.ResponseMessage;
 import ca.bertsa.schedulator3000.models.ShiftsFromTo;
 import ca.bertsa.schedulator3000.services.ShiftService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,13 +13,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/shifts")
-public class ScheduleController {
+@RequiredArgsConstructor
+public class ShiftController {
 
     private final ShiftService shiftService;
-
-    public ScheduleController(ShiftService shiftService) {
-        this.shiftService = shiftService;
-    }
 
     @PostMapping("/manager/create")
     public ResponseEntity<?> create(@RequestBody ShiftDto dto) {

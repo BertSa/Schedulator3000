@@ -72,7 +72,7 @@ export function SignIn({signIn}: SignInProps) {
                     variant="contained"
                     color="primary"
                 >
-                    Sign Up
+                    Sign In
                 </Button>
                 <Grid container>
                     <Grid item xs>

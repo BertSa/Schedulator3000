@@ -94,11 +94,7 @@ function RegisterEmployee() {
             phone,
             role
         };
-        managerService.addEmployee(user.email, employee).then(({ok, body}) => {
-            if (ok) {
-                user.employees.push(body as Employee);
-            }
-        });
+        managerService.addEmployee(user.email, employee).then();
     };
 
 

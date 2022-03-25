@@ -1,10 +1,11 @@
 package ca.bertsa.schedulator3000.controllers;
 
 
-import ca.bertsa.schedulator3000.dto.ConnectionDto;
-import ca.bertsa.schedulator3000.dto.EmployeeDto;
+import ca.bertsa.schedulator3000.dtos.ConnectionDto;
+import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.models.ResponseMessage;
 import ca.bertsa.schedulator3000.services.ManagerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,18 +13,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/manager")
+@RequiredArgsConstructor
 public class ManagerController {
 
-    private final ManagerService employeeService;
-
-    public ManagerController(ManagerService employeeService) {
-        this.employeeService = employeeService;
-    }
+    private final ManagerService managerService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody ConnectionDto dto) {
         try {
-            final var manager = employeeService.signIn(dto);
+            final var manager = managerService.signIn(dto);
 
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -38,7 +36,7 @@ public class ManagerController {
     @GetMapping("/employees/{emailManager}")
     public ResponseEntity<?> getAllEmployeeOfManager(@PathVariable String emailManager) {
         try {
-            final var employees = employeeService.getAllEmployee(emailManager);
+            final var employees = managerService.getAllEmployee(emailManager);
 
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -53,7 +51,7 @@ public class ManagerController {
     @PostMapping("/employees/add/{emailManager}")
     public ResponseEntity<?> addEmployee(@PathVariable String emailManager, @RequestBody EmployeeDto dto) {
         try {
-            final var employeeAdded = employeeService.addEmployee(emailManager, dto);
+            final var employeeAdded = managerService.addEmployee(emailManager, dto);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)

@@ -1,6 +1,6 @@
 package ca.bertsa.schedulator3000.models;
 
-import ca.bertsa.schedulator3000.dto.EmployeeDto;
+import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

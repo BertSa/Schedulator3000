@@ -1,4 +1,4 @@
-package ca.bertsa.schedulator3000.dto;
+package ca.bertsa.schedulator3000.dtos;
 
 import ca.bertsa.schedulator3000.models.Employee;
 import lombok.AllArgsConstructor;
@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+
 @Getter
 @Setter
 @AllArgsConstructor

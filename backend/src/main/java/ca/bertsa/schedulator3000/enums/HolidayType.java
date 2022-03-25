@@ -1,4 +1,4 @@
-package ca.bertsa.schedulator3000.models;
+package ca.bertsa.schedulator3000.enums;
 
 public enum HolidayType {
     NONE,

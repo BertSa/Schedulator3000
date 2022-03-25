@@ -1,5 +1,7 @@
 package ca.bertsa.schedulator3000.models;
 
+import ca.bertsa.schedulator3000.enums.HolidayType;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 

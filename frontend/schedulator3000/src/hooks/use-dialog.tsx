@@ -37,7 +37,6 @@ function DialogContainer(props: DialogContainerProps) {
         </Dialog>
     );
 }
-
 export default function DialogProvider({children}: { children: React.ReactNode }) {
     const [dialogs, setDialogs] = React.useState<DialogParams[]>([]);
     let id = 0;
