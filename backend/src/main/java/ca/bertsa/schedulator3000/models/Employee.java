@@ -23,8 +23,6 @@ public class Employee extends User {
     @NotBlank
     private String role;
     private Boolean active = null;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Manager manager;
 
 
     public EmployeeDto mapToDto() {

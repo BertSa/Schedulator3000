@@ -2,8 +2,8 @@ package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dtos.RequestScheduleEmployeeDto;
 import ca.bertsa.schedulator3000.dtos.ShiftDto;
-import ca.bertsa.schedulator3000.models.ResponseMessage;
-import ca.bertsa.schedulator3000.models.ShiftsFromTo;
+import ca.bertsa.schedulator3000.dtos.ResponseMessage;
+import ca.bertsa.schedulator3000.dtos.ShiftsFromToDto;
 import ca.bertsa.schedulator3000.services.ShiftService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,7 +59,7 @@ public class ShiftController {
     }
 
     @PostMapping("/manager")
-    public ResponseEntity<?> getAll(@RequestBody ShiftsFromTo dto) {
+    public ResponseEntity<?> getAll(@RequestBody ShiftsFromToDto dto) {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)

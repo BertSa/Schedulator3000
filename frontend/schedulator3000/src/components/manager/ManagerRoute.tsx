@@ -5,12 +5,11 @@ import {SignInManager} from './SignInManager';
 
 export function ManagerRoute(): React.ReactElement {
     return <>
-        <h2>Hello</h2>
-        <RequireNoAuth>
-            <SignInManager/>
-        </RequireNoAuth>
         <RequireAdmin>
             <Dashboards/>
         </RequireAdmin>
+        <RequireNoAuth>
+            <SignInManager/>
+        </RequireNoAuth>
     </>;
 }

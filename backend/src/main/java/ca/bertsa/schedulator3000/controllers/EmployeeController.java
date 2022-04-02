@@ -1,7 +1,7 @@
 package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
-import ca.bertsa.schedulator3000.models.ResponseMessage;
+import ca.bertsa.schedulator3000.dtos.ResponseMessage;
 import ca.bertsa.schedulator3000.services.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -44,7 +44,7 @@ export const useServices = () => {
 function useProvideManagerService() {
     const {enqueueSnackbar} = useSnackbar();
 
-    async function addEmployee(emailManager: string, employee: Employee): Promise<{ ok: boolean, body: {} }> {
+    async function addEmployee(emailManager: string, employee: Employee): Promise<{ ok: boolean, body: Employee | {message:string} }> {
         return await fetch(`/manager/employees/add/${emailManager}`, requestInit(METHODS.POST, employee)).then(
             response =>
                 response.json().then(
@@ -227,15 +227,20 @@ function useProvideServices(): IProviderServices {
     };
 }
 
+export type IShiftService = {
+    getShifts: (body: any) => Promise<Shift[]>,
+    create: (body: any) => Promise<Shift | null>,
+    updateShift: (body: any) => Promise<Shift | null>,
+    deleteShift: (id: any) => Promise<boolean>
+}
+export type IManagerService = {
+    addEmployee: (emailManager: string, employee: Employee) => Promise<{ ok: boolean, body: Employee | {message:string} }>,
+    getEmployees: (emailManager: string) => Promise<Employee[]>,
+}
+
 type IProviderServices = {
-    managerService: {
-        addEmployee: (emailManager: string, employee: Employee) => Promise<{ ok: boolean, body: {} }>,
-        getEmployees: (emailManager: string) => Promise<Employee[]>,
-    },
-    shiftService: {
-        getShifts: (body: any) => Promise<Shift[]>,
-        create: (body: any) => Promise<Shift | null>,
-        updateShift: (body: any) => Promise<Shift | null>,
-        deleteShift: (id: any) => Promise<boolean>
-    };
+    managerService: IManagerService,
+    shiftService: IShiftService,
 };
+
+

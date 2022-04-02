@@ -118,10 +118,6 @@ export const Schedule = () => {
             });
     }, [curentWeek]);
 
-    if (!user) {
-        return null;
-    }
-
     function Toolbar(props: { onView: any, date: any, view: any, onNavigate: any }) {
         useEffect(() => {
             setCurrentWeek(getBeginningOfWeek(props.date));

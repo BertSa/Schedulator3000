@@ -4,37 +4,45 @@ import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
 import {useAuth} from '../../hooks/use-auth';
 import {FieldInput} from '../shared/form/FormFields';
 import {regexEmail, regexPhone} from '../../utilities';
-import {Employee} from '../../models/User';
+import {Employee, Manager} from '../../models/User';
 import {Table, TableHeader, TableRow} from '../shared/Table';
 import {Button, Container, Grid, Link} from '@mui/material';
 import {Schedule} from './Schedule';
-import {useServices} from '../../hooks/use-services';
+import {IManagerService, useServices} from '../../hooks/use-services';
 
 export function Dashboards(): React.ReactElement {
     const {path} = useRouteMatch();
     return <>
-        <Link href={`${path}/employees`}>Employee Management</Link>
-        <Link href={`${path}/schedule`}>Schedule</Link>
         <Route path={`${path}/employees`} component={EmployeeManagement}/>
         <Route path={`${path}/schedule`} component={Schedule}/>
     </>;
 }
 
-function EmployeeManagement(): React.ReactElement {
-    return <Container maxWidth="sm"
-                      sx={{
-                          marginTop: 8,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center'
-                      }}>
-        <h2 className="text-center">Employee Management</h2>
-        <RegisterEmployee/>
-        <EmployeeList/>
-    </Container>;
+function EmployeeTable(props: { employees: Employee[] }) {
+    return <>
+        <h3>Employees</h3>
+        <Table>
+            <TableHeader>
+                <th>#</th>
+                <th>FirstName</th>
+                <th>LastName</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Role</th>
+            </TableHeader>
+            {props.employees.map((employee, index) => <TableRow key={index}>
+                <td>{employee.id ?? 'N/A'}</td>
+                <td>{employee.firstName ?? 'N/A'}</td>
+                <td>{employee.lastName ?? 'N/A'}</td>
+                <td>{employee.email ?? 'N/A'}</td>
+                <td>{employee.phone ?? 'N/A'}</td>
+                <td>{employee.role ?? 'N/A'}</td>
+            </TableRow>)}
+        </Table>
+    </>;
 }
 
-function EmployeeList() {
+function EmployeeManagement(): React.ReactElement {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const {managerService} = useServices();
     let user = useAuth().getManager();
@@ -47,34 +55,29 @@ function EmployeeList() {
             });
     }, []);
 
-    return <Table>
-        <TableHeader>
-            <th>#</th>
-            <th>FirstName</th>
-            <th>LastName</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Role</th>
-        </TableHeader>
-        {employees.map((employee, index) => <TableRow key={index}>
-            <td>{employee.id ?? 'N/A'}</td>
-            <td>{employee.firstName ?? 'N/A'}</td>
-            <td>{employee.lastName ?? 'N/A'}</td>
-            <td>{employee.email ?? 'N/A'}</td>
-            <td>{employee.phone ?? 'N/A'}</td>
-            <td>{employee.role ?? 'N/A'}</td>
-
-        </TableRow>)}
-    </Table>;
+    return <><Container maxWidth="sm"
+                        sx={{
+                            marginTop: 8,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center'
+                        }}>
+        <h2 className="text-center">Employee Management</h2>
+        <RegisterEmployee user={user} managerService={managerService} setEmployees={setEmployees}/>
+        <EmployeeTable employees={employees}/>
+    </Container>
+    </>;
 }
 
-function RegisterEmployee() {
+function RegisterEmployee({
+                              user,
+                              managerService,
+                              setEmployees
+                          }: { user: Manager, managerService: IManagerService, setEmployees: React.Dispatch<React.SetStateAction<Employee[]>> }) {
     const {register, handleSubmit, formState: {errors}} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
     });
-    const user = useAuth().getManager();
-    const {managerService} = useServices();
 
     const submit: SubmitHandler<FieldValues> = (data, event) => {
         event?.preventDefault();
@@ -94,7 +97,11 @@ function RegisterEmployee() {
             phone,
             role
         };
-        managerService.addEmployee(user.email, employee).then();
+        managerService.addEmployee(user.email, employee).then(({ok, body}) => {
+            if (ok) {
+                setEmployees((curentEmployees: Employee[]) => [...curentEmployees, body as Employee]);
+            }
+        });
     };
 
 

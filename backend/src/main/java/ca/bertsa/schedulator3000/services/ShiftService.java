@@ -5,7 +5,7 @@ import ca.bertsa.schedulator3000.dtos.ShiftDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.models.Shift;
-import ca.bertsa.schedulator3000.models.ShiftsFromTo;
+import ca.bertsa.schedulator3000.dtos.ShiftsFromToDto;
 import ca.bertsa.schedulator3000.repositories.ShiftRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class ShiftService {
         shiftRepository.deleteById(id);
     }
 
-    public List<ShiftDto> getAllFromTo(ShiftsFromTo dto) {
+    public List<ShiftDto> getAllFromTo(ShiftsFromToDto dto) {
         return shiftRepository.getAllByManager_EmailAndStartTimeBetween(dto.getManagerEmail(), dto.getFrom().atTime(0, 0), dto.getTo().atTime(0, 0))
                 .stream()
                 .map(Shift::mapToDto)

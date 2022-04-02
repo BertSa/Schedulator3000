@@ -23,7 +23,13 @@ export function SignIn({signIn}: SignInProps) {
     };
 
     return (
-        <Container maxWidth="xs">
+        <Container maxWidth="xs"
+                   sx={{
+                       marginTop: 8,
+                       display: 'flex',
+                       flexDirection: 'column',
+                       alignItems: 'center'
+                   }}>
             <Grid container
                   sx={{
                       display: 'flex',

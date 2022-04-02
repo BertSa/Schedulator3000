@@ -84,14 +84,14 @@ function useProvideAuth(): IProviderAuth {
                         if (response.status === 200) {
                             setUser(Object.setPrototypeOf(body, Manager.prototype));
                             enqueueSnackbar('You are connected!', {
-                                variant: 'default',
+                                variant: 'success',
                                 autoHideDuration: 3000,
                             });
                             return true;
                         }
                         if (response.status === 400) {
                             enqueueSnackbar(body.message, {
-                                variant: 'default',
+                                variant: 'error',
                                 autoHideDuration: 3000,
                             });
                         }

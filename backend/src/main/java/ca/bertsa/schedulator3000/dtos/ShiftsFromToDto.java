@@ -1,4 +1,4 @@
-package ca.bertsa.schedulator3000.models;
+package ca.bertsa.schedulator3000.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class ShiftsFromTo {
+public class ShiftsFromToDto {
     @Email
     private String managerEmail;
     private LocalDate from;
