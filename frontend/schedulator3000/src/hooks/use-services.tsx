@@ -13,7 +13,7 @@ export enum METHODS {
 }
 
 export const requestInit = (method: METHODS, body?: any | string, isString?: boolean) => {
-    let value : RequestInit = {
+    let value: RequestInit = {
         method: method,
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache',
@@ -44,8 +44,8 @@ export const useServices = () => {
 function useProvideManagerService() {
     const {enqueueSnackbar} = useSnackbar();
 
-    async function addEmployee(emailManager: string, employee: Employee): Promise<{ ok: boolean, body: Employee | {message:string} }> {
-        return await fetch(`/manager/employees/add/${emailManager}`, requestInit(METHODS.POST, employee)).then(
+    async function addEmployee(emailManager: string, employee: Employee): Promise<{ ok: boolean, body: Employee | { message: string } }> {
+        return await fetch(`/manager/employees/create/${emailManager}`, requestInit(METHODS.POST, employee)).then(
             response =>
                 response.json().then(
                     body => {
@@ -234,7 +234,7 @@ export type IShiftService = {
     deleteShift: (id: any) => Promise<boolean>
 }
 export type IManagerService = {
-    addEmployee: (emailManager: string, employee: Employee) => Promise<{ ok: boolean, body: Employee | {message:string} }>,
+    addEmployee: (emailManager: string, employee: Employee) => Promise<{ ok: boolean, body: Employee | { message: string } }>,
     getEmployees: (emailManager: string) => Promise<Employee[]>,
 }
 

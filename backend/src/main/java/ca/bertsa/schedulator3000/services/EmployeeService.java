@@ -2,13 +2,16 @@ package ca.bertsa.schedulator3000.services;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
 import ca.bertsa.schedulator3000.dtos.EmployeeDto;
+import ca.bertsa.schedulator3000.dtos.PasswordChangeDto;
 import ca.bertsa.schedulator3000.models.Employee;
+import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -30,13 +33,14 @@ public class EmployeeService {
         return employee;
     }
 
-    public Employee create(EmployeeDto dto) {
+    public Employee create(EmployeeDto dto, Manager manager) {
         Assert.notNull(dto, "Employee cannot be null!");
         Assert.isTrue(
                 !employeeRepository.existsByEmailIgnoreCase(dto.getEmail()),
                 "Employee with email " + dto.getEmail() + " already exists!");
 
         Employee employee = dto.mapToEmployee();
+        employee.setManager(manager);
         employee.setPassword(UUID.randomUUID().toString());
 
         return employeeRepository.save(employee);
@@ -60,6 +64,20 @@ public class EmployeeService {
         if (!employeeRepository.existsByEmailIgnoreCase(employeeEmail)) {
             throw new EntityNotFoundException("Employee with email " + employeeEmail + " does not exist!");
         }
+    }
+
+    public List<Employee> getAllByManager(Manager manager) {
+        return employeeRepository.getAllByManager(manager);
+    }
+
+    public EmployeeDto updatePassword(PasswordChangeDto dto) {
+        final Employee employee = employeeRepository.getByEmailIgnoreCaseAndPassword(dto.getEmail(), dto.getCurrentPassword());
+
+        employee.setPassword(dto.getNewPassword());
+        employee.setActive(true);
+
+        final Employee save = employeeRepository.save(employee);
+        return save.mapToDto();
     }
 }
 

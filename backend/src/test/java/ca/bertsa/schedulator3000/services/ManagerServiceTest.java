@@ -44,7 +44,6 @@ class ManagerServiceTest {
             // Arrange
             final Manager dummyManager = Dummies.getDummyManager();
             final List<Employee> dummyEmployees = Dummies.getDummyEmployees();
-            dummyManager.setEmployees(dummyEmployees);
 
             when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(dummyManager);
@@ -86,11 +85,11 @@ class ManagerServiceTest {
 
             when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(dummyManager);
-            when(employeeService.create(any()))
+            when(employeeService.create(any(), any()))
                     .thenReturn(employee);
 
             // Act
-            final Employee actualEmployee = managerService.addEmployee(dummyManager.getEmail(), dummyEmployeeDto);
+            final Employee actualEmployee = managerService.createEmployee(dummyManager.getEmail(), dummyEmployeeDto);
 
             // Assert
             assertThat(actualEmployee)
@@ -107,7 +106,7 @@ class ManagerServiceTest {
 
             // Act — Assert
             assertThrows(EntityNotFoundException.class,
-                    () -> managerService.addEmployee(emailManager, Dummies.getDummyEmployeeDto()),
+                    () -> managerService.createEmployee(emailManager, Dummies.getDummyEmployeeDto()),
                     "Manager with email " + emailManager + " does not exist!");
         }
 
@@ -118,12 +117,12 @@ class ManagerServiceTest {
             final Manager dummyManager = Dummies.getDummyManager();
             when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(dummyManager);
-            when(employeeService.create(any()))
+            when(employeeService.create(any(), any()))
                     .thenThrow(new IllegalArgumentException("Employee cannot be null!"));
 
             // Act — Assert
             assertThrows(IllegalArgumentException.class,
-                    () -> managerService.addEmployee(dummyManager.getEmail(), null),
+                    () -> managerService.createEmployee(dummyManager.getEmail(), null),
                     "Employee cannot be null!");
         }
     }

@@ -24,6 +24,7 @@ public class EmployeeDto {
     private String firstName;
     @NotBlank
     private String lastName;
+    private String password;
     @NotBlank
     private String role;
     private Boolean active;

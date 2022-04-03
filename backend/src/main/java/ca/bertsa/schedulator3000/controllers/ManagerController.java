@@ -48,10 +48,10 @@ public class ManagerController {
         }
     }
 
-    @PostMapping("/employees/add/{emailManager}")
-    public ResponseEntity<?> addEmployee(@PathVariable String emailManager, @RequestBody EmployeeDto dto) {
+    @PostMapping("/employees/create/{emailManager}")
+    public ResponseEntity<?> createEmployee(@PathVariable String emailManager, @RequestBody EmployeeDto dto) {
         try {
-            final var employeeAdded = managerService.addEmployee(emailManager, dto);
+            final var employeeAdded = managerService.createEmployee(emailManager, dto);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)

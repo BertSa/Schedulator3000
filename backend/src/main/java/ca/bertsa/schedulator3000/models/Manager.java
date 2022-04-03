@@ -6,9 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +16,11 @@ import java.util.List;
 @JsonIgnoreProperties
 public class Manager extends User {
 
-    @OneToMany
-    private List<Employee> employees = new ArrayList<>();
     @OneToMany(cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<VacationRequest> vacationRequests;
     @OneToMany
     private List<Holiday> holidays;
-
-
-    public void addEmployee(Employee employee) {
-        this.employees.add(employee);
-    }
 
     public ManagerDto mapToDto() {
         final ManagerDto managerDto = new ManagerDto();

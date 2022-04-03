@@ -3,12 +3,13 @@ import React, {useEffect, useState} from 'react';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
 import {useAuth} from '../../hooks/use-auth';
 import {FieldInput} from '../shared/form/FormFields';
-import {regexEmail, regexPhone} from '../../utilities';
+import {regex} from '../../utilities';
 import {Employee, Manager} from '../../models/User';
 import {Table, TableHeader, TableRow} from '../shared/Table';
-import {Button, Container, Grid, Link} from '@mui/material';
+import {Button, Container, Grid} from '@mui/material';
 import {Schedule} from './Schedule';
 import {IManagerService, useServices} from '../../hooks/use-services';
+import {useDialog} from '../../hooks/use-dialog';
 
 export function Dashboards(): React.ReactElement {
     const {path} = useRouteMatch();
@@ -49,23 +50,20 @@ function EmployeeManagement(): React.ReactElement {
     useEffect(() => {
         let email = user.email ?? '';
         managerService.getEmployees(email).then(
-            employees => {
-                user.employees = employees;
-                setEmployees(employees);
-            });
+            employees => setEmployees(employees));
     }, []);
 
-    return <><Container maxWidth="sm"
-                        sx={{
-                            marginTop: 8,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center'
-                        }}>
-        <h2 className="text-center">Employee Management</h2>
-        <RegisterEmployee user={user} managerService={managerService} setEmployees={setEmployees}/>
-        <EmployeeTable employees={employees}/>
-    </Container>
+    return <>
+        <Container maxWidth="sm"
+                   sx={{
+                       display: 'flex',
+                       flexDirection: 'column',
+                       alignItems: 'center'
+                   }}>
+            <h2 className="text-center">Employee Management</h2>
+            <RegisterEmployee user={user} managerService={managerService} setEmployees={setEmployees}/>
+            <EmployeeTable employees={employees}/>
+        </Container>
     </>;
 }
 
@@ -78,6 +76,8 @@ function RegisterEmployee({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
     });
+    const [createDialog, closeDialog] = useDialog();
+
 
     const submit: SubmitHandler<FieldValues> = (data, event) => {
         event?.preventDefault();
@@ -99,7 +99,16 @@ function RegisterEmployee({
         };
         managerService.addEmployee(user.email, employee).then(({ok, body}) => {
             if (ok) {
-                setEmployees((curentEmployees: Employee[]) => [...curentEmployees, body as Employee]);
+                let emp = body as Employee;
+                setEmployees((curentEmployees: Employee[]) => [...curentEmployees, emp]);
+                const defaultMessage = `Hi ${emp.firstName} ${emp.lastName} here's your password:`;
+                createDialog({
+                    children: <form action={`mailto:${emp.email}`} method="post" encType="text/plain">
+                        <input type="text" name="template" value={defaultMessage}/>
+                        <input type="text" name="code" disabled value={emp.password} size={50}/>
+                        <input type={'submit'} onClick={() => closeDialog()} value="Send"/>
+                    </form>
+                });
             }
         });
     };
@@ -152,7 +161,7 @@ function RegisterEmployee({
                                 validation={{
                                     required: 'This field is required',
                                     pattern: {
-                                        value: regexEmail,
+                                        value: regex.email,
                                         message: 'Please enter a valid email address'
                                     }
                                 }}
@@ -168,7 +177,7 @@ function RegisterEmployee({
                                 validation={{
                                     required: 'This field is required!',
                                     pattern: {
-                                        value: regexPhone,
+                                        value: regex.phone,
                                         message: 'Phone number is not valid!'
                                     }
                                 }}/>

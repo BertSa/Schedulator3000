@@ -106,7 +106,7 @@ public class ManagerControllerTest {
             final Employee employee = dummyEmployee.mapToEmployee();
             employee.setId(2L);
 
-            when(managerService.addEmployee(any(), any()))
+            when(managerService.createEmployee(any(), any()))
                     .thenReturn(employee);
 
             // Act
@@ -134,7 +134,7 @@ public class ManagerControllerTest {
             final Employee employee = dummyEmployee.mapToEmployee();
             employee.setId(2L);
 
-            when(managerService.addEmployee(any(), any()))
+            when(managerService.createEmployee(any(), any()))
                     .thenThrow(new IllegalArgumentException("Manager does not exist!"));
 
             // Act

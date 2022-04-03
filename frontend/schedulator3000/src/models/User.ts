@@ -1,10 +1,10 @@
 export class User {
-    public id: number;
-    public email: string;
-    public phone: string;
-    public password?: string;
+    id: number;
+    email: string;
+    phone: string;
+    password?: string;
 
-    constructor(id:number, email: string, phone: string, password?: string) {
+    constructor(id: number, email: string, phone: string, password?: string) {
         this.id = id;
         this.email = email;
         this.phone = phone;
@@ -13,20 +13,28 @@ export class User {
 }
 
 export class Employee extends User {
-    public firstName: string;
-    public lastName: string;
-    public role: string;
-    public active?: boolean;
+    firstName: string;
+    lastName: string;
+    role: string;
+    active?: boolean | null;
 
-    constructor(id:number, email: string, phone: string,firstName: string, lastName: string, role: string, password?: string) {
+    constructor(id: number, email: string, phone: string, firstName: string, lastName: string, role: string, password?: string, active?: boolean | null) {
         super(id, email, phone, password);
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
+        this.active = active;
     }
 }
 
-
 export class Manager extends User {
-    public employees: Employee[] = [];
+    constructor(id: number, email: string, phone: string, password?: string) {
+        super(id, email, phone, password);
+    }
 }
+
+export enum UserType {
+    EMPLOYEE = 'Employee',
+    MANAGER = 'Manager',
+}
+

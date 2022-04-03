@@ -1,6 +1,8 @@
 package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
+import ca.bertsa.schedulator3000.dtos.EmployeeDto;
+import ca.bertsa.schedulator3000.dtos.PasswordChangeDto;
 import ca.bertsa.schedulator3000.dtos.ResponseMessage;
 import ca.bertsa.schedulator3000.services.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,21 @@ public class EmployeeController {
     public ResponseEntity<?> signIn(@RequestBody ConnectionDto dto) {
         try {
             final var employee = employeeService.signIn(dto);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(employee);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/password/update")
+    public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeDto dto){
+        try {
+            final var employee = employeeService.updatePassword(dto);
 
             return ResponseEntity
                     .status(HttpStatus.OK)

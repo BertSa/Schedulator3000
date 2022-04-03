@@ -22,17 +22,13 @@ public class ManagerService {
 
     public List<Employee> getAllEmployee(String emailManager) {
         final Manager manager = getOneByEmail(emailManager);
-        return manager.getEmployees();
+        return employeeService.getAllByManager(manager);
     }
 
-    public Employee addEmployee(String emailManager, EmployeeDto dto) {
+    public Employee createEmployee(String emailManager, EmployeeDto dto) {
         final Manager manager = getOneByEmail(emailManager);
 
-        final Employee employee = employeeService.create(dto);
-        manager.addEmployee(employee);
-        managerRepository.save(manager);
-
-        return employee;
+        return employeeService.create(dto, manager);
     }
 
     public Manager getOneByEmail(String emailManager) {

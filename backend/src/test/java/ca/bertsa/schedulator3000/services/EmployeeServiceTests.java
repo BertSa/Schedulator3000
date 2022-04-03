@@ -46,7 +46,7 @@ class EmployeeServiceTests {
                     .thenReturn(mappedEmployee);
 
             // Act
-            final Employee actualEmployee = employeeService.create(dummyEmployeeDto);
+            final Employee actualEmployee = employeeService.create(dummyEmployeeDto, any());
 
             // Assert
             assertThat(actualEmployee)
@@ -64,7 +64,7 @@ class EmployeeServiceTests {
 
             // Act — Assert
             assertThrows(IllegalArgumentException.class,
-                    () -> employeeService.create(dummyEmployeeDto),
+                    () -> employeeService.create(dummyEmployeeDto, any()),
                     "Employee with email " + dummyEmployeeDto.getEmail() + " already exists!");
         }
 
@@ -73,7 +73,7 @@ class EmployeeServiceTests {
         void shouldThrowIllegalArgumentException_whenEmployeeDtoIsNull() {
             // Act — Assert
             assertThrows(IllegalArgumentException.class,
-                    () -> employeeService.create(null),
+                    () -> employeeService.create(null, any()),
                     "Employee cannot be null!");
         }
     }

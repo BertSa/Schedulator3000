@@ -1,10 +1,9 @@
 import React from 'react';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-import {RequireNoAuth} from './hooks/use-auth';
+import {RequireEmployee, RequireNoAuth} from './hooks/use-auth';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
-import {Schedule} from './components/manager/Schedule';
 import {ManagerRoute} from './components/manager/ManagerRoute';
-import {Navbar} from './Navbar';
+import {Navbar} from './components/Navbar';
+import {SignIn} from './components/SignIn';
 
 
 export default function App() {
@@ -19,15 +18,20 @@ export default function App() {
     return (
 
         <Router>
-            <Navbar />
+            <Navbar/>
             <div className="container">
-                <Route path="/schedule" component={Schedule}/>
                 <Route path="/manager" component={ManagerRoute}/>
-                <Route path="/register">
-                    <RequireNoAuth>
+                <RequireEmployee>
+                    <h3>Allooooo</h3>
+                </RequireEmployee>
+                <RequireNoAuth>
+                    <Route path="/register">
                         <Register/>
-                    </RequireNoAuth>
-                </Route>
+                    </Route>
+                    <Route path="/signin">
+                        <SignIn/>
+                    </Route>
+                </RequireNoAuth>
             </div>
         </Router>
     );

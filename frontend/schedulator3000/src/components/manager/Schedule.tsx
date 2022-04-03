@@ -18,7 +18,13 @@ import {AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit} from 
 import {DateTimePicker} from '@mui/lab';
 import {Employee} from '../../models/User';
 import {useAuth} from '../../hooks/use-auth';
-import {getBeginningOfWeek, getCurrentTimezoneDate, stringAvatar, stringToColor, toLocalDateString} from '../../utilities';
+import {
+    getBeginningOfWeek,
+    getCurrentTimezoneDate,
+    stringAvatar,
+    stringToColor,
+    toLocalDateString
+} from '../../utilities';
 import {useDialog} from '../../hooks/use-dialog';
 import {Shift} from '../../models/Shift';
 import {useServices} from '../../hooks/use-services';
