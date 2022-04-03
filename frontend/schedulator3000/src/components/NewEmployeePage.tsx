@@ -15,14 +15,14 @@ export function NewEmployeePage() {
     const history = useHistory();
 
     const submit: SubmitHandler<FieldValues> = (data) => {
-        const {current, newPassword, confirm} = data as { current: string, newPassword: string, confirm: string };
-        if (newPassword !== confirm) {
+        const {currentPassword, newPassword, confirmationPassword} = data as IPasswordChangeDto;
+        if (newPassword !== confirmationPassword) {
             return;
         }
 
         const pwdChange: PasswordChangeDto = {
-            currentPassword: current,
-            newPassword: newPassword
+            currentPassword,
+            newPassword
         };
 
         updatePassword(pwdChange).then(()=>{
@@ -46,7 +46,7 @@ export function NewEmployeePage() {
                 <Grid item xs={12} sm={6}>
                     <FieldInput register={register}
                                 errors={errors}
-                                name="current"
+                                name="currentPassword"
                                 label="Current Password"
                                 autoComplete="current-password"
                                 type="password"
@@ -68,7 +68,7 @@ export function NewEmployeePage() {
                 <Grid item xs={12}>
                     <FieldInput register={register}
                                 errors={errors}
-                                name="confirm"
+                                name="confirmationPassword"
                                 label="Confirm New Password"
                                 autoComplete="current-password"
                                 type="password"
@@ -89,4 +89,10 @@ export function NewEmployeePage() {
             </Grid>
         </Container>
     </>;
+}
+
+type IPasswordChangeDto = {
+    currentPassword: string;
+    newPassword: string;
+    confirmationPassword: string;
 }

@@ -7,13 +7,13 @@ export function stringToColor(string: string) {
     let hash = 0;
     let i;
 
-    for (i = 0; i < string.length; i += 1) {
+    for (i = 0; i < string.length; i++) {
         hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
 
     let color = '#';
 
-    for (i = 0; i < 3; i += 1) {
+    for (i = 0; i < 3; i++) {
         const value = (hash >> (i * 8)) & 0xff;
         color += `00${value.toString(16)}`.substr(-2);
     }
@@ -30,16 +30,17 @@ export function stringAvatar(name: string) {
     };
 }
 
-
 export function getCurrentTimezoneDate(date: Date) {
    return new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000)
 }
+
 export function getBeginningOfWeek(date: string | Date) {
     date = new Date(date);
     let day = date.getDay();
     let diff = date.getDate() - day;
     return new Date(date.setDate(diff));
 }
+
 export function toLocalDateString(date: Date) {
     return date.toLocaleDateString('en-CA', {
         month: '2-digit',

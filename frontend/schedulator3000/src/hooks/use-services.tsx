@@ -37,14 +37,12 @@ export function ServicesProvider({children}: { children: React.ReactNode }) {
     return React.createElement(authContext.Provider, {value: auth}, children);
 }
 
-export const useServices = () => {
-    return useContext(authContext);
-};
+export const useServices = () => useContext(authContext);
 
 function useProvideManagerService() {
     const {enqueueSnackbar} = useSnackbar();
 
-    async function addEmployee(emailManager: string, employee: Employee): Promise<{ ok: boolean, body: Employee | { message: string } }> {
+    async function addEmployee(emailManager: string, employee: Employee): Promise<Employee | undefined> {
         return await fetch(`/manager/employees/create/${emailManager}`, requestInit(METHODS.POST, employee)).then(
             response =>
                 response.json().then(
@@ -54,13 +52,14 @@ function useProvideManagerService() {
                                 variant: 'success',
                                 autoHideDuration: 3000
                             });
+                            return body as Employee;
                         } else if (response.status === 400) {
                             enqueueSnackbar(body.message, {
                                 variant: 'error',
                                 autoHideDuration: 3000
                             });
                         }
-                        return {ok: response.ok, body};
+                        return undefined;
                     }));
     }
 
@@ -234,7 +233,7 @@ export type IShiftService = {
     deleteShift: (id: any) => Promise<boolean>
 }
 export type IManagerService = {
-    addEmployee: (emailManager: string, employee: Employee) => Promise<{ ok: boolean, body: Employee | { message: string } }>,
+    addEmployee: (emailManager: string, employee: Employee) => Promise<Employee | undefined>,
     getEmployees: (emailManager: string) => Promise<Employee[]>,
 }
 

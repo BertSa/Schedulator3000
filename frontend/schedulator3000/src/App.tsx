@@ -1,9 +1,9 @@
 import React from 'react';
-import {RequireEmployee, RequireNoAuth} from './hooks/use-auth';
+import {RequireAdmin, RequireEmployee, RequireNoAuth} from './hooks/use-auth';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
-import {ManagerRoute} from './components/manager/ManagerRoute';
 import {Navbar} from './components/Navbar';
-import {SignIn} from './components/SignIn';
+import {SignInPage} from './components/SignInPage';
+import {Dashboards} from './components/manager/Dashboards';
 
 
 export default function App() {
@@ -16,21 +16,18 @@ export default function App() {
     };
 
     return (
-
         <Router>
             <Navbar/>
             <div className="container">
-                <Route path="/manager" component={ManagerRoute}/>
+                <RequireAdmin>
+                    <Route path="/manager" component={Dashboards}/>
+                </RequireAdmin>
                 <RequireEmployee>
                     <h3>Allooooo</h3>
                 </RequireEmployee>
                 <RequireNoAuth>
-                    <Route path="/register">
-                        <Register/>
-                    </Route>
-                    <Route path="/signin">
-                        <SignIn/>
-                    </Route>
+                    <Route path="/register" component={Register}/>
+                    <Route path="/signin" component={SignInPage}/>
                 </RequireNoAuth>
             </div>
         </Router>

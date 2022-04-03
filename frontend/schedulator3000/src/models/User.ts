@@ -28,13 +28,4 @@ export class Employee extends User {
 }
 
 export class Manager extends User {
-    constructor(id: number, email: string, phone: string, password?: string) {
-        super(id, email, phone, password);
-    }
 }
-
-export enum UserType {
-    EMPLOYEE = 'Employee',
-    MANAGER = 'Manager',
-}
-

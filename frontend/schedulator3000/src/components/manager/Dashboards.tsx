@@ -19,6 +19,30 @@ export function Dashboards(): React.ReactElement {
     </>;
 }
 
+function EmployeeManagement(): React.ReactElement {
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const {managerService} = useServices();
+    let user = useAuth().getManager();
+    useEffect(() => {
+        let email = user.email ?? '';
+        managerService.getEmployees(email).then(
+            employees => setEmployees(employees));
+    }, [managerService, user.email]);
+
+    return <>
+        <Container maxWidth="sm"
+                   sx={{
+                       display: 'flex',
+                       flexDirection: 'column',
+                       alignItems: 'center'
+                   }}>
+            <h2 className="text-center">Employee Management</h2>
+            <RegisterEmployee user={user} managerService={managerService} setEmployees={setEmployees}/>
+            <EmployeeTable employees={employees}/>
+        </Container>
+    </>;
+}
+
 function EmployeeTable(props: { employees: Employee[] }) {
     return <>
         <h3>Employees</h3>
@@ -43,35 +67,13 @@ function EmployeeTable(props: { employees: Employee[] }) {
     </>;
 }
 
-function EmployeeManagement(): React.ReactElement {
-    const [employees, setEmployees] = useState<Employee[]>([]);
-    const {managerService} = useServices();
-    let user = useAuth().getManager();
-    useEffect(() => {
-        let email = user.email ?? '';
-        managerService.getEmployees(email).then(
-            employees => setEmployees(employees));
-    }, []);
-
-    return <>
-        <Container maxWidth="sm"
-                   sx={{
-                       display: 'flex',
-                       flexDirection: 'column',
-                       alignItems: 'center'
-                   }}>
-            <h2 className="text-center">Employee Management</h2>
-            <RegisterEmployee user={user} managerService={managerService} setEmployees={setEmployees}/>
-            <EmployeeTable employees={employees}/>
-        </Container>
-    </>;
+type IRegisterEmployeeProps = {
+    user: Manager,
+    managerService: IManagerService,
+    setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>
 }
 
-function RegisterEmployee({
-                              user,
-                              managerService,
-                              setEmployees
-                          }: { user: Manager, managerService: IManagerService, setEmployees: React.Dispatch<React.SetStateAction<Employee[]>> }) {
+function RegisterEmployee({user, managerService, setEmployees}: IRegisterEmployeeProps): React.ReactElement {
     const {register, handleSubmit, formState: {errors}} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
@@ -97,15 +99,14 @@ function RegisterEmployee({
             phone,
             role
         };
-        managerService.addEmployee(user.email, employee).then(({ok, body}) => {
-            if (ok) {
-                let emp = body as Employee;
-                setEmployees((curentEmployees: Employee[]) => [...curentEmployees, emp]);
-                const defaultMessage = `Hi ${emp.firstName} ${emp.lastName} here's your password:`;
+        managerService.addEmployee(user.email, employee).then(employee => {
+            if (employee !== undefined) {
+                setEmployees((curentEmployees: Employee[]) => [...curentEmployees, employee]);
+                const defaultMessage = `Hi ${employee.firstName} ${employee.lastName} here's your password:`;
                 createDialog({
-                    children: <form action={`mailto:${emp.email}`} method="post" encType="text/plain">
+                    children: <form action={`mailto:${employee.email}`} method="post" encType="text/plain">
                         <input type="text" name="template" value={defaultMessage}/>
-                        <input type="text" name="code" disabled value={emp.password} size={50}/>
+                        <input type="text" name="code" disabled value={employee.password} size={50}/>
                         <input type={'submit'} onClick={() => closeDialog()} value="Send"/>
                     </form>
                 });

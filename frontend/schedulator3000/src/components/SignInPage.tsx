@@ -6,7 +6,7 @@ import {FieldInput} from './shared/form/FormFields';
 import {regex} from '../utilities';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
 
-export function SignIn() {
+export function SignInPage() {
     const [tab, setTab] = useState(0);
     const auth = useAuth();
     const history = useHistory();
@@ -21,13 +21,15 @@ export function SignIn() {
 
         if (tab === 0) {
             auth.signInEmployee(email, password).then(ok => {
-                if (ok)
+                if (ok) {
                     history.push('/');
+                }
             });
         } else if (tab === 1) {
             auth.signInManager(email, password).then(ok => {
-                if (ok)
+                if (ok) {
                     history.push('/manager/dashboard');
+                }
             });
         }
     };
@@ -100,7 +102,7 @@ export function SignIn() {
             >
                 Sign In
             </Button>
-            <Grid container sx={{marginTop:2}}>
+            <Grid container sx={{marginTop: 2}}>
                 <Grid item xs>
                     <Typography fontSize="smaller">
                         <Link component={RouterLink} to={{pathname: '/forgot_password'}}>

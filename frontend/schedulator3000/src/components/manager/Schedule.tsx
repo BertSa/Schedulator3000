@@ -122,7 +122,7 @@ export const Schedule = () => {
                         setEvents(map);
                     });
             });
-    }, [curentWeek]);
+    }, [curentWeek, managerService, user.email, shiftService]);
 
     function Toolbar(props: { onView: any, date: any, view: any, onNavigate: any }) {
         useEffect(() => {

@@ -1,9 +1,10 @@
-import React, {createContext, useContext, useEffect, useState} from 'react';
-import {Employee, Manager} from '../models/User';
+import React, {createContext, useCallback, useContext, useEffect, useState} from 'react';
+import {Employee, Manager, User} from '../models/User';
 import {useSnackbar} from 'notistack';
 import {METHODS, requestInit} from './use-services';
 import {PasswordChangeDto} from '../models/PasswordChangeDto';
 import {NewEmployeePage} from '../components/NewEmployeePage';
+import {useHistory} from 'react-router-dom';
 
 const authContext: React.Context<IProviderAuth> = createContext({} as IProviderAuth);
 
@@ -12,9 +13,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     return React.createElement(authContext.Provider, {value: auth}, children);
 }
 
-export const useAuth = () => {
-    return useContext(authContext);
-};
+export const useAuth = () => useContext(authContext);
 
 export function RequireAuth({children}: { children: React.ReactNode }): any {
     const auth = useAuth();
@@ -62,6 +61,7 @@ export function RequireNoAuth({children}: { children: React.ReactNode }): any {
 
 function useProvideAuth(): IProviderAuth {
     const {enqueueSnackbar} = useSnackbar();
+    const history = useHistory();
     const [user, setUser] = useState<Manager | Employee | undefined>(() => {
         if (sessionStorage.length === 0) {
             return undefined;
@@ -73,32 +73,47 @@ function useProvideAuth(): IProviderAuth {
         }
 
         let userParsed = JSON.parse(item) as Employee | Manager;
-
         let type = sessionStorage.getItem('type');
-        if (type === Employee.prototype.constructor.name)
+
+        if (type === Employee.prototype.constructor.name) {
             return Object.setPrototypeOf(userParsed, Employee.prototype);
-        if (type === Manager.prototype.constructor.name)
+        }
+        if (type === Manager.prototype.constructor.name) {
             return Object.setPrototypeOf(userParsed, Manager.prototype);
+        }
         return undefined;
     });
+
+    const isAuthenticated = (): boolean => user !== undefined;
+    const isManager = useCallback(() => user !== undefined && user instanceof Manager, [user]);
+    const isEmployee = useCallback(() => user !== undefined && user instanceof Employee, [user]);
 
 
     useEffect(() => {
         sessionStorage.setItem('user', JSON.stringify(user));
-        if (isEmployee())
+        if (isEmployee()) {
             sessionStorage.setItem('type', Employee.prototype.constructor.name);
-        else if (isManager())
+        } else if (isManager()) {
             sessionStorage.setItem('type', Manager.prototype.constructor.name);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
+        }
+    }, [user, isManager, isEmployee]);
 
-    const signInManager = async (email: string, password: string): Promise<boolean | void> => {
-        return await fetch(`/manager/signin`, requestInit(METHODS.POST, {email: email, password: password})).then(
+    const signInManager = async (email: string, password: string): Promise<boolean> => {
+        return signIn('manager', Manager.prototype, email, password);
+    };
+
+    const signInEmployee = async (email: string, password: string): Promise<boolean> => {
+        return signIn('employee', Employee.prototype, email, password);
+    };
+
+
+    const signIn = async (endpoint: string, prototype: any, email: string, password: string): Promise<boolean> => {
+        return await fetch(`/${endpoint}/signin`, requestInit(METHODS.POST, {email: email, password: password})).then(
             response => {
                 return response.json().then(
                     body => {
                         if (response.status === 200) {
-                            setUser(Object.setPrototypeOf(body, Manager.prototype));
+                            setUser(Object.setPrototypeOf(body, prototype));
                             enqueueSnackbar('You are connected!', {
                                 variant: 'success',
                                 autoHideDuration: 3000
@@ -114,36 +129,9 @@ function useProvideAuth(): IProviderAuth {
                         return false;
                     }
                 );
-            }, err => console.log(err)
+            }
         );
     };
-
-    const signInEmployee = async (email: string, password: string): Promise<boolean | void> => {
-        return await fetch(`/employee/signin`, requestInit(METHODS.POST, {email: email, password: password})).then(
-            response => {
-                return response.json().then(
-                    body => {
-                        if (response.status === 200) {
-                            setUser(Object.setPrototypeOf(body, Employee.prototype));
-                            enqueueSnackbar('You are connected!', {
-                                variant: 'success',
-                                autoHideDuration: 3000
-                            });
-                            return true;
-                        }
-                        if (response.status === 400) {
-                            enqueueSnackbar(body.message, {
-                                variant: 'error',
-                                autoHideDuration: 3000
-                            });
-                        }
-                        return false;
-                    }
-                );
-            }, err => console.log(err)
-        );
-    };
-
 
     const signOut = (): void => {
         setUser(undefined);
@@ -153,88 +141,86 @@ function useProvideAuth(): IProviderAuth {
             variant: 'default',
             autoHideDuration: 3000
         });
-    };
-
-    const isManager = (): boolean => {
-        return isAuthenticated() && user instanceof Manager;
-    };
-
-    const isEmployee = (): boolean => {
-        return isAuthenticated() && user instanceof Employee;
-    };
-
-    const isAuthenticated = (): boolean => {
-        return user !== undefined && user !== null;
+        history.push('/');
     };
 
     const getManager = (): Manager => {
-        if (isManager())
-            return user as Manager;
-        return null as unknown as Manager;
-    };
-    const getEmployee = (): Employee => {
-        if (isEmployee())
-            return user as Employee;
-        return null as unknown as Employee;
-    };
-
-    const updatePassword = async (passwordChange: PasswordChangeDto) => {
         if (isManager()) {
-            return;
+            return user as Manager;
         }
-        if (isEmployee()) {
-            passwordChange.email = getEmployee().email;
+        throw new Error('You are not a manager!');
+    };
 
-            return await fetch(`/employee/password/update`, requestInit(METHODS.POST, passwordChange)).then(
-                response => {
-                    return response.json().then(
-                        body => {
-                            if (response.status === 200) {
-                                setUser(Object.setPrototypeOf(body, Employee.prototype));
-                                enqueueSnackbar('Password Updated!', {
-                                    variant: 'success',
-                                    autoHideDuration: 3000
-                                });
-                                return true;
-                            }
-                            if (response.status === 400) {
-                                enqueueSnackbar(body.message, {
-                                    variant: 'error',
-                                    autoHideDuration: 3000
-                                });
-                            }
-                            return false;
-                        }
-                    );
-                }, err => console.log(err)
-            );
+    const getEmployee = (): Employee => {
+        if (isEmployee()) {
+            return user as Employee;
         }
+        throw new Error('You are not an employee!');
+    };
+
+    const updatePassword = async (passwordChange: PasswordChangeDto): Promise<boolean> => {
+        let endpoint: string;
+        let prototype: User;
+
+        if (isManager()) {
+            endpoint = 'manager';
+            prototype = Manager.prototype;
+        } else if (isEmployee()) {
+            endpoint = 'employee';
+            prototype = Employee.prototype;
+        } else {
+            return false;
+        }
+
+        passwordChange.email = getEmployee().email;
+
+        return await fetch(`/${endpoint}/password/update`, requestInit(METHODS.POST, passwordChange)).then(
+            response => {
+                return response.json().then(
+                    body => {
+                        if (response.status === 200) {
+                            setUser(Object.setPrototypeOf(body, prototype));
+                            enqueueSnackbar('Password Updated!', {
+                                variant: 'success',
+                                autoHideDuration: 3000
+                            });
+                            return true;
+                        }
+                        if (response.status === 400) {
+                            enqueueSnackbar(body.message, {
+                                variant: 'error',
+                                autoHideDuration: 3000
+                            });
+                        }
+                        return false;
+                    }
+                );
+            }
+        );
 
     };
 
     return {
-        user,
+        updatePassword,
         signInManager,
         signInEmployee,
         signOut,
+        isAuthenticated,
         isManager,
         isEmployee,
         getManager,
         getEmployee,
-        isAuthenticated,
-        updatePassword
     };
 }
 
 type IProviderAuth = {
-    user: Manager | Employee | undefined;
-    signInManager: (email: string, password: string) => Promise<boolean | void>;
-    signInEmployee: (email: string, password: string) => Promise<boolean | void>;
+    updatePassword: (passwordChange: PasswordChangeDto) => Promise<boolean>;
+    signInManager: (email: string, password: string) => Promise<boolean>;
+    signInEmployee: (email: string, password: string) => Promise<boolean>;
     signOut: () => void;
+    isAuthenticated: () => boolean;
     isManager: () => boolean;
     isEmployee: () => boolean;
     getManager: () => Manager;
     getEmployee: () => Employee;
-    isAuthenticated: () => boolean;
-    updatePassword: (passwordChange: PasswordChangeDto) => Promise<boolean | void>;
 }

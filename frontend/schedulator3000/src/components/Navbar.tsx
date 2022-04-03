@@ -17,8 +17,10 @@ export function Navbar() {
     };
 
     function ManagerLinks() {
-        if (!auth.isManager())
+        if (!auth.isManager()){
             return null;
+        }
+
         return <>
             <Button
                 onClick={() => {
@@ -42,8 +44,10 @@ export function Navbar() {
     }
 
     function ManagerLinksSm() {
-        if (!auth.isManager())
+        if (!auth.isManager()){
             return null;
+        }
+
         return <>
             <MenuItem onClick={() => {
                 history.push('/manager/employees');
@@ -131,9 +135,9 @@ export function Navbar() {
                         variant="h6"
                         noWrap
                         component="div"
-                        sx={{mr: 2, display: {xs: 'none', md: 'flex'}}}
+                        sx={{mr: 2, display: {xs: 'none', md: 'flex'}, textTransform: 'uppercase'}}
                     >
-                        SCHEDULATOR3000
+                        {process.env.REACT_APP_NAME}
                     </Typography>
                     <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
                         <IconButton
