@@ -1,16 +1,14 @@
 package ca.bertsa.schedulator3000.services;
 
-import ca.bertsa.schedulator3000.dtos.RequestScheduleEmployeeDto;
 import ca.bertsa.schedulator3000.dtos.ShiftDto;
+import ca.bertsa.schedulator3000.dtos.ShiftsFromToDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.models.Shift;
-import ca.bertsa.schedulator3000.dtos.ShiftsFromToDto;
 import ca.bertsa.schedulator3000.repositories.ShiftRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,17 +43,20 @@ public class ShiftService {
     }
 
     public List<ShiftDto> getAllFromTo(ShiftsFromToDto dto) {
-        return shiftRepository.getAllByManager_EmailAndStartTimeBetween(dto.getManagerEmail(), dto.getFrom().atTime(0, 0), dto.getTo().atTime(0, 0))
+        managerService.assertExistsByEmail(dto.getUserEmail());
+
+        return shiftRepository.getAllByManager_EmailAndStartTimeBetween(dto.getUserEmail(), dto.getFrom().atStartOfDay(), dto.getTo().atStartOfDay())
                 .stream()
                 .map(Shift::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    public List<Shift> getScheduleOfEmployee(RequestScheduleEmployeeDto dto) {
-        employeeService.assertExistsByEmail(dto.getEmployeeEmail());
+    public List<ShiftDto> getScheduleOfEmployee(ShiftsFromToDto dto) {
+        employeeService.assertExistsByEmail(dto.getUserEmail());
 
-        final LocalDateTime startTime = LocalDateTime.parse(dto.getWeekStart());
-
-        return shiftRepository.getAllByEmployee_EmailAndStartTimeBetween(dto.getEmployeeEmail(), startTime, startTime.plusDays(7));
+        return shiftRepository.getAllByEmployee_EmailAndStartTimeBetween(dto.getUserEmail(), dto.getFrom().atStartOfDay(), dto.getTo().atStartOfDay())
+                .stream()
+                .map(Shift::mapToDto)
+                .collect(Collectors.toList());
     }
 }

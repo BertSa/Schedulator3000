@@ -60,7 +60,7 @@ public class EmployeeService {
 
     public void assertExistsByEmail(String employeeEmail) {
         Assert.notNull(employeeEmail, "Employee email cannot be null!");
-        Assert.isTrue(employeeEmail.isEmpty(), "Employee email cannot be empty!");
+        Assert.isTrue(!employeeEmail.isEmpty(), "Employee email cannot be empty!");
         if (!employeeRepository.existsByEmailIgnoreCase(employeeEmail)) {
             throw new EntityNotFoundException("Employee with email " + employeeEmail + " does not exist!");
         }

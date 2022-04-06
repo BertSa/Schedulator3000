@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Setter
 public class ShiftsFromToDto {
     @Email
-    private String managerEmail;
+    private String userEmail;
     private LocalDate from;
     private LocalDate to;
 }

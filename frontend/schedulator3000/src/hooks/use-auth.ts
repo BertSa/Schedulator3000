@@ -1,10 +1,9 @@
 import React, {createContext, useCallback, useContext, useEffect, useState} from 'react';
-import {Employee, Manager, User} from '../models/User';
+import {Employee, Manager} from '../models/User';
 import {useSnackbar} from 'notistack';
 import {METHODS, requestInit} from './use-services';
 import {PasswordChangeDto} from '../models/PasswordChangeDto';
-import {NewEmployeePage} from '../components/NewEmployeePage';
-import {useHistory} from 'react-router-dom';
+import {NewEmployeePage} from '../components/employee/NewEmployeePage';
 
 const authContext: React.Context<IProviderAuth> = createContext({} as IProviderAuth);
 
@@ -61,7 +60,6 @@ export function RequireNoAuth({children}: { children: React.ReactNode }): any {
 
 function useProvideAuth(): IProviderAuth {
     const {enqueueSnackbar} = useSnackbar();
-    const history = useHistory();
     const [user, setUser] = useState<Manager | Employee | undefined>(() => {
         if (sessionStorage.length === 0) {
             return undefined;
@@ -141,7 +139,6 @@ function useProvideAuth(): IProviderAuth {
             variant: 'default',
             autoHideDuration: 3000
         });
-        history.push('/');
     };
 
     const getManager = (): Manager => {
@@ -158,28 +155,35 @@ function useProvideAuth(): IProviderAuth {
         throw new Error('You are not an employee!');
     };
 
+    const setActive = (): void => {
+        if (isEmployee()){
+            setUser((prevState) => {
+                const prevState1 = prevState as Employee;
+                prevState1.active = true;
+                return prevState1;
+            })
+        }
+    };
+
     const updatePassword = async (passwordChange: PasswordChangeDto): Promise<boolean> => {
         let endpoint: string;
-        let prototype: User;
 
         if (isManager()) {
             endpoint = 'manager';
-            prototype = Manager.prototype;
         } else if (isEmployee()) {
             endpoint = 'employee';
-            prototype = Employee.prototype;
+            passwordChange.email = getEmployee().email;
         } else {
             return false;
         }
 
-        passwordChange.email = getEmployee().email;
 
         return await fetch(`/${endpoint}/password/update`, requestInit(METHODS.POST, passwordChange)).then(
             response => {
                 return response.json().then(
                     body => {
                         if (response.status === 200) {
-                            setUser(Object.setPrototypeOf(body, prototype));
+                            setActive();
                             enqueueSnackbar('Password Updated!', {
                                 variant: 'success',
                                 autoHideDuration: 3000
@@ -209,7 +213,7 @@ function useProvideAuth(): IProviderAuth {
         isManager,
         isEmployee,
         getManager,
-        getEmployee,
+        getEmployee
     };
 }
 

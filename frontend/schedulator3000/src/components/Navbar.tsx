@@ -9,12 +9,8 @@ export function Navbar() {
     const history = useHistory();
     const auth = useAuth();
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElNav(event.currentTarget);
-    };
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
+    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => setAnchorElNav(event.currentTarget);
+    const handleCloseNavMenu = () => setAnchorElNav(null);
 
     function ManagerLinks() {
         if (!auth.isManager()){
@@ -67,13 +63,8 @@ export function Navbar() {
     function RightSide() {
         const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-        const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-            setAnchorEl(event.currentTarget);
-        };
-
-        const handleClose = () => {
-            setAnchorEl(null);
-        };
+        const handleMenu = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+        const handleClose = () => setAnchorEl(null);
 
         if (auth.isAuthenticated()) {
             return <>
@@ -105,8 +96,9 @@ export function Navbar() {
                     onClose={handleClose}
                 >
                     <MenuItem onClick={() => {
-                        auth.signOut();
                         handleClose();
+                        auth.signOut();
+                        history.push('/');
                     }}>Log out</MenuItem>
                     <MenuItem onClick={handleClose}>My account</MenuItem>
                 </Menu>
@@ -177,7 +169,7 @@ export function Navbar() {
                         component="div"
                         sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}
                     >
-                        SCHEDULATOR3000
+                        {process.env.REACT_APP_NAME}
                     </Typography>
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
                         <ManagerLinks/>

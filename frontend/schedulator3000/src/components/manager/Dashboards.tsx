@@ -22,12 +22,13 @@ export function Dashboards(): React.ReactElement {
 function EmployeeManagement(): React.ReactElement {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const {managerService} = useServices();
-    let user = useAuth().getManager();
+    const user = useAuth().getManager();
+    const email = user.email ?? '';
+
     useEffect(() => {
-        let email = user.email ?? '';
         managerService.getEmployees(email).then(
             employees => setEmployees(employees));
-    }, [managerService, user.email]);
+    }, [managerService, email]);
 
     return <>
         <Container maxWidth="sm"

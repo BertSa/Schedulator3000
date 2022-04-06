@@ -1,6 +1,5 @@
 package ca.bertsa.schedulator3000.controllers;
 
-import ca.bertsa.schedulator3000.dtos.RequestScheduleEmployeeDto;
 import ca.bertsa.schedulator3000.dtos.ShiftDto;
 import ca.bertsa.schedulator3000.dtos.ResponseMessage;
 import ca.bertsa.schedulator3000.dtos.ShiftsFromToDto;
@@ -71,8 +70,8 @@ public class ShiftController {
         }
     }
 
-    @GetMapping("/employee/weekof")
-    public ResponseEntity<?> getScheduleOfEmployee(@RequestBody RequestScheduleEmployeeDto dto) {
+    @PostMapping("/employee")
+    public ResponseEntity<?> getScheduleOfEmployee(@RequestBody ShiftsFromToDto dto) {
         try {
             final var schedule = shiftService.getScheduleOfEmployee(dto);
             return ResponseEntity

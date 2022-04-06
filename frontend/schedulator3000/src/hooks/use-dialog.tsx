@@ -59,12 +59,14 @@ export default function DialogProvider({children}: { children: React.ReactNode }
                 latestDialog = dialogs.pop();
             }
 
-            if (latestDialog?.onClose) {
+            if (!latestDialog) {
+                return dialogs;
+            }
+            if (latestDialog.onClose) {
                 latestDialog.onClose();
-                return [...dialogs, {...latestDialog, open: false}];
             }
 
-            return dialogs;
+            return [...dialogs, {...latestDialog, open: false}];
         });
     };
     const contextValue = React.useRef([createDialog, closeDialog] as const);

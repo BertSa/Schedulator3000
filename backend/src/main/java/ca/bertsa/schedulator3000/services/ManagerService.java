@@ -49,4 +49,12 @@ public class ManagerService {
 
         return manager.mapToDto();
     }
+
+    public void assertExistsByEmail(String managerEmail) {
+        Assert.notNull(managerEmail, "Manager email cannot be null!");
+        Assert.isTrue(!managerEmail.isEmpty(), "Manager email cannot be empty!");
+        if (!managerRepository.existsByEmailIgnoreCase(managerEmail)) {
+            throw new EntityNotFoundException("Employee with email " + managerEmail + " does not exist!");
+        }
+    }
 }

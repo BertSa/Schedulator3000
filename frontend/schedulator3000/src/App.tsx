@@ -1,9 +1,10 @@
 import React from 'react';
-import {RequireAdmin, RequireEmployee, RequireNoAuth} from './hooks/use-auth';
 import {BrowserRouter as Router, Route} from 'react-router-dom';
 import {Navbar} from './components/Navbar';
 import {SignInPage} from './components/SignInPage';
 import {Dashboards} from './components/manager/Dashboards';
+import {ScheduleEmployee} from './components/employee/ScheduleEmployee';
+import {RequireAdmin, RequireEmployee, RequireNoAuth} from './hooks/use-auth';
 
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
                 </RequireAdmin>
                 <RequireEmployee>
                     <h3>Allooooo</h3>
+                    <ScheduleEmployee/>
                 </RequireEmployee>
                 <RequireNoAuth>
                     <Route path="/register" component={Register}/>

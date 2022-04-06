@@ -1,6 +1,29 @@
+import {dateFnsLocalizer} from 'react-big-calendar';
+import {format, getDay, parse, startOfWeek} from 'date-fns';
+import enCA from 'date-fns/locale/en-CA';
+
 export const regex = Object.freeze({
     email: /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i,
     phone: /^\(?([0-9]{3})\)?[- ]?([0-9]{3})[- ]?([0-9]{4})$/,
+});
+
+export const preferences = Object.freeze({
+    calendar: {
+        step: 30,
+        timeslots: 2,
+        scrollToTime: new Date(1970, 1, 1, 6),
+        toolbar: true
+    }
+});
+
+export const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek,
+    getDay,
+    locales: {
+        'en-CA': enCA
+    }
 });
 
 export function stringToColor(string: string) {

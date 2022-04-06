@@ -1,9 +1,9 @@
 import {Button, Container, Grid} from '@mui/material';
-import {FieldInput} from './shared/form/FormFields';
+import {FieldInput} from '../shared/form/FormFields';
 import React from 'react';
 import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {useAuth} from '../hooks/use-auth';
-import {PasswordChangeDto} from '../models/PasswordChangeDto';
+import {useAuth} from '../../hooks/use-auth';
+import {PasswordChangeDto} from '../../models/PasswordChangeDto';
 import {useHistory} from 'react-router-dom';
 
 export function NewEmployeePage() {

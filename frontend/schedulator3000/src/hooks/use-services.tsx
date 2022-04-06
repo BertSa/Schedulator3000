@@ -4,6 +4,7 @@ import {Employee} from '../models/User';
 import {Shift} from '../models/Shift';
 import {useDialog} from './use-dialog';
 import {Button, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
+import {ShiftsFromToDto} from '../models/ShiftsFromTo';
 
 export enum METHODS {
     POST = 'POST',
@@ -91,8 +92,8 @@ function useProvideShiftService() {
     const {enqueueSnackbar} = useSnackbar();
     let [openDialog, closeDialog] = useDialog();
 
-    async function getShifts(body: any): Promise<Shift[]> {
-        return await fetch(`/shifts/manager`, requestInit(METHODS.POST, body)).then(
+    async function getShifts(endpoint:string, body: ShiftsFromToDto): Promise<Shift[]> {
+        return await fetch(`/shifts/${endpoint}`, requestInit(METHODS.POST, body)).then(
             response =>
                 response.json().then(
                     body => {
@@ -108,6 +109,9 @@ function useProvideShiftService() {
                         return [];
                     }));
     }
+
+    const getShiftsManager = async (body: ShiftsFromToDto): Promise<Shift[]> => getShifts('manager', body);
+    const getShiftsEmployee = async (body: ShiftsFromToDto): Promise<Shift[]> => getShifts('employee', body);
 
     async function create(body: any): Promise<Shift | null> {
         return await fetch(`/shifts/manager/create`, requestInit(METHODS.POST, body)).then(
@@ -209,7 +213,8 @@ function useProvideShiftService() {
     }
 
     return {
-        getShifts,
+        getShiftsManager,
+        getShiftsEmployee,
         create,
         updateShift,
         deleteShift
@@ -227,7 +232,8 @@ function useProvideServices(): IProviderServices {
 }
 
 export type IShiftService = {
-    getShifts: (body: any) => Promise<Shift[]>,
+    getShiftsManager: (body: ShiftsFromToDto) => Promise<Shift[]>,
+    getShiftsEmployee: (body: ShiftsFromToDto) => Promise<Shift[]>,
     create: (body: any) => Promise<Shift | null>,
     updateShift: (body: any) => Promise<Shift | null>,
     deleteShift: (id: any) => Promise<boolean>

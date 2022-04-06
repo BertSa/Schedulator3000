@@ -7,4 +7,6 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
     Manager getByEmailIgnoreCase(String emailManager);
 
     Manager getByEmailIgnoreCaseAndPassword(String email, String password);
+
+    boolean existsByEmailIgnoreCase(String managerEmail);
 }

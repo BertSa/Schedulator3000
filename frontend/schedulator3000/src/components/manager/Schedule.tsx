@@ -1,17 +1,7 @@
 import React, {ComponentType, useEffect, useState} from 'react';
-import {
-    Calendar,
-    CalendarProps,
-    dateFnsLocalizer,
-    Event,
-    Navigate,
-    SlotInfo,
-    stringOrDate,
-    Views
-} from 'react-big-calendar';
+import {Calendar, CalendarProps, Event, Navigate, SlotInfo, stringOrDate, Views} from 'react-big-calendar';
 import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addons/dragAndDrop';
-import {addDays, format, getDay, parse, startOfWeek} from 'date-fns';
-import enCA from 'date-fns/locale/en-CA';
+import {addDays} from 'date-fns';
 import {Controller, UnpackNestedValue, useForm} from 'react-hook-form';
 import {Avatar, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography} from '@mui/material';
 import {AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit} from '@mui/icons-material';
@@ -21,6 +11,8 @@ import {useAuth} from '../../hooks/use-auth';
 import {
     getBeginningOfWeek,
     getCurrentTimezoneDate,
+    localizer,
+    preferences,
     stringAvatar,
     stringToColor,
     toLocalDateString
@@ -30,16 +22,9 @@ import {Shift} from '../../models/Shift';
 import {useServices} from '../../hooks/use-services';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import {ShiftsFromToDto} from '../../models/ShiftsFromTo';
+import {ShiftEvent} from '../../models/ShiftEvent';
 
-const localizer = dateFnsLocalizer({
-    format,
-    parse,
-    startOfWeek,
-    getDay,
-    locales: {
-        'en-CA': enCA
-    }
-});
 
 enum SubmitType {
     CREATE,
@@ -50,20 +35,9 @@ type Ress = {
     employeeId: number,
 }
 
-interface ShiftEvent extends Event {
-    resourceId: number,
-}
-
 const DnDCalendar = withDragAndDrop<ShiftEvent, Ress>(Calendar as ComponentType<CalendarProps<ShiftEvent, Ress>>);
 
-const preferences = {
-    calendar: {
-        step: 30,
-        timeslots: 2,
-        scrollToTime: new Date(1970, 1, 1, 6),
-        toolbar: true
-    }
-};
+
 
 export const Schedule = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -88,15 +62,15 @@ export const Schedule = () => {
     const {managerService, shiftService} = useServices();
 
     useEffect(() => {
-        let body = {
-            managerEmail: user.email,
+        let body: ShiftsFromToDto = {
+            userEmail: user.email,
             from: toLocalDateString(addDays(curentWeek, -7)),
             to: toLocalDateString(addDays(curentWeek, 14))
         };
         managerService.getEmployees(user.email ?? '').then(
             list => {
                 setEmployees(list);
-                shiftService.getShifts(body).then(
+                shiftService.getShiftsManager(body).then(
                     shifts => {
                         if (shifts.length === 0) {
                             setEvents([]);
@@ -124,7 +98,7 @@ export const Schedule = () => {
             });
     }, [curentWeek, managerService, user.email, shiftService]);
 
-    function Toolbar(props: { onView: any, date: any, view: any, onNavigate: any }) {
+    function ToolbarCalendar(props: { onView: any, date: any, view: any, onNavigate: any}) {
         useEffect(() => {
             setCurrentWeek(getBeginningOfWeek(props.date));
         }, [props.date]);
@@ -333,7 +307,6 @@ export const Schedule = () => {
                 </>
             )
         });
-        console.log(id);
     }
 
 
@@ -402,8 +375,7 @@ export const Schedule = () => {
                 popup
                 toolbar={preferences.calendar.toolbar}
                 startAccessor={(event: Event) => new Date(event.start as Date)}
-                onSelectEvent={(data, event) => {
-                    console.log(event.nativeEvent);
+                onSelectEvent={(data) => {
                     setValue('start', data.start as Date);
                     setValue('end', data.end as Date);
                     setValue('employeeId', data.resource.employeeId);
@@ -447,7 +419,7 @@ export const Schedule = () => {
                             </div>
                         ),
                         toolbar: ({date, view, onView, onNavigate}) => (
-                            <Toolbar
+                            <ToolbarCalendar
                                 date={date}
                                 view={view}
                                 onView={onView}
@@ -513,3 +485,5 @@ export const Schedule = () => {
         </>
     );
 };
+
+
