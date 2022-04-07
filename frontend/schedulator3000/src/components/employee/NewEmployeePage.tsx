@@ -1,10 +1,10 @@
-import {Button, Container, Grid} from '@mui/material';
-import {FieldInput} from '../shared/form/FormFields';
+import { Button, Container, Grid } from '@mui/material';
+import { FieldInput } from '../shared/form/FormFields';
 import React from 'react';
-import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
-import {useAuth} from '../../hooks/use-auth';
-import {PasswordChangeDto} from '../../models/PasswordChangeDto';
-import {useHistory} from 'react-router-dom';
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { useAuth } from '../../hooks/use-auth';
+import { PasswordChangeDto, PasswordChangeWithPwdConfirmation } from '../../models/PasswordChangeDto';
+import { useHistory } from 'react-router-dom';
 
 export function NewEmployeePage() {
     const {register, handleSubmit, formState: {errors}} = useForm({
@@ -14,8 +14,8 @@ export function NewEmployeePage() {
     const {updatePassword} = useAuth();
     const history = useHistory();
 
-    const submit: SubmitHandler<FieldValues> = (data) => {
-        const {currentPassword, newPassword, confirmationPassword} = data as IPasswordChangeDto;
+    const submit: SubmitHandler<FieldValues> = data => {
+        const {currentPassword, newPassword, confirmationPassword} = data as PasswordChangeWithPwdConfirmation;
         if (newPassword !== confirmationPassword) {
             return;
         }
@@ -25,58 +25,58 @@ export function NewEmployeePage() {
             newPassword
         };
 
-        updatePassword(pwdChange).then(()=>{
+        updatePassword(pwdChange).then(() => {
             history.replace('/');
         });
     };
 
     return <>
         <Container maxWidth="sm"
-                   sx={{
+                   sx={ {
                        marginTop: 12,
                        display: 'flex',
                        flexDirection: 'column',
                        alignItems: 'center'
-                   }}>
+                   } }>
             <Grid container
                   component="form"
-                  spacing={2}
-                  onSubmit={handleSubmit(submit)}
+                  spacing={ 2 }
+                  onSubmit={ handleSubmit(submit) }
                   noValidate>
-                <Grid item xs={12} sm={6}>
-                    <FieldInput register={register}
-                                errors={errors}
+                <Grid item xs={ 12 } sm={ 6 }>
+                    <FieldInput register={ register }
+                                errors={ errors }
                                 name="currentPassword"
                                 label="Current Password"
                                 autoComplete="current-password"
                                 type="password"
-                                validation={{
+                                validation={ {
                                     required: 'This Field is required!'
-                                }}/>
+                                } } />
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <FieldInput register={register}
-                                errors={errors}
+                <Grid item xs={ 12 } sm={ 6 }>
+                    <FieldInput register={ register }
+                                errors={ errors }
                                 name="newPassword"
                                 label="New Password"
                                 autoComplete="new-password"
                                 type="password"
-                                validation={{
+                                validation={ {
                                     required: 'This Field is required!'
-                                }}/>
+                                } } />
                 </Grid>
-                <Grid item xs={12}>
-                    <FieldInput register={register}
-                                errors={errors}
+                <Grid item xs={ 12 }>
+                    <FieldInput register={ register }
+                                errors={ errors }
                                 name="confirmationPassword"
                                 label="Confirm New Password"
                                 autoComplete="current-password"
                                 type="password"
-                                validation={{
+                                validation={ {
                                     required: 'This Field is required!'
-                                }}/>
+                                } } />
                 </Grid>
-                <Grid item xs={12} justifyContent={'center'}>
+                <Grid item xs={ 12 } justifyContent={ 'center' }>
                     <Button
                         type="submit"
                         fullWidth
@@ -89,10 +89,4 @@ export function NewEmployeePage() {
             </Grid>
         </Container>
     </>;
-}
-
-type IPasswordChangeDto = {
-    currentPassword: string;
-    newPassword: string;
-    confirmationPassword: string;
 }

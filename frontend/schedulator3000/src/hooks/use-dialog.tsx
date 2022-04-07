@@ -1,48 +1,42 @@
-import React from 'react';
-import {Dialog} from '@mui/material';
+import React, { PropsWithChildren } from 'react';
+import { Dialog } from '@mui/material';
 
 type ProviderContext = readonly [(option: DialogParams) => number, (id?: number) => void];
 
-type DialogParams = {
+type DialogParams = PropsWithChildren<{
     idDialog?: number;
-    children: React.ReactNode;
     open?: boolean;
-    onClose?: Function;
-    onExited?: Function;
-};
+    onClose?: VoidFunction;
+    onExited?: VoidFunction;
+}>;
 
-type DialogContainerProps = DialogParams & {
-    onClose: () => void;
-    onKill: () => void;
-};
+type DialogContainerProps = PropsWithChildren<{
+    open: boolean;
+    onClose: VoidFunction;
+    onEnded: VoidFunction;
+}>;
 
 
-const DialogContext = React.createContext<ProviderContext>([
-    (): number => {
-        return 0;
-    },
-    () => {
-    }
-]);
+const DialogContext = React.createContext<ProviderContext>({} as ProviderContext);
 export const useDialog = () => React.useContext(DialogContext);
 
-function DialogContainer({children, open, onClose, onKill}: DialogContainerProps) {
+function DialogContainer({children, open, onClose, onEnded}: DialogContainerProps) {
     return (
-        <Dialog open={open ?? false}
-                onClose={onClose}
-                onEnded={onKill}>
-            {children}
+        <Dialog open={ open }
+                onClose={ onClose }
+                onEnded={ onEnded }>
+            { children }
         </Dialog>
     );
 }
 
-export default function DialogProvider({children}: { children: React.ReactNode }) {
+export default function DialogProvider({children}: PropsWithChildren<{}>) {
     const [dialogs, setDialogs] = React.useState<DialogParams[]>([]);
     let numberOfDialogCreated = 0;
 
     const createDialog = (option: DialogParams): number => {
         numberOfDialogCreated++;
-        const dialog = {...option, open: true, idDialog: numberOfDialogCreated};
+        const dialog: DialogParams = {...option, open: true, idDialog: numberOfDialogCreated};
         setDialogs(dialogs => [...dialogs, dialog]);
         return numberOfDialogCreated;
     };
@@ -62,6 +56,7 @@ export default function DialogProvider({children}: { children: React.ReactNode }
             if (!latestDialog) {
                 return dialogs;
             }
+
             if (latestDialog.onClose) {
                 latestDialog.onClose();
             }
@@ -72,27 +67,27 @@ export default function DialogProvider({children}: { children: React.ReactNode }
     const contextValue = React.useRef([createDialog, closeDialog] as const);
 
     return (
-        <DialogContext.Provider value={contextValue.current}>
-            {children}
-            {dialogs.map((dialog, index) => {
+        <DialogContext.Provider value={ contextValue.current }>
+            { children }
+            { dialogs.map((dialog, index) => {
                 const {onClose, ...dialogParams} = dialog;
-                const handleKill = () => {
+                const handleOnEnded = () => {
                     if (dialog.onExited) {
                         dialog.onExited();
                     }
                     setDialogs(dialogs => dialogs.slice(0, dialogs.length - 1));
                 };
 
-                // noinspection RequiredAttributes
                 return (
                     <DialogContainer
                         key={index}
                         onClose={closeDialog}
-                        onKill={handleKill}
-                        {...dialogParams}
-                    />
+                        onEnded={handleOnEnded}
+                        open={dialogParams.open ?? false}>
+                        {dialogParams.children}
+                    </DialogContainer>
                 );
-            })}
+            }) }
         </DialogContext.Provider>
     );
 }

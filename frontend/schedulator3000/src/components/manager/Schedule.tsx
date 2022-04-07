@@ -1,30 +1,21 @@
-import React, {ComponentType, useEffect, useState} from 'react';
-import {Calendar, CalendarProps, Event, Navigate, SlotInfo, stringOrDate, Views} from 'react-big-calendar';
-import withDragAndDrop, {withDragAndDropProps} from 'react-big-calendar/lib/addons/dragAndDrop';
-import {addDays} from 'date-fns';
-import {Controller, UnpackNestedValue, useForm} from 'react-hook-form';
-import {Avatar, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography} from '@mui/material';
-import {AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit} from '@mui/icons-material';
-import {DateTimePicker} from '@mui/lab';
-import {Employee} from '../../models/User';
-import {useAuth} from '../../hooks/use-auth';
-import {
-    getBeginningOfWeek,
-    getCurrentTimezoneDate,
-    localizer,
-    preferences,
-    stringAvatar,
-    stringToColor,
-    toLocalDateString
-} from '../../utilities';
-import {useDialog} from '../../hooks/use-dialog';
-import {Shift} from '../../models/Shift';
-import {useServices} from '../../hooks/use-services';
+import React, { ComponentType, useEffect, useState } from 'react';
+import { Calendar, CalendarProps, Event, Navigate, SlotInfo, stringOrDate, View, Views } from 'react-big-calendar';
+import withDragAndDrop, { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
+import { addDays } from 'date-fns';
+import { Controller, UnpackNestedValue, useForm } from 'react-hook-form';
+import { Avatar, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import { AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit } from '@mui/icons-material';
+import { DateTimePicker } from '@mui/lab';
+import { Employee } from '../../models/User';
+import { useAuth } from '../../hooks/use-auth';
+import { getBeginningOfWeek, getCurrentTimezoneDate, localizer, preferences, stringAvatar, stringToColor, toLocalDateString } from '../../utilities';
+import { useDialog } from '../../hooks/use-dialog';
+import { Shift, ShiftWithoutId } from '../../models/Shift';
+import { useServices } from '../../hooks/use-services';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import {ShiftsFromToDto} from '../../models/ShiftsFromTo';
-import {ShiftEvent} from '../../models/ShiftEvent';
-
+import { ShiftsFromToDto } from '../../models/ShiftsFromTo';
+import { ShiftEvent } from '../../models/ShiftEvent';
 
 enum SubmitType {
     CREATE,
@@ -37,14 +28,25 @@ type Ress = {
 
 const DnDCalendar = withDragAndDrop<ShiftEvent, Ress>(Calendar as ComponentType<CalendarProps<ShiftEvent, Ress>>);
 
+type ContextMenuStates = {
+    mouseX: number;
+    mouseY: number;
+    shiftEvent: ShiftEvent;
+}
 
+type FormFieldValue = {
+    start: Date,
+    end: Date,
+    employeeId: number,
+    shiftId?: number,
+}
 
 export const Schedule = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [events, setEvents] = useState<ShiftEvent[]>([]);
     const [curentWeek, setCurrentWeek] = useState<Date>(getBeginningOfWeek(getCurrentTimezoneDate(new Date())));
     const [openDialog, closeDialog] = useDialog();
-    const {setValue, getValues, register, handleSubmit, formState: {errors}, reset, control} = useForm<any>({
+    const {setValue, getValues, register, handleSubmit, formState: {errors}, reset, control} = useForm<FormFieldValue>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
         defaultValues: {
@@ -53,11 +55,7 @@ export const Schedule = () => {
             employeeId: -1
         }
     });
-    const [contextMenu, setContextMenu] = React.useState<{
-        mouseX: number;
-        mouseY: number;
-        shiftEvent: ShiftEvent;
-    } | null>(null);
+    const [contextMenu, setContextMenu] = React.useState<ContextMenuStates | null>(null);
     const user = useAuth().getManager();
     const {managerService, shiftService} = useServices();
 
@@ -98,7 +96,7 @@ export const Schedule = () => {
             });
     }, [curentWeek, managerService, user.email, shiftService]);
 
-    function ToolbarCalendar(props: { onView: any, date: any, view: any, onNavigate: any}) {
+    function ToolbarCalendar(props: { onView: Function, date: stringOrDate, view: View, onNavigate: Function }) {
         useEffect(() => {
             setCurrentWeek(getBeginningOfWeek(props.date));
         }, [props.date]);
@@ -106,22 +104,22 @@ export const Schedule = () => {
         return <>
             <div className="d-inline-block">
                 <div>
-                    <Button onClick={() => props.onNavigate(Navigate.PREVIOUS)}>
-                        <ArrowBack/>
+                    <Button onClick={ () => props.onNavigate(Navigate.PREVIOUS) }>
+                        <ArrowBack />
                     </Button>
-                    <Button onClick={() => props.onNavigate(Navigate.TODAY)}>
+                    <Button onClick={ () => props.onNavigate(Navigate.TODAY) }>
                         Today
                     </Button>
-                    <Button onClick={() => props.onNavigate(Navigate.NEXT)}>
-                        <ArrowForward/>
+                    <Button onClick={ () => props.onNavigate(Navigate.NEXT) }>
+                        <ArrowForward />
                     </Button>
                 </div>
-                {props.view === Views.DAY && <div>{new Date(props.date).toLocaleDateString()}</div>}
+                { props.view === Views.DAY && <div>{ new Date(props.date).toLocaleDateString() }</div> }
                 <div>
-                    <Button onClick={() => props.onView(Views.WEEK)}>
+                    <Button onClick={ () => props.onView(Views.WEEK) }>
                         Week
                     </Button>
-                    <Button onClick={() => props.onView(Views.DAY)}>
+                    <Button onClick={ () => props.onView(Views.DAY) }>
                         Day
                     </Button>
                 </div>
@@ -133,11 +131,15 @@ export const Schedule = () => {
     function openMyDialog(submitType: SubmitType) {
         let id: number;
 
-        function submitCreate({start, end, employeeId}: { start: Date, end: Date, employeeId: number }, event: any) {
+        function submitCreate({
+                                  start,
+                                  end,
+                                  employeeId
+                              }: { start: Date, end: Date, employeeId: number }, event?: React.BaseSyntheticEvent) {
             event?.preventDefault();
             let employee = employees.find(employee => employee.id === employeeId);
 
-            const newShift: Shift = {
+            const newShift: ShiftWithoutId = {
                 startTime: new Date(new Date(start).toISOString()),
                 endTime: new Date(new Date(end).toISOString()),
                 emailEmployee: employee?.email ?? '',
@@ -150,7 +152,7 @@ export const Schedule = () => {
                         return;
                     }
 
-                    let event: any = {
+                    let event: ShiftEvent = {
                         resourceId: shift.id,
                         title: employee?.lastName + ' ' + employee?.firstName,
                         start: getCurrentTimezoneDate(shift.startTime),
@@ -159,17 +161,21 @@ export const Schedule = () => {
                             employeeId: employeeId
                         }
                     };
-                    setEvents((currentEvents: any[]) => [...currentEvents, event]);
+                    setEvents((currentEvents: ShiftEvent[]) => [...currentEvents, event]);
                     closeDialog(id);
                     reset();
                 }
             );
         }
 
-        function update(data: UnpackNestedValue<any>, event?: any) {
+        function update(data: UnpackNestedValue<FormFieldValue>, event?: any) {
             event?.preventDefault();
             const submitter = event?.nativeEvent.submitter.value;
             const {start, end, employeeId, shiftId} = data;
+
+            if (!shiftId) {
+                return;
+            }
 
             if (submitter === 'delete') {
                 shiftService.deleteShift(shiftId).then(deleted => {
@@ -217,90 +223,92 @@ export const Schedule = () => {
             children: (
                 <>
                     <Typography variant="h5"
-                                component="h5">{submitType === SubmitType.CREATE ? 'Create Shift' : 'Modify Shift'}</Typography>
-                    <Grid container columnSpacing={2} rowSpacing={2} padding={2} component="form"
-                          onSubmit={handleSubmit(submitType === SubmitType.CREATE ? submitCreate : update)}
+                                component="h5">{ submitType === SubmitType.CREATE ? 'Create Shift' : 'Modify Shift' }</Typography>
+                    <Grid container columnSpacing={ 2 } rowSpacing={ 2 } padding={ 2 } component="form"
+                          onSubmit={ handleSubmit(submitType === SubmitType.CREATE ? submitCreate : update) }
                           noValidate>
-                        <Grid item xs={12}>
+                        <Grid item xs={ 12 }>
                             <TextField
                                 select
                                 label="Select"
                                 fullWidth
-                                defaultValue={getValues().employeeId ?? '-1'}
-                                SelectProps={{
+                                defaultValue={ getValues().employeeId ?? '-1' }
+                                SelectProps={ {
                                     startAdornment: (
                                         <InputAdornment position="start">
-                                            <AccountCircle/>
+                                            <AccountCircle />
                                         </InputAdornment>
                                     )
-                                }}
-                                {...register('employeeId', {
-                                    required: true
-                                })}
-                                helperText={errors.employeeId ?? ' '}
-                                error={!!errors.employeeId}
+                                } }
+                                { ...register('employeeId', {
+                                    required: true,
+                                    validate: (value: number) => value !== -1 ? undefined : 'Please select an employee',
+                                }) }
+                                helperText={ errors.employeeId ?? ' ' }
+                                error={ !!errors.employeeId }
                             >
-                                <MenuItem hidden aria-hidden value={-1}/>
-                                {employees.map(user => <MenuItem key={user.id}
-                                                                 value={user.id}><Avatar {...stringAvatar(user.firstName + ' ' + user.lastName)} /> {user.firstName} {user.lastName}
-                                </MenuItem>)}
+                                <MenuItem hidden aria-hidden value={ -1 } />
+                                { employees.map(user => <MenuItem key={ user.id }
+                                                                  value={ user.id }><Avatar { ...stringAvatar(user.firstName + ' ' + user.lastName) } /> { user.firstName } { user.lastName }
+                                </MenuItem>) }
                             </TextField>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={ 6 }>
                             <Controller
                                 name="start"
-                                control={control}
-                                rules={{
+                                control={ control }
+                                rules={ {
                                     required: true
-                                }}
-                                render={({fieldState, formState, field}) => (
+                                } }
+                                render={ ({fieldState, formState, field}) => (
                                     <DateTimePicker
                                         label="Start Time"
-                                        renderInput={(props) => <TextField {...props} helperText={errors.start ?? ' '}
-                                                                           error={!!errors.start}/>}
-                                        {...field}
-                                        {...fieldState}
-                                        {...formState}
+                                        renderInput={ (props) => <TextField { ...props }
+                                                                            helperText={ errors.start ?? ' ' }
+                                                                            error={ !!errors.start } /> }
+                                        { ...field }
+                                        { ...fieldState }
+                                        { ...formState }
                                     />
-                                )}
+                                ) }
                             />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={ 6 }>
                             <Controller
                                 name="end"
-                                control={control}
-                                rules={{
+                                control={ control }
+                                rules={ {
                                     required: true,
                                     validate: (value) => {
                                         if (value < getValues().start) {
                                             return 'End time must be after start time';
                                         }
                                     }
-                                }}
-                                render={({fieldState, formState, field}) => (
+                                } }
+                                render={ ({fieldState, formState, field}) => (
                                     <DateTimePicker
                                         label="End Time"
-                                        renderInput={(props) => <TextField helperText={errors.end?.message ?? ' dd'}
-                                                                           error={!!errors.end}
-                                                                           {...props} />}
-                                        {...field}
-                                        {...fieldState}
-                                        {...formState}
+                                        renderInput={ (props) => <TextField helperText={ errors.end?.message ?? ' ' }
+                                                                            error={ !!errors.end }
+                                                                            { ...props } /> }
+                                        { ...field }
+                                        { ...fieldState }
+                                        { ...formState }
                                     />
-                                )}
+                                ) }
                             />
                         </Grid>
-                        <Grid item alignSelf={'center'} marginX={'auto'}>
-                            <Stack spacing={2} direction="row">
+                        <Grid item alignSelf={ 'center' } marginX={ 'auto' }>
+                            <Stack spacing={ 2 } direction="row">
                                 <Button type="submit" color="primary"
-                                        variant="contained">{submitType === SubmitType.CREATE ? 'Submit' : 'Update'}</Button>
-                                {submitType === SubmitType.UPDATE &&
+                                        variant="contained">{ submitType === SubmitType.CREATE ? 'Submit' : 'Update' }</Button>
+                                { submitType === SubmitType.UPDATE &&
                                     <Button value="delete" type="submit" color="error"
-                                            variant="contained">Delete</Button>}
-                                <Button value="cancel" type="button" color="primary" variant="text" onClick={() => {
+                                            variant="contained">Delete</Button> }
+                                <Button value="cancel" type="button" color="primary" variant="text" onClick={ () => {
                                     closeDialog(id);
                                     reset();
-                                }}>Cancel</Button>
+                                } }>Cancel</Button>
                             </Stack>
                         </Grid>
                     </Grid>
@@ -308,7 +316,6 @@ export const Schedule = () => {
             )
         });
     }
-
 
     function updateEvent(data: { event: ShiftEvent; start: stringOrDate; end: stringOrDate; isAllDay: boolean }) {
         const {start, end, event: {resourceId, resource}} = data;
@@ -320,8 +327,8 @@ export const Schedule = () => {
         openMyDialog(SubmitType.UPDATE);
     }
 
-    const onEventResize: withDragAndDropProps<ShiftEvent, any>['onEventResize'] = data => updateEvent(data);
-    const onEventDrop: withDragAndDropProps<ShiftEvent, any>['onEventDrop'] = data => updateEvent(data);
+    const onEventResize: withDragAndDropProps<ShiftEvent, Ress>['onEventResize'] = data => updateEvent(data);
+    const onEventDrop: withDragAndDropProps<ShiftEvent, Ress>['onEventDrop'] = data => updateEvent(data);
 
 
     const handleSelect: CalendarProps['onSelectSlot'] = ({start, end}: SlotInfo): void => {
@@ -354,40 +361,40 @@ export const Schedule = () => {
 
     return (<>
             <DnDCalendar
-                defaultView={Views.WEEK}
-                defaultDate={getBeginningOfWeek(new Date())}
-                views={[Views.WEEK, Views.DAY]}
-                events={events}
-                localizer={localizer}
-                style={{
+                defaultView={ Views.WEEK }
+                defaultDate={ getBeginningOfWeek(new Date()) }
+                views={ [Views.WEEK, Views.DAY] }
+                events={ events }
+                localizer={ localizer }
+                style={ {
                     height: 500,
                     colorScheme: 'dark',
                     color: '#fff'
-                }}
-                onEventDrop={onEventDrop}
-                onEventResize={onEventResize}
-                step={preferences.calendar.step}
-                timeslots={preferences.calendar.timeslots}
-                scrollToTime={preferences.calendar.scrollToTime}
-                showMultiDayTimes={true}
-                allDayAccessor={'allDay'}
-                selectable={'ignoreEvents'}
+                } }
+                onEventDrop={ onEventDrop }
+                onEventResize={ onEventResize }
+                step={ preferences.calendar.step }
+                timeslots={ preferences.calendar.timeslots }
+                scrollToTime={ preferences.calendar.scrollToTime }
+                showMultiDayTimes={ true }
+                allDayAccessor={ 'allDay' }
+                selectable={ 'ignoreEvents' }
                 popup
-                toolbar={preferences.calendar.toolbar}
-                startAccessor={(event: Event) => new Date(event.start as Date)}
-                onSelectEvent={(data) => {
+                toolbar={ preferences.calendar.toolbar }
+                startAccessor={ (event: Event) => new Date(event.start as Date) }
+                onSelectEvent={ (data) => {
                     setValue('start', data.start as Date);
                     setValue('end', data.end as Date);
                     setValue('employeeId', data.resource.employeeId);
                     setValue('shiftId', data.resourceId);
                     openMyDialog(SubmitType.UPDATE);
-                }}
-                onSelectSlot={handleSelect}
-                min={new Date('2022-03-19T04:00:00.000Z')}
-                max={new Date('2022-03-20T03:59:00.000Z')}
+                } }
+                onSelectSlot={ handleSelect }
+                min={ new Date('2022-03-19T04:00:00.000Z') }
+                max={ new Date('2022-03-20T03:59:00.000Z') }
                 resizable
-                dayLayoutAlgorithm={'overlap'}
-                eventPropGetter={(event: Event) => {
+                dayLayoutAlgorithm={ 'overlap' }
+                eventPropGetter={ (event: Event) => {
                     let employee = employees.find(employee => employee.id === event.resource.employeeId);
                     let fullName = employee?.lastName + ' ' + employee?.firstName;
                     let eventProps = {
@@ -403,43 +410,36 @@ export const Schedule = () => {
                     }
 
                     return eventProps;
-                }}
+                } }
                 components={
                     {
                         eventWrapper: ({event, children}) => (
-                            <div
-                                onContextMenu={
-                                    e => {
-                                        handleContextMenu(e, event);
-                                        e.preventDefault();
-                                    }
-                                }>
-
-                                {children}
+                            <div onContextMenu={ e => handleContextMenu(e, event) }>
+                                { children }
                             </div>
                         ),
                         toolbar: ({date, view, onView, onNavigate}) => (
                             <ToolbarCalendar
-                                date={date}
-                                view={view}
-                                onView={onView}
-                                onNavigate={onNavigate}
+                                date={ date }
+                                view={ view }
+                                onView={ onView }
+                                onNavigate={ onNavigate }
                             />
                         )
                     }
                 }
             />
             <Menu
-                open={contextMenu !== null}
-                onClose={handleClose}
+                open={ contextMenu !== null }
+                onClose={ handleClose }
                 anchorReference="anchorPosition"
                 anchorPosition={
-                    contextMenu !== null
-                        ? {top: contextMenu.mouseY, left: contextMenu.mouseX}
-                        : undefined
+                    contextMenu !== null ?
+                        {top: contextMenu.mouseY, left: contextMenu.mouseX} :
+                        undefined
                 }
             >
-                <MenuItem onClick={() => {
+                <MenuItem onClick={ () => {
                     if (contextMenu !== null) {
                         let shiftEvent = contextMenu.shiftEvent;
                         setValue('start', shiftEvent.start as Date);
@@ -449,13 +449,13 @@ export const Schedule = () => {
                         openMyDialog(SubmitType.UPDATE);
                     }
                     handleClose();
-                }}>
+                } }>
                     <ListItemIcon>
-                        <Edit fontSize="small"/>
+                        <Edit fontSize="small" />
                     </ListItemIcon>
                     <ListItemText>Edit</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={() => {
+                <MenuItem onClick={ () => {
                     if (contextMenu !== null) {
                         let shiftEvent = contextMenu.shiftEvent;
                         setValue('start', shiftEvent.start as Date);
@@ -464,20 +464,20 @@ export const Schedule = () => {
                         openMyDialog(SubmitType.CREATE);
                     }
                     handleClose();
-                }}>
+                } }>
                     <ListItemIcon>
-                        <ContentCopy fontSize="small"/>
+                        <ContentCopy fontSize="small" />
                     </ListItemIcon>
                     <ListItemText>Duplicate</ListItemText>
                 </MenuItem>
-                <MenuItem sx={{alignContent: 'center'}} onClick={() => {
-                    shiftService.deleteShift(contextMenu?.shiftEvent.resourceId).then(deleted =>
+                <MenuItem sx={ {alignContent: 'center'} } onClick={ () => {
+                    shiftService.deleteShift(contextMenu?.shiftEvent.resourceId as number).then(deleted =>
                         deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent.resourceId))
                     );
                     handleClose();
-                }}>
+                } }>
                     <ListItemIcon>
-                        <Delete fontSize="small"/>
+                        <Delete fontSize="small" />
                     </ListItemIcon>
                     <ListItemText>Delete</ListItemText>
                 </MenuItem>

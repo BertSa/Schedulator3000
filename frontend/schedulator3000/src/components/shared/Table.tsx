@@ -1,4 +1,4 @@
-import React, {Children} from 'react';
+import React, { Children } from 'react';
 import PropTypes from 'prop-types';
 
 export function Table(props: any) {
@@ -7,24 +7,28 @@ export function Table(props: any) {
     let tableHeader;
 
     let list: any = React.Children.toArray(children).filter(child => child !== null && child !== undefined) || [];
-    if (!list.find((child: any) => child.type.name === 'TableHeader'))
+    if (!list.find((child: any) => child.type.name === 'TableHeader')) {
         throw new Error('Table must have a TableHeader');
+    }
 
     Children.map(children, child => {
-        if (!child) return;
-        if (child.type.name === 'TableHeader')
+        if (!child) {
+            return;
+        }
+        if (child.type.name === 'TableHeader') {
             tableHeader = child;
-        else
+        } else {
             tableRows.push(child);
+        }
     });
     return (
         <table
-            className={'table table-light table-striped table-borderless text-center rounded-3 shadow-lg mx-auto ' + className}>
+            className={ 'table table-light table-striped table-borderless text-center rounded-3 shadow-lg mx-auto ' + className }>
             <thead>
-            {tableHeader}
+            { tableHeader }
             </thead>
             <tbody>
-            {tableRows}
+            { tableRows }
             </tbody>
         </table>
     );
@@ -62,7 +66,7 @@ type TableRowProps = {
 export function TableRow(props: TableRowProps) {
     const {children} = props;
     return <tr>
-        {React.Children.map(children, child => {
+        { React.Children.map(children, child => {
             if (child?.type === 'th') {
                 return React.cloneElement(child,
                     {
@@ -73,7 +77,7 @@ export function TableRow(props: TableRowProps) {
             if (child.type === 'td') {
                 return child;
             }
-        })}
+        }) }
     </tr>;
 }
 

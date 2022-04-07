@@ -1,10 +1,12 @@
-import {dateFnsLocalizer} from 'react-big-calendar';
-import {format, getDay, parse, startOfWeek} from 'date-fns';
+import { dateFnsLocalizer } from 'react-big-calendar';
+import { format, getDay, parse, startOfWeek } from 'date-fns';
 import enCA from 'date-fns/locale/en-CA';
 
 export const regex = Object.freeze({
     email: /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i,
     phone: /^\(?([0-9]{3})\)?[- ]?([0-9]{3})[- ]?([0-9]{4})$/,
+    password: /.{5,}/,
+    name: /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
 });
 
 export const preferences = Object.freeze({
@@ -38,7 +40,7 @@ export function stringToColor(string: string) {
 
     for (i = 0; i < 3; i++) {
         const value = (hash >> (i * 8)) & 0xff;
-        color += `00${value.toString(16)}`.substr(-2);
+        color += `00${ value.toString(16) }`.substr(-2);
     }
 
     return color;
@@ -49,12 +51,12 @@ export function stringAvatar(name: string) {
         sx: {
             bgcolor: stringToColor(name)
         },
-        children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
+        children: `${ name.split(' ')[0][0] }${ name.split(' ')[1][0] }`
     };
 }
 
 export function getCurrentTimezoneDate(date: Date) {
-   return new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000)
+    return new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
 }
 
 export function getBeginningOfWeek(date: string | Date) {

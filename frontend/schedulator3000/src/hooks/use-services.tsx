@@ -1,10 +1,10 @@
-import React, {createContext, useContext} from 'react';
-import {useSnackbar} from 'notistack';
-import {Employee} from '../models/User';
-import {Shift} from '../models/Shift';
-import {useDialog} from './use-dialog';
-import {Button, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
-import {ShiftsFromToDto} from '../models/ShiftsFromTo';
+import React, { createContext, PropsWithChildren, useContext } from 'react';
+import { useSnackbar } from 'notistack';
+import { Employee, EmployeeRegister } from '../models/User';
+import { Shift, ShiftWithoutId } from '../models/Shift';
+import { useDialog } from './use-dialog';
+import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { ShiftsFromToDto } from '../models/ShiftsFromTo';
 
 export enum METHODS {
     POST = 'POST',
@@ -33,7 +33,7 @@ export const requestInit = (method: METHODS, body?: any | string, isString?: boo
 
 const authContext: React.Context<IProviderServices> = createContext({} as IProviderServices);
 
-export function ServicesProvider({children}: { children: React.ReactNode }) {
+export function ServicesProvider({children}: PropsWithChildren<{}>) {
     const auth = useProvideServices();
     return React.createElement(authContext.Provider, {value: auth}, children);
 }
@@ -43,8 +43,8 @@ export const useServices = () => useContext(authContext);
 function useProvideManagerService() {
     const {enqueueSnackbar} = useSnackbar();
 
-    async function addEmployee(emailManager: string, employee: Employee): Promise<Employee | undefined> {
-        return await fetch(`/manager/employees/create/${emailManager}`, requestInit(METHODS.POST, employee)).then(
+    async function addEmployee(emailManager: string, employee: EmployeeRegister): Promise<Employee | undefined> {
+        return await fetch(`/manager/employees/create/${ emailManager }`, requestInit(METHODS.POST, employee)).then(
             response =>
                 response.json().then(
                     body => {
@@ -65,7 +65,7 @@ function useProvideManagerService() {
     }
 
     async function getEmployees(emailManager: string): Promise<Employee[]> {
-        return await fetch(`/manager/employees/${emailManager}`, requestInit(METHODS.GET)).then(
+        return await fetch(`/manager/employees/${ emailManager }`, requestInit(METHODS.GET)).then(
             response =>
                 response.json().then(
                     body => {
@@ -92,8 +92,8 @@ function useProvideShiftService() {
     const {enqueueSnackbar} = useSnackbar();
     let [openDialog, closeDialog] = useDialog();
 
-    async function getShifts(endpoint:string, body: ShiftsFromToDto): Promise<Shift[]> {
-        return await fetch(`/shifts/${endpoint}`, requestInit(METHODS.POST, body)).then(
+    async function getShifts(endpoint: string, body: ShiftsFromToDto): Promise<Shift[]> {
+        return await fetch(`/shifts/${ endpoint }`, requestInit(METHODS.POST, body)).then(
             response =>
                 response.json().then(
                     body => {
@@ -113,7 +113,7 @@ function useProvideShiftService() {
     const getShiftsManager = async (body: ShiftsFromToDto): Promise<Shift[]> => getShifts('manager', body);
     const getShiftsEmployee = async (body: ShiftsFromToDto): Promise<Shift[]> => getShifts('employee', body);
 
-    async function create(body: any): Promise<Shift | null> {
+    async function create(body: ShiftWithoutId): Promise<Shift | null> {
         return await fetch(`/shifts/manager/create`, requestInit(METHODS.POST, body)).then(
             response =>
                 response.json().then(
@@ -135,7 +135,7 @@ function useProvideShiftService() {
                     }));
     }
 
-    async function updateShift(body: any): Promise<Shift | null> {
+    async function updateShift(body: Shift): Promise<Shift | null> {
         return await fetch(`/shifts/manager/update`, requestInit(METHODS.PUT, body)).then(
             response =>
                 response.json().then(
@@ -157,7 +157,7 @@ function useProvideShiftService() {
                     }));
     }
 
-    async function deleteShift(id: any): Promise<boolean> {
+    async function deleteShift(id: number): Promise<boolean> {
         let canceled = await new Promise<boolean>(resolve => {
             openDialog({
                 children: (
@@ -171,16 +171,16 @@ function useProvideShiftService() {
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={() => {
+                            <Button onClick={ () => {
                                 resolve(false);
                                 closeDialog();
-                            }} variant="contained" autoFocus>
+                            } } variant="contained" autoFocus>
                                 Confirm
                             </Button>
-                            <Button onClick={() => {
+                            <Button onClick={ () => {
                                 resolve(true);
                                 closeDialog();
-                            }}>Cancel</Button>
+                            } }>Cancel</Button>
                         </DialogActions>
                     </>
                 )
@@ -191,7 +191,7 @@ function useProvideShiftService() {
             return Promise.resolve(false);
         }
 
-        return await fetch(`/shifts/manager/delete/${id}`, requestInit(METHODS.DELETE)).then(
+        return await fetch(`/shifts/manager/delete/${ id }`, requestInit(METHODS.DELETE)).then(
             response =>
                 response.json().then(
                     body => {
@@ -234,12 +234,12 @@ function useProvideServices(): IProviderServices {
 export type IShiftService = {
     getShiftsManager: (body: ShiftsFromToDto) => Promise<Shift[]>,
     getShiftsEmployee: (body: ShiftsFromToDto) => Promise<Shift[]>,
-    create: (body: any) => Promise<Shift | null>,
-    updateShift: (body: any) => Promise<Shift | null>,
-    deleteShift: (id: any) => Promise<boolean>
+    create: (body: ShiftWithoutId) => Promise<Shift | null>,
+    updateShift: (body: Shift) => Promise<Shift | null>,
+    deleteShift: (id: number) => Promise<boolean>
 }
 export type IManagerService = {
-    addEmployee: (emailManager: string, employee: Employee) => Promise<Employee | undefined>,
+    addEmployee: (emailManager: string, employee: EmployeeRegister) => Promise<Employee | undefined>,
     getEmployees: (emailManager: string) => Promise<Employee[]>,
 }
 

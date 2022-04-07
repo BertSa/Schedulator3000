@@ -1,11 +1,11 @@
-import React, {createContext, useCallback, useContext, useEffect, useState} from 'react';
-import {Employee, Manager} from '../models/User';
-import {useSnackbar} from 'notistack';
-import {METHODS, requestInit} from './use-services';
-import {PasswordChangeDto} from '../models/PasswordChangeDto';
-import {NewEmployeePage} from '../components/employee/NewEmployeePage';
+import React, { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
+import { Employee, Manager } from '../models/User';
+import { useSnackbar } from 'notistack';
+import { METHODS, requestInit } from './use-services';
+import { PasswordChangeDto } from '../models/PasswordChangeDto';
+import { NewEmployeePage } from '../components/employee/NewEmployeePage';
 
-const authContext: React.Context<IProviderAuth> = createContext({} as IProviderAuth);
+const authContext: React.Context<ProviderAuth> = createContext({} as ProviderAuth);
 
 export function AuthProvider({children}: { children: React.ReactNode }) {
     const auth = useProvideAuth();
@@ -14,7 +14,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
 
 export const useAuth = () => useContext(authContext);
 
-export function RequireAuth({children}: { children: React.ReactNode }): any {
+export function RequireAuth({children}: PropsWithChildren<{}>): any {
     const auth = useAuth();
 
     if (auth.isAuthenticated()) {
@@ -24,7 +24,7 @@ export function RequireAuth({children}: { children: React.ReactNode }): any {
     return null;
 }
 
-export function RequireAdmin({children}: { children: React.ReactNode }): any {
+export function RequireAdmin({children}: PropsWithChildren<{}>): any {
     const auth = useAuth();
 
     if (auth.isManager()) {
@@ -34,7 +34,7 @@ export function RequireAdmin({children}: { children: React.ReactNode }): any {
     return null;
 }
 
-export function RequireEmployee({children}: { children: React.ReactNode }): any {
+export function RequireEmployee({children}: PropsWithChildren<{}>): any {
     const auth = useAuth();
 
     if (auth.isEmployee()) {
@@ -48,7 +48,7 @@ export function RequireEmployee({children}: { children: React.ReactNode }): any 
     return null;
 }
 
-export function RequireNoAuth({children}: { children: React.ReactNode }): any {
+export function RequireNoAuth({children}: PropsWithChildren<{}>): any {
     let auth = useAuth();
 
     if (auth.isAuthenticated()) {
@@ -58,15 +58,15 @@ export function RequireNoAuth({children}: { children: React.ReactNode }): any {
     return children;
 }
 
-function useProvideAuth(): IProviderAuth {
+function useProvideAuth(): ProviderAuth {
     const {enqueueSnackbar} = useSnackbar();
     const [user, setUser] = useState<Manager | Employee | undefined>(() => {
         if (sessionStorage.length === 0) {
             return undefined;
         }
 
-        let item: any = sessionStorage.getItem('user');
-        if (item === typeof undefined || item === typeof null) {
+        let item: string | null = sessionStorage.getItem('user');
+        if (item === null || item === typeof undefined || item === typeof null) {
             return undefined;
         }
 
@@ -96,17 +96,12 @@ function useProvideAuth(): IProviderAuth {
         }
     }, [user, isManager, isEmployee]);
 
-    const signInManager = async (email: string, password: string): Promise<boolean> => {
-        return signIn('manager', Manager.prototype, email, password);
-    };
-
-    const signInEmployee = async (email: string, password: string): Promise<boolean> => {
-        return signIn('employee', Employee.prototype, email, password);
-    };
+    const signInManager = async (email: string, password: string): Promise<boolean> => signIn('manager', Manager.prototype, email, password);
+    const signInEmployee = async (email: string, password: string): Promise<boolean> => signIn('employee', Employee.prototype, email, password);
 
 
-    const signIn = async (endpoint: string, prototype: any, email: string, password: string): Promise<boolean> => {
-        return await fetch(`/${endpoint}/signin`, requestInit(METHODS.POST, {email: email, password: password})).then(
+    const signIn = async (endpoint: string, prototype: Manager | Employee, email: string, password: string): Promise<boolean> => {
+        return await fetch(`/${ endpoint }/signin`, requestInit(METHODS.POST, {email: email, password: password})).then(
             response => {
                 return response.json().then(
                     body => {
@@ -156,17 +151,18 @@ function useProvideAuth(): IProviderAuth {
     };
 
     const setActive = (): void => {
-        if (isEmployee()){
-            setUser((prevState) => {
+        if (isEmployee()) {
+            setUser(prevState => {
                 const prevState1 = prevState as Employee;
                 prevState1.active = true;
                 return prevState1;
-            })
+            });
         }
     };
 
     const updatePassword = async (passwordChange: PasswordChangeDto): Promise<boolean> => {
         let endpoint: string;
+
 
         if (isManager()) {
             endpoint = 'manager';
@@ -178,7 +174,7 @@ function useProvideAuth(): IProviderAuth {
         }
 
 
-        return await fetch(`/${endpoint}/password/update`, requestInit(METHODS.POST, passwordChange)).then(
+        return await fetch(`/${ endpoint }/password/update`, requestInit(METHODS.POST, passwordChange)).then(
             response => {
                 return response.json().then(
                     body => {
@@ -217,7 +213,7 @@ function useProvideAuth(): IProviderAuth {
     };
 }
 
-type IProviderAuth = {
+type ProviderAuth = {
     updatePassword: (passwordChange: PasswordChangeDto) => Promise<boolean>;
     signInManager: (email: string, password: string) => Promise<boolean>;
     signInEmployee: (email: string, password: string) => Promise<boolean>;
