@@ -1,7 +1,6 @@
 package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
-import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.dtos.ManagerDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
@@ -102,12 +101,10 @@ public class ManagerControllerTest {
         public void shouldAddEmployee() throws Exception {
             // Arrange
             final Manager manager = Dummies.getDummyManager();
-            final EmployeeDto dummyEmployee = Dummies.getDummyEmployeeDto();
-            final Employee employee = dummyEmployee.mapToEmployee();
-            employee.setId(2L);
+            final Employee dummyEmployee = Dummies.getDummyEmployee(2L);
 
             when(managerService.createEmployee(any(), any()))
-                    .thenReturn(employee);
+                    .thenReturn(dummyEmployee);
 
             // Act
             MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
@@ -123,16 +120,14 @@ public class ManagerControllerTest {
             assertThat(response.getStatus())
                     .isEqualTo(HttpStatus.CREATED.value());
             assertThat(actualEmployee)
-                    .isEqualTo(employee);
+                    .isEqualTo(dummyEmployee);
         }
 
         @Test
         @DisplayName("should return error message when addEmployee is unsuccessful")
         public void shouldReturnBadRequest_whenServiceThrowException() throws Exception {
             // Arrange
-            final EmployeeDto dummyEmployee = Dummies.getDummyEmployeeDto();
-            final Employee employee = dummyEmployee.mapToEmployee();
-            employee.setId(2L);
+            final Employee dummyEmployee = Dummies.getDummyEmployee(2L);
 
             when(managerService.createEmployee(any(), any()))
                     .thenThrow(new IllegalArgumentException("Manager does not exist!"));

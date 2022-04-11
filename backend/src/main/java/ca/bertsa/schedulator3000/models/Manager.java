@@ -16,19 +16,19 @@ import java.util.List;
 @JsonIgnoreProperties
 public class Manager extends User {
 
-    @OneToMany(cascade = CascadeType.REMOVE)
     @JsonIgnore
+    @OneToMany(cascade = CascadeType.REMOVE)
     private List<VacationRequest> vacationRequests;
     @OneToMany
     private List<Holiday> holidays;
 
     public ManagerDto mapToDto() {
         final ManagerDto managerDto = new ManagerDto();
+        managerDto.setId(this.getId());
         managerDto.setEmail(this.getEmail());
         managerDto.setPassword(this.getPassword());
         managerDto.setPhone(this.getPhone());
         managerDto.setHolidays(this.getHolidays());
-        managerDto.setId(this.getId());
         return managerDto;
     }
 }

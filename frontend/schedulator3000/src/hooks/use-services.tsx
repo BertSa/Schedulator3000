@@ -3,8 +3,8 @@ import { useSnackbar } from 'notistack';
 import { Employee, EmployeeRegister } from '../models/User';
 import { Shift, ShiftWithoutId } from '../models/Shift';
 import { useDialog } from './use-dialog';
-import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { ShiftsFromToDto } from '../models/ShiftsFromTo';
+import { WarningDelete } from '../components/WarningDelete';
 
 export enum METHODS {
     POST = 'POST',
@@ -42,6 +42,8 @@ export const useServices = () => useContext(authContext);
 
 function useProvideManagerService() {
     const {enqueueSnackbar} = useSnackbar();
+    let [openDialog, closeDialog] = useDialog();
+
 
     async function addEmployee(emailManager: string, employee: EmployeeRegister): Promise<Employee | undefined> {
         return await fetch(`/manager/employees/create/${ emailManager }`, requestInit(METHODS.POST, employee)).then(
@@ -50,6 +52,39 @@ function useProvideManagerService() {
                     body => {
                         if (response.status === 201) {
                             enqueueSnackbar('Employee added!', {
+                                variant: 'success',
+                                autoHideDuration: 3000
+                            });
+                            return body as Employee;
+                        } else if (response.status === 400) {
+                            enqueueSnackbar(body.message, {
+                                variant: 'error',
+                                autoHideDuration: 3000
+                            });
+                        }
+                        return undefined;
+                    }));
+    }
+
+    async function fireEmployee(idEmployee: number, emailManager: string): Promise<Employee | undefined> {
+        let canceled = await new Promise<boolean>(resolve => {
+            openDialog({
+                children: <WarningDelete resolve={ resolve } closeDialog={ closeDialog } title={ 'Wait a minute!' }
+                                         text={ 'Are you sure you want to fire this employee?' } />,
+            });
+        });
+
+        if (canceled) {
+            return Promise.resolve(undefined);
+        }
+
+
+        return await fetch(`/manager/employees/${ idEmployee }/fire/${ emailManager }`, requestInit(METHODS.PUT)).then(
+            response =>
+                response.json().then(
+                    body => {
+                        if (response.status === 200) {
+                            enqueueSnackbar('Employee fired', {
                                 variant: 'success',
                                 autoHideDuration: 3000
                             });
@@ -84,7 +119,8 @@ function useProvideManagerService() {
 
     return {
         addEmployee,
-        getEmployees
+        getEmployees,
+        fireEmployee,
     };
 }
 
@@ -160,30 +196,8 @@ function useProvideShiftService() {
     async function deleteShift(id: number): Promise<boolean> {
         let canceled = await new Promise<boolean>(resolve => {
             openDialog({
-                children: (
-                    <>
-                        <DialogTitle id="alert-dialog-title">
-                            Wait a minute!
-                        </DialogTitle>
-                        <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                                Are you sure you want to delete this shift?
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={ () => {
-                                resolve(false);
-                                closeDialog();
-                            } } variant="contained" autoFocus>
-                                Confirm
-                            </Button>
-                            <Button onClick={ () => {
-                                resolve(true);
-                                closeDialog();
-                            } }>Cancel</Button>
-                        </DialogActions>
-                    </>
-                )
+                children: <WarningDelete resolve={ resolve } closeDialog={ closeDialog } title={ 'Wait a minute!' }
+                                         text={ 'Are you sure you want to delete this shift?' } />,
             });
         });
 
@@ -241,6 +255,7 @@ export type IShiftService = {
 export type IManagerService = {
     addEmployee: (emailManager: string, employee: EmployeeRegister) => Promise<Employee | undefined>,
     getEmployees: (emailManager: string) => Promise<Employee[]>,
+    fireEmployee: (idEmployee: number, emailManager: string) => Promise<Employee | undefined>,
 }
 
 type IProviderServices = {

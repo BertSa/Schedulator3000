@@ -1,7 +1,6 @@
 package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
-import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.dtos.PasswordChangeDto;
 import ca.bertsa.schedulator3000.dtos.ResponseMessage;
 import ca.bertsa.schedulator3000.services.EmployeeService;

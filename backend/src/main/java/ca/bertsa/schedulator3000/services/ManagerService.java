@@ -1,7 +1,6 @@
 package ca.bertsa.schedulator3000.services;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
-import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.dtos.ManagerDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
@@ -25,7 +24,7 @@ public class ManagerService {
         return employeeService.getAllByManager(manager);
     }
 
-    public Employee createEmployee(String emailManager, EmployeeDto dto) {
+    public Employee createEmployee(String emailManager, Employee dto) {
         final Manager manager = getOneByEmail(emailManager);
 
         return employeeService.create(dto, manager);
@@ -56,5 +55,15 @@ public class ManagerService {
         if (!managerRepository.existsByEmailIgnoreCase(managerEmail)) {
             throw new EntityNotFoundException("Employee with email " + managerEmail + " does not exist!");
         }
+    }
+
+    public Employee fireEmployee(Long id, String emailManager) {
+        assertExistsByEmail(emailManager);
+
+        final Employee employee = employeeService.getOneById(id);
+
+        employee.setActive(false);
+
+        return employeeService.update(employee);
     }
 }

@@ -13,5 +13,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     Employee getByEmailIgnoreCase(String email);
 
-    List<Employee> getAllByManager(Manager manager);
+    List<Employee> getAllByManagerAndActiveIsTrue(Manager manager);
 }

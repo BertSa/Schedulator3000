@@ -1,19 +1,20 @@
 import React from 'react';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { useDialog } from '../../hooks/use-dialog';
-import { Employee, EmployeeRegister, Manager } from '../../models/User';
+import { useDialog } from '../../../../hooks/use-dialog';
+import { Employee, EmployeeRegister, Manager } from '../../../../models/User';
 import { Button, Grid } from '@mui/material';
-import { FieldInput } from '../shared/form/FormFields';
-import { regex } from '../../utilities';
-import { IManagerService } from '../../hooks/use-services';
+import { FieldInput } from '../../../shared/form/FormFields';
+import { regex } from '../../../../utilities';
+import { IManagerService } from '../../../../hooks/use-services';
 
 type IRegisterEmployeeProps = {
     user: Manager,
     managerService: IManagerService,
-    setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>
+    setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>,
+    closeMainDialog:VoidFunction,
 }
 
-export function RegisterEmployee({user, managerService, setEmployees}: IRegisterEmployeeProps): React.ReactElement {
+export function RegisterEmployee({user, managerService, setEmployees, closeMainDialog}: IRegisterEmployeeProps): React.ReactElement {
     const {register, handleSubmit, formState: {errors}} = useForm({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
@@ -23,25 +24,13 @@ export function RegisterEmployee({user, managerService, setEmployees}: IRegister
 
     const submit: SubmitHandler<FieldValues> = (data, event) => {
         event?.preventDefault();
-        const {
-            firstName,
-            lastName,
-            email,
-            phone,
-            role
-        } = data;
+        const employee = data as EmployeeRegister;
 
-        let employee: EmployeeRegister = {
-            firstName,
-            lastName,
-            email,
-            phone,
-            role
-        };
         managerService.addEmployee(user.email, employee).then(
             employee => {
                 if (employee !== undefined) {
                     setEmployees((curentEmployees: Employee[]) => [...curentEmployees, employee]);
+                    closeMainDialog();
                     const defaultMessage = `Hi ${ employee.firstName } ${ employee.lastName } here's your password:`;
                     createDialog({
                         children: <form action={ `mailto:${ employee.email }` } method="post" encType="text/plain">
@@ -143,11 +132,18 @@ export function RegisterEmployee({user, managerService, setEmployees}: IRegister
                 <Grid item xs={ 12 } justifyContent={ 'center' }>
                     <Button
                         type="submit"
-                        fullWidth
                         variant="contained"
                         color="primary"
                     >
                         Submit
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="text"
+                        color="primary"
+                        onClick={ () => closeMainDialog()}
+                    >
+                        Cancel
                     </Button>
                 </Grid>
             </Grid>

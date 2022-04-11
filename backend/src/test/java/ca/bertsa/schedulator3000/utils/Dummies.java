@@ -1,6 +1,5 @@
 package ca.bertsa.schedulator3000.utils;
 
-import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 
@@ -34,16 +33,6 @@ public class Dummies {
         manager.setPassword("password");
         manager.setPhone("1234567890");
         return manager;
-    }
-
-    public static EmployeeDto getDummyEmployeeDto() {
-        final EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setFirstName("John");
-        employeeDto.setLastName("Doe");
-        employeeDto.setEmail("dummyEmployee@email.com");
-        employeeDto.setPhone("1234567890");
-        employeeDto.setRole("ROLE_MANAGER");
-        return employeeDto;
     }
 
     public static Employee getDummyEmployee(long id) {

@@ -1,7 +1,7 @@
 package ca.bertsa.schedulator3000.services;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
-import ca.bertsa.schedulator3000.dtos.EmployeeDto;
+import ca.bertsa.schedulator3000.exceptions.EmployeeInactiveException;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.repositories.EmployeeRepository;
 import ca.bertsa.schedulator3000.utils.Dummies;
@@ -37,27 +37,26 @@ class EmployeeServiceTests {
         @DisplayName("should create employee")
         void shouldCreateEmployee() {
             // Arrange
-            final EmployeeDto dummyEmployeeDto = Dummies.getDummyEmployeeDto();
+            final Employee dummyEmployeeDto = Dummies.getDummyEmployee(1L);
 
             when(employeeRepository.existsByEmailIgnoreCase(any()))
                     .thenReturn(false);
-            final Employee mappedEmployee = dummyEmployeeDto.mapToEmployee();
             when(employeeRepository.save(any()))
-                    .thenReturn(mappedEmployee);
+                    .thenReturn(dummyEmployeeDto);
 
             // Act
             final Employee actualEmployee = employeeService.create(dummyEmployeeDto, any());
 
             // Assert
             assertThat(actualEmployee)
-                    .isEqualTo(mappedEmployee);
+                    .isEqualTo(dummyEmployeeDto);
         }
 
         @Test
         @DisplayName("should throw exception when employee already exists")
         void shouldThrowIllegalArgumentException_whenEmailAlreadyUsed() {
             // Arrange
-            final EmployeeDto dummyEmployeeDto = Dummies.getDummyEmployeeDto();
+            final Employee dummyEmployeeDto = Dummies.getDummyEmployee(1L);
 
             when(employeeRepository.existsByEmailIgnoreCase(any()))
                     .thenReturn(true);
@@ -83,7 +82,7 @@ class EmployeeServiceTests {
     class SignInTests {
         @Test
         @DisplayName("should return employee")
-        void shouldReturnEmployee() {
+        void shouldReturnEmployee() throws EmployeeInactiveException {
             // Arrange
             final Employee dummyEmployee = Dummies.getDummyEmployee(1L);
 

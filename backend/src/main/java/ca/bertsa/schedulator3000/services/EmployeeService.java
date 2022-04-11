@@ -1,8 +1,8 @@
 package ca.bertsa.schedulator3000.services;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
-import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.dtos.PasswordChangeDto;
+import ca.bertsa.schedulator3000.exceptions.EmployeeInactiveException;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.EmployeeRepository;
@@ -33,26 +33,29 @@ public class EmployeeService {
         return employee;
     }
 
-    public Employee create(EmployeeDto dto, Manager manager) {
-        Assert.notNull(dto, "Employee cannot be null!");
+    public Employee create(Employee employee, Manager manager) {
+        Assert.notNull(employee, "Employee cannot be null!");
         Assert.isTrue(
-                !employeeRepository.existsByEmailIgnoreCase(dto.getEmail()),
-                "Employee with email " + dto.getEmail() + " already exists!");
+                !employeeRepository.existsByEmailIgnoreCase(employee.getEmail()),
+                "Employee with email " + employee.getEmail() + " already exists!");
 
-        Employee employee = dto.mapToEmployee();
         employee.setManager(manager);
         employee.setPassword(UUID.randomUUID().toString());
 
         return employeeRepository.save(employee);
     }
 
-    public Employee signIn(ConnectionDto dto) {
+    public Employee signIn(ConnectionDto dto) throws EmployeeInactiveException {
         Assert.notNull(dto, "Email and password cannot be null!");
 
         Employee employee = employeeRepository.getByEmailIgnoreCaseAndPassword(dto.getEmail(), dto.getPassword());
 
         if (employee == null) {
             throw new EntityNotFoundException("Invalid email or password!");
+        }
+
+        if (Boolean.FALSE.equals(employee.getActive())) {
+            throw new EmployeeInactiveException("Employee is not active!");
         }
 
         return employee;
@@ -67,17 +70,20 @@ public class EmployeeService {
     }
 
     public List<Employee> getAllByManager(Manager manager) {
-        return employeeRepository.getAllByManager(manager);
+        return employeeRepository.getAllByManagerAndActiveIsTrue(manager);
     }
 
-    public EmployeeDto updatePassword(PasswordChangeDto dto) {
+    public Employee updatePassword(PasswordChangeDto dto) {
         final Employee employee = employeeRepository.getByEmailIgnoreCaseAndPassword(dto.getEmail(), dto.getCurrentPassword());
 
         employee.setPassword(dto.getNewPassword());
         employee.setActive(true);
 
-        final Employee save = employeeRepository.save(employee);
-        return save.mapToDto();
+        return employeeRepository.save(employee);
+    }
+
+    public Employee update(Employee employee) {
+        return employeeRepository.save(employee);
     }
 }
 

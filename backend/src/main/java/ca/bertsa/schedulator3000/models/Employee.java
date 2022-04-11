@@ -1,10 +1,10 @@
 package ca.bertsa.schedulator3000.models;
 
-import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -21,19 +21,9 @@ public class Employee extends User {
     private String lastName;
     @NotBlank
     private String role;
+    @Nullable
     private Boolean active = null;
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     private Manager manager;
-
-
-    public EmployeeDto mapToDto() {
-        EmployeeDto employeeDto = new EmployeeDto();
-        employeeDto.setId(this.getId());
-        employeeDto.setFirstName(this.getFirstName());
-        employeeDto.setLastName(this.getLastName());
-        employeeDto.setRole(this.getRole());
-        employeeDto.setActive(this.getActive());
-        return employeeDto;
-    }
 }

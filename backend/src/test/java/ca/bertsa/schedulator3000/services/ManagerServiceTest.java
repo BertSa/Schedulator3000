@@ -1,7 +1,6 @@
 package ca.bertsa.schedulator3000.services;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
-import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.ManagerRepository;
@@ -80,20 +79,19 @@ class ManagerServiceTest {
         public void shouldAddEmployeeToManager() {
             // Arrange
             final Manager dummyManager = Dummies.getDummyManager();
-            final EmployeeDto dummyEmployeeDto = Dummies.getDummyEmployeeDto();
-            final Employee employee = dummyEmployeeDto.mapToEmployee();
+            final Employee dummyEmployeeDto = Dummies.getDummyEmployee(1L);
 
             when(managerRepository.getByEmailIgnoreCase(any()))
                     .thenReturn(dummyManager);
             when(employeeService.create(any(), any()))
-                    .thenReturn(employee);
+                    .thenReturn(dummyEmployeeDto);
 
             // Act
             final Employee actualEmployee = managerService.createEmployee(dummyManager.getEmail(), dummyEmployeeDto);
 
             // Assert
             assertThat(actualEmployee)
-                    .isEqualTo(employee);
+                    .isEqualTo(dummyEmployeeDto);
         }
 
         @Test
@@ -106,7 +104,7 @@ class ManagerServiceTest {
 
             // Act — Assert
             assertThrows(EntityNotFoundException.class,
-                    () -> managerService.createEmployee(emailManager, Dummies.getDummyEmployeeDto()),
+                    () -> managerService.createEmployee(emailManager, Dummies.getDummyEmployee(1L)),
                     "Manager with email " + emailManager + " does not exist!");
         }
 

@@ -1,12 +1,7 @@
 import { Route, useRouteMatch } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../hooks/use-auth';
-import { Employee } from '../../models/User';
-import { Container } from '@mui/material';
+import React from 'react';
 import { Schedule } from './Schedule';
-import { useServices } from '../../hooks/use-services';
-import { EmployeeTable } from './EmployeeTable';
-import { RegisterEmployee } from './RegisterEmployee';
+import { EmployeeManagement } from './EmployeeManagement/EmployeeManagement';
 
 export function Dashboards(): React.ReactElement {
     const {path} = useRouteMatch();
@@ -16,26 +11,3 @@ export function Dashboards(): React.ReactElement {
     </>;
 }
 
-function EmployeeManagement(): React.ReactElement {
-    const [employees, setEmployees] = useState<Employee[]>([]);
-    const {managerService} = useServices();
-    const user = useAuth().getManager();
-
-    useEffect(() => {
-        managerService.getEmployees(user.email).then(
-            employees => setEmployees(employees));
-    }, [managerService, user.email]);
-
-    return <>
-        <Container maxWidth="sm"
-                   sx={ {
-                       display: 'flex',
-                       flexDirection: 'column',
-                       alignItems: 'center'
-                   } }>
-            <h2 className="text-center">Employee Management</h2>
-            <RegisterEmployee user={ user } managerService={ managerService } setEmployees={ setEmployees } />
-            <EmployeeTable employees={ employees } />
-        </Container>
-    </>;
-}

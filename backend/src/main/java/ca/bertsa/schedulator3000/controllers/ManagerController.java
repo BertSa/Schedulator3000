@@ -1,9 +1,8 @@
 package ca.bertsa.schedulator3000.controllers;
 
-
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
-import ca.bertsa.schedulator3000.dtos.EmployeeDto;
 import ca.bertsa.schedulator3000.dtos.ResponseMessage;
+import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.services.ManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,9 +48,9 @@ public class ManagerController {
     }
 
     @PostMapping("/employees/create/{emailManager}")
-    public ResponseEntity<?> createEmployee(@PathVariable String emailManager, @RequestBody EmployeeDto dto) {
+    public ResponseEntity<?> createEmployee(@PathVariable String emailManager, @RequestBody Employee employee) {
         try {
-            final var employeeAdded = managerService.createEmployee(emailManager, dto);
+            final var employeeAdded = managerService.createEmployee(emailManager, employee);
 
             return ResponseEntity
                     .status(HttpStatus.CREATED)
@@ -61,6 +60,20 @@ public class ManagerController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseMessage(e.getMessage()));
         }
+    }
 
+    @PutMapping("/employees/{id}/fire/{emailManager}")
+    public ResponseEntity<?> fireEmployee(@PathVariable Long id, @PathVariable String emailManager) {
+        try {
+            final var employeeFired = managerService.fireEmployee(id, emailManager);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(employeeFired);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage(e.getMessage()));
+        }
     }
 }
