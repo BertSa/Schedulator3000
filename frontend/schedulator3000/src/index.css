@@ -3,7 +3,12 @@
 
 body {
     margin: 0;
-    overflow-y: scroll;
+    overflow-y: scroll !important;
+    z-index: 0 !important;
+}
+
+body, .navbar{
+    padding: 0 !important;
 }
 
 .special-day {
@@ -18,6 +23,13 @@ code {
     padding-top: 80px;
 }
 
+.rbc-time-slot{
+    z-index: 10;
+}
+
+.rbc-event {
+    z-index: 20;
+}
 /*.scheduleContainer {*/
 /*    display: grid;*/
 /*    grid-gap: 0.2rem;*/

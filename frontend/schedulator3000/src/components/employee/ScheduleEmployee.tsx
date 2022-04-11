@@ -64,6 +64,7 @@ export function ScheduleEmployee() {
                 showMultiDayTimes={ true }
                 allDayAccessor={ 'allDay' }
                 selectable={ 'ignoreEvents' }
+
                 popup
                 toolbar={ preferences.calendar.toolbar }
                 startAccessor={ (event: Event) => new Date(event.start as Date) }
@@ -87,7 +88,27 @@ export function ScheduleEmployee() {
                             } }>
                                 { children }
                             </div>
-                        )
+                        ),
+                        dayColumnWrapper: ({children}) => (
+                            <div onContextMenu={ e => {/* handleContextMenu(e, event);*/
+                            } }>
+                                { children }
+                            </div>
+                        ),
+                        eventContainerWrapper: ({children}) => (
+                            <div onContextMenu={ e => {/* handleContextMenu(e, event);*/
+                            } }>
+                                { children }
+                            </div>
+                        ),
+                        dateCellWrapper: ({children}) => (
+                            <div onContextMenu={ e => {/* handleContextMenu(e, event);*/
+                            } }>
+                                { children }
+                            </div>
+                        ),
+
+
                     }
                 }
             />

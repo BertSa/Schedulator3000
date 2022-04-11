@@ -1,4 +1,4 @@
-import React, { ComponentType, useEffect, useState } from 'react';
+import React, { Children, ComponentType, useEffect, useState } from 'react';
 import { Calendar, CalendarProps, Event, Navigate, SlotInfo, stringOrDate, View, Views } from 'react-big-calendar';
 import withDragAndDrop, { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
 import { addDays } from 'date-fns';
@@ -16,6 +16,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { ShiftsFromToDto } from '../../models/ShiftsFromTo';
 import { ShiftEvent } from '../../models/ShiftEvent';
+import { object } from 'prop-types';
 
 enum SubmitType {
     CREATE,
@@ -31,7 +32,7 @@ const DnDCalendar = withDragAndDrop<ShiftEvent, Ress>(Calendar as ComponentType<
 type ContextMenuStates = {
     mouseX: number;
     mouseY: number;
-    shiftEvent: ShiftEvent;
+    shiftEvent: ShiftEvent | null;
 }
 
 type FormFieldValue = {
@@ -337,8 +338,7 @@ export const Schedule = () => {
         openMyDialog(SubmitType.CREATE);
     };
 
-
-    const handleContextMenu = (event: React.MouseEvent, shiftEvent: ShiftEvent) => {
+    const handleContextMenu = (event: React.MouseEvent, shiftEvent: ShiftEvent | null) => {
         event.preventDefault();
         setContextMenu(
             contextMenu === null
@@ -425,7 +425,14 @@ export const Schedule = () => {
                                 onView={ onView }
                                 onNavigate={ onNavigate }
                             />
-                        )
+                        ),
+                        timeSlotWrapper: ({children}) => {
+                            return React.cloneElement(children as any, {
+                                onContextMenu: (e: any) => {
+                                    handleContextMenu(e, null);
+                                },
+                            });
+                        },
                     }
                 }
             />
@@ -433,6 +440,10 @@ export const Schedule = () => {
                 open={ contextMenu !== null }
                 onClose={ handleClose }
                 anchorReference="anchorPosition"
+               onContextMenu={ (e:any) =>  {
+                   e.preventDefault();
+                   handleClose();
+               }}
                 anchorPosition={
                     contextMenu !== null ?
                         {top: contextMenu.mouseY, left: contextMenu.mouseX} :
@@ -440,12 +451,12 @@ export const Schedule = () => {
                 }
             >
                 <MenuItem onClick={ () => {
-                    if (contextMenu !== null) {
+                    if (contextMenu !== null && contextMenu.shiftEvent !== null) {
                         let shiftEvent = contextMenu.shiftEvent;
-                        setValue('start', shiftEvent.start as Date);
-                        setValue('end', shiftEvent.end as Date);
-                        setValue('employeeId', shiftEvent.resource.employeeId);
-                        setValue('shiftId', shiftEvent.resourceId);
+                        setValue('start', shiftEvent?.start as Date);
+                        setValue('end', shiftEvent?.end as Date);
+                        setValue('employeeId', shiftEvent?.resource.employeeId);
+                        setValue('shiftId', shiftEvent?.resourceId);
                         openMyDialog(SubmitType.UPDATE);
                     }
                     handleClose();
@@ -456,11 +467,11 @@ export const Schedule = () => {
                     <ListItemText>Edit</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={ () => {
-                    if (contextMenu !== null) {
+                    if (contextMenu !== null && contextMenu.shiftEvent !== null) {
                         let shiftEvent = contextMenu.shiftEvent;
-                        setValue('start', shiftEvent.start as Date);
-                        setValue('end', shiftEvent.end as Date);
-                        setValue('employeeId', shiftEvent.resource.employeeId);
+                        setValue('start', shiftEvent?.start as Date);
+                        setValue('end', shiftEvent?.end as Date);
+                        setValue('employeeId', shiftEvent?.resource.employeeId);
                         openMyDialog(SubmitType.CREATE);
                     }
                     handleClose();
@@ -471,8 +482,8 @@ export const Schedule = () => {
                     <ListItemText>Duplicate</ListItemText>
                 </MenuItem>
                 <MenuItem sx={ {alignContent: 'center'} } onClick={ () => {
-                    shiftService.deleteShift(contextMenu?.shiftEvent.resourceId as number).then(deleted =>
-                        deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent.resourceId))
+                    shiftService.deleteShift(contextMenu?.shiftEvent?.resourceId as number).then(deleted =>
+                        deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent?.resourceId))
                     );
                     handleClose();
                 } }>

@@ -120,7 +120,7 @@ export function Navbar() {
 
 
     return <>
-        <AppBar position="fixed">
+        <AppBar position="fixed" className="navbar">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Typography
