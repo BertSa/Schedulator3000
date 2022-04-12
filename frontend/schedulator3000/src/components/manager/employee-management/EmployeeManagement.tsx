@@ -4,13 +4,12 @@ import { EmployeeTable } from './employee-table/EmployeeTable';
 
 export function EmployeeManagement(): React.ReactElement {
     return <>
-        <Container maxWidth="md"
+        <Container maxWidth="lg"
                    sx={ {
                        display: 'flex',
                        flexDirection: 'column',
                        alignItems: 'center'
                    } }>
-            <h2 className="text-center">Employee Management</h2>
             <EmployeeTable />
         </Container>
     </>;

@@ -7,11 +7,12 @@ import { Controller, UnpackNestedValue, useForm } from 'react-hook-form';
 import { useAuth } from '../../../hooks/use-auth';
 import { useServices } from '../../../hooks/use-services';
 import { ShiftsFromToDto } from '../../../models/ShiftsFromTo';
-import { addDays, differenceInDays, differenceInMinutes, format, getDay, hoursToMinutes, minutesToHours } from 'date-fns';
+import { addDays, addWeeks, differenceInDays, differenceInMinutes, format, getDay, hoursToMinutes, minutesToHours, subWeeks } from 'date-fns';
 import { Shift, ShiftWithoutId } from '../../../models/Shift';
 import { useDialog } from '../../../hooks/use-dialog';
 import { TimePicker } from '@mui/lab';
 import { SubmitType } from './Schedule';
+import { ScheduleTableToolbar } from './ScheduleTableToolbar';
 
 
 type FormFieldValue = {
@@ -265,7 +266,7 @@ export function ScheduleTable() {
 
         return (
             <>
-                <TableRow sx={ {'& > *': {borderBottom: 'unset'}}}>
+                <TableRow sx={ {'& > *': {borderBottom: 'unset'}} }>
                     <TableCell>
                         <IconButton
                             aria-label="expand row"
@@ -279,7 +280,7 @@ export function ScheduleTable() {
                         { employee.firstName } { employee.lastName }
                     </TableCell>
                     { shifts.map((day, key) =>
-                        <TableCell key={ key } align="center" sx={{cursor: "pointer"}} onClick={ () => {
+                        <TableCell key={ key } align="center" sx={ {cursor: 'pointer'} } onClick={ () => {
                             reset();
                             setValue('start', day[0]?.startTime ?? addDays(curentWeek, key));
                             setValue('end', day[0]?.endTime ?? addDays(curentWeek, key));
@@ -314,6 +315,10 @@ export function ScheduleTable() {
     return (
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
+                <ScheduleTableToolbar
+                    currentWeek = { getDateOfDay(0) }
+                    prev={ () => setCurrentWeek(curentWeek => subWeeks(curentWeek, 1)) }
+                    next={ () => setCurrentWeek(curentWeek => addWeeks(curentWeek, 1)) } />
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>

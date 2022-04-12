@@ -35,7 +35,7 @@ export function EmployeeTableToolbar({selected, addEmployee, fireEmployee, editE
             ) : (
                 <Typography
                     sx={ {flex: '1 1 100%'} }
-                    variant="h6"
+                    variant="h5"
                     id="tableTitle"
                     component="div"
                 >
@@ -45,7 +45,7 @@ export function EmployeeTableToolbar({selected, addEmployee, fireEmployee, editE
             { selected !== null ? (
                 <>
                     <Tooltip title="Edit">
-                        <IconButton onClick={editEmployee}>
+                        <IconButton onClick={ editEmployee }>
                             <Edit />
                         </IconButton>
                     </Tooltip>
@@ -55,12 +55,13 @@ export function EmployeeTableToolbar({selected, addEmployee, fireEmployee, editE
                         </IconButton>
                     </Tooltip>
                 </>
-            ) : (
-                <Tooltip title="Add new employee">
-                    <IconButton onClick={ addEmployee }>
-                        <Add />
-                    </IconButton>
-                </Tooltip>
+            ) : (<>
+                    <Tooltip title="Add new employee">
+                        <IconButton onClick={ addEmployee }>
+                            <Add />
+                        </IconButton>
+                    </Tooltip>
+                </>
             ) }
         </Toolbar>
     );

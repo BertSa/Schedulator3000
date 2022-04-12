@@ -3,7 +3,7 @@ import { Calendar, CalendarProps, Event, Navigate, SlotInfo, stringOrDate, View,
 import withDragAndDrop, { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
 import { addDays } from 'date-fns';
 import { Controller, UnpackNestedValue, useForm } from 'react-hook-form';
-import { Avatar, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import { Avatar, Button, Container, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/lab';
 import { Employee } from '../../../models/User';
@@ -359,90 +359,91 @@ export const Schedule = () => {
 
 
     return (<>
-            <DnDCalendar
-                defaultView={ Views.WEEK }
-                defaultDate={ getBeginningOfWeek(new Date()) }
-                views={ [Views.WEEK, Views.DAY] }
-                events={ events }
-                localizer={ localizer }
-                style={ {
-                    height: 500,
-                    colorScheme: 'dark',
-                    color: '#fff'
-                } }
-                onEventDrop={ onEventDrop }
-                onEventResize={ onEventResize }
-                step={ preferences.calendar.step }
-                timeslots={ preferences.calendar.timeslots }
-                scrollToTime={ preferences.calendar.scrollToTime }
-                showMultiDayTimes={ true }
-                allDayAccessor={ 'allDay' }
-                selectable={ 'ignoreEvents' }
-                popup
-                toolbar={ preferences.calendar.toolbar }
-                startAccessor={ (event: Event) => new Date(event.start as Date) }
-                onSelectEvent={ (data) => {
-                    setValue('start', data.start as Date);
-                    setValue('end', data.end as Date);
-                    setValue('employeeId', data.resource.employeeId);
-                    setValue('shiftId', data.resourceId);
-                    openMyDialog(SubmitType.UPDATE);
-                } }
-                onSelectSlot={ handleSelect }
-                min={ new Date('2022-03-19T04:00:00.000Z') }
-                max={ new Date('2022-03-20T03:59:00.000Z') }
-                resizable
-                dayLayoutAlgorithm={ 'overlap' }
-                eventPropGetter={ (event: Event) => {
-                    let employee = employees.find(employee => employee.id === event.resource.employeeId);
-                    let fullName = employee?.lastName + ' ' + employee?.firstName;
-                    let eventProps = {
-                        style: {
-                            backgroundColor: stringToColor(fullName),
-                            color: '#fff',
-                            border: 'none'
+            <Container maxWidth="lg">
+                <DnDCalendar
+                    defaultView={ Views.WEEK }
+                    defaultDate={ getBeginningOfWeek(new Date()) }
+                    views={ [Views.WEEK, Views.DAY] }
+                    events={ events }
+                    localizer={ localizer }
+                    style={ {
+                        colorScheme: 'dark',
+                        color: '#fff'
+                    } }
+                    onEventDrop={ onEventDrop }
+                    onEventResize={ onEventResize }
+                    step={ preferences.calendar.step }
+                    timeslots={ preferences.calendar.timeslots }
+                    scrollToTime={ preferences.calendar.scrollToTime }
+                    showMultiDayTimes={ true }
+                    allDayAccessor={ 'allDay' }
+                    selectable={ 'ignoreEvents' }
+                    popup
+                    toolbar={ preferences.calendar.toolbar }
+                    startAccessor={ (event: Event) => new Date(event.start as Date) }
+                    onSelectEvent={ (data) => {
+                        setValue('start', data.start as Date);
+                        setValue('end', data.end as Date);
+                        setValue('employeeId', data.resource.employeeId);
+                        setValue('shiftId', data.resourceId);
+                        openMyDialog(SubmitType.UPDATE);
+                    } }
+                    onSelectSlot={ handleSelect }
+                    min={ new Date('2022-03-19T04:00:00.000Z') }
+                    max={ new Date('2022-03-20T03:59:00.000Z') }
+                    resizable
+                    dayLayoutAlgorithm={ 'overlap' }
+                    eventPropGetter={ (event: Event) => {
+                        let employee = employees.find(employee => employee.id === event.resource.employeeId);
+                        let fullName = employee?.lastName + ' ' + employee?.firstName;
+                        let eventProps = {
+                            style: {
+                                backgroundColor: stringToColor(fullName),
+                                color: '#fff',
+                                border: 'none'
+                            }
+                        };
+                        if (event.start?.getDay() === 6 || event.start?.getDay() === 15) {
+                            eventProps.style.backgroundColor = '#f44336';
+                            eventProps.style.color = '#fff';
                         }
-                    };
-                    if (event.start?.getDay() === 6 || event.start?.getDay() === 15) {
-                        eventProps.style.backgroundColor = '#f44336';
-                        eventProps.style.color = '#fff';
-                    }
 
-                    return eventProps;
-                } }
-                components={
-                    {
-                        eventWrapper: ({event, children}) => (
-                            <div onContextMenu={ e => handleContextMenu(e, event) }>
-                                { children }
-                            </div>
-                        ),
-                        toolbar: ({date, view, onView, onNavigate}) => (
-                            <ToolbarCalendar
-                                date={ date }
-                                view={ view }
-                                onView={ onView }
-                                onNavigate={ onNavigate }
-                            />
-                        ),
-                        timeSlotWrapper: ({children}) => {
-                            return React.cloneElement(children as any, {
-                                onContextMenu: (e: any) => {
-                                    handleContextMenu(e, null);
-                                },
-                            });
-                        },
+                        return eventProps;
+                    } }
+                    components={
+                        {
+                            eventWrapper: ({event, children}) => (
+                                <div onContextMenu={ e => handleContextMenu(e, event) }>
+                                    { children }
+                                </div>
+                            ),
+                            toolbar: ({date, view, onView, onNavigate}) => (
+                                <ToolbarCalendar
+                                    date={ date }
+                                    view={ view }
+                                    onView={ onView }
+                                    onNavigate={ onNavigate }
+                                />
+                            ),
+                            timeSlotWrapper: ({children}) => {
+                                return React.cloneElement(children as any, {
+                                    onContextMenu: (e: any) => {
+                                        handleContextMenu(e, null);
+                                    },
+                                });
+                            },
+                        }
                     }
-                }
-            />
+                />
+            </Container>
             <Menu
                 open={ contextMenu !== null }
                 onClose={ handleClose }
                 anchorReference="anchorPosition"
-               onContextMenu={ (e:any) =>  {
-                   e.preventDefault();
-                   handleClose();
-               }}
+                onContextMenu={ (e: any) => {
+                    e.preventDefault();
+                    handleClose();
+                } }
                 anchorPosition={
                     contextMenu !== null ?
                         {top: contextMenu.mouseY, left: contextMenu.mouseX} :

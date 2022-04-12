@@ -59,11 +59,11 @@ export function EmployeeTable() {
                 <TableHead>
                     <TableRow>
                         <TableCell>#</TableCell>
-                        <TableCell align="right">First Name</TableCell>
-                        <TableCell align="right">Last Name</TableCell>
-                        <TableCell align="right">Email</TableCell>
-                        <TableCell align="right">Phone</TableCell>
-                        <TableCell align="right">Role</TableCell>
+                        <TableCell align="center">First Name</TableCell>
+                        <TableCell align="center">Last Name</TableCell>
+                        <TableCell align="center">Email</TableCell>
+                        <TableCell align="center">Phone</TableCell>
+                        <TableCell align="center">Role</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -76,11 +76,11 @@ export function EmployeeTable() {
                             <TableCell component="th" scope="row">
                                 { employee.id }
                             </TableCell>
-                            <TableCell align="right">{ employee.firstName ?? 'N/A' }</TableCell>
-                            <TableCell align="right">{ employee.lastName ?? 'N/A' }</TableCell>
-                            <TableCell align="right">{ employee.email ?? 'N/A' }</TableCell>
-                            <TableCell align="right">{ employee.phone ?? 'N/A' }</TableCell>
-                            <TableCell align="right">{ employee.role ?? 'N/A' }</TableCell>
+                            <TableCell align="center">{ employee.firstName ?? 'N/A' }</TableCell>
+                            <TableCell align="center">{ employee.lastName ?? 'N/A' }</TableCell>
+                            <TableCell align="center">{ employee.email ?? 'N/A' }</TableCell>
+                            <TableCell align="center">{ employee.phone ?? 'N/A' }</TableCell>
+                            <TableCell align="center">{ employee.role ?? 'N/A' }</TableCell>
                         </TableRow>
                     )) }
                 </TableBody>
