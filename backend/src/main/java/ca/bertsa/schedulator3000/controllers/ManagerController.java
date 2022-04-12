@@ -32,7 +32,7 @@ public class ManagerController {
         }
     }
 
-    @GetMapping("/employees/{emailManager}")
+    @GetMapping("/{emailManager}/employees")
     public ResponseEntity<?> getAllEmployeeOfManager(@PathVariable String emailManager) {
         try {
             final var employees = managerService.getAllEmployee(emailManager);
@@ -47,7 +47,7 @@ public class ManagerController {
         }
     }
 
-    @PostMapping("/employees/create/{emailManager}")
+    @PostMapping("/{emailManager}/employees/create")
     public ResponseEntity<?> createEmployee(@PathVariable String emailManager, @RequestBody Employee employee) {
         try {
             final var employeeAdded = managerService.createEmployee(emailManager, employee);
@@ -62,7 +62,7 @@ public class ManagerController {
         }
     }
 
-    @PutMapping("/employees/{id}/fire/{emailManager}")
+    @PutMapping("/{emailManager}/employees/{id}/fire")
     public ResponseEntity<?> fireEmployee(@PathVariable Long id, @PathVariable String emailManager) {
         try {
             final var employeeFired = managerService.fireEmployee(id, emailManager);

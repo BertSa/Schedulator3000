@@ -70,7 +70,7 @@ public class EmployeeService {
     }
 
     public List<Employee> getAllByManager(Manager manager) {
-        return employeeRepository.getAllByManagerAndActiveIsTrue(manager);
+        return employeeRepository.getAllByManagerAndActiveIsTrueOrActiveIsNull(manager);
     }
 
     public Employee updatePassword(PasswordChangeDto dto) {
@@ -83,7 +83,19 @@ public class EmployeeService {
     }
 
     public Employee update(Employee employee) {
+        Assert.notNull(employee, "Employee cannot be null!");
         return employeeRepository.save(employee);
+    }
+
+    public Employee updateEmployee(Employee employee) {
+        final Employee oneByEmail = getOneByEmail(employee.getEmail());
+
+        oneByEmail.setFirstName(employee.getFirstName());
+        oneByEmail.setLastName(employee.getLastName());
+        oneByEmail.setPhone(employee.getPhone());
+        oneByEmail.setRole(employee.getRole());
+
+        return employeeRepository.save(oneByEmail);
     }
 }
 

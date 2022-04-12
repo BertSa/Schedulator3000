@@ -97,7 +97,7 @@ function useProvideAuth(): ProviderAuth {
     }, [user, isManager, isEmployee]);
 
     const signInManager = async (email: string, password: string): Promise<boolean> => signIn('manager', Manager.prototype, email, password);
-    const signInEmployee = async (email: string, password: string): Promise<boolean> => signIn('employee', Employee.prototype, email, password);
+    const signInEmployee = async (email: string, password: string): Promise<boolean> => signIn('employees', Employee.prototype, email, password);
 
 
     const signIn = async (endpoint: string, prototype: Manager | Employee, email: string, password: string): Promise<boolean> => {
@@ -111,7 +111,6 @@ function useProvideAuth(): ProviderAuth {
                                 variant: 'success',
                                 autoHideDuration: 3000
                             });
-                            return true;
                         }
                         if (response.status === 400) {
                             enqueueSnackbar(body.message, {
@@ -119,7 +118,7 @@ function useProvideAuth(): ProviderAuth {
                                 autoHideDuration: 3000
                             });
                         }
-                        return false;
+                        return response.ok;
                     }
                 );
             }
@@ -161,18 +160,12 @@ function useProvideAuth(): ProviderAuth {
     };
 
     const updatePassword = async (passwordChange: PasswordChangeDto): Promise<boolean> => {
-        let endpoint: string;
-
-
-        if (isManager()) {
-            endpoint = 'manager';
-        } else if (isEmployee()) {
-            endpoint = 'employee';
-            passwordChange.email = getEmployee().email;
-        } else {
+        if (!isAuthenticated()) {
             return false;
         }
 
+        let endpoint: string = isManager() ? 'manager' : 'employees';
+        passwordChange.email = user?.email;
 
         return await fetch(`/${ endpoint }/password/update`, requestInit(METHODS.POST, passwordChange)).then(
             response => {
@@ -184,7 +177,6 @@ function useProvideAuth(): ProviderAuth {
                                 variant: 'success',
                                 autoHideDuration: 3000
                             });
-                            return true;
                         }
                         if (response.status === 400) {
                             enqueueSnackbar(body.message, {
@@ -192,7 +184,7 @@ function useProvideAuth(): ProviderAuth {
                                 autoHideDuration: 3000
                             });
                         }
-                        return false;
+                        return response.ok;
                     }
                 );
             }

@@ -1,30 +1,29 @@
 import React from 'react';
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler } from 'react-hook-form';
 import { useDialog } from '../../../../hooks/use-dialog';
-import { Employee, EmployeeRegister, Manager } from '../../../../models/User';
-import { Button, Grid } from '@mui/material';
-import { FieldInput } from '../../../shared/form/FormFields';
-import { regex } from '../../../../utilities';
+import { Employee, EmployeeFormType, Manager } from '../../../../models/User';
 import { IManagerService } from '../../../../hooks/use-services';
+import { EmployeeForm } from './EmployeeForm';
 
 type IRegisterEmployeeProps = {
     user: Manager,
     managerService: IManagerService,
     setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>,
-    closeMainDialog:VoidFunction,
+    closeMainDialog: VoidFunction,
 }
 
-export function RegisterEmployee({user, managerService, setEmployees, closeMainDialog}: IRegisterEmployeeProps): React.ReactElement {
-    const {register, handleSubmit, formState: {errors}} = useForm({
-        mode: 'onSubmit',
-        reValidateMode: 'onSubmit'
-    });
+export function RegisterEmployee({
+                                     user,
+                                     managerService,
+                                     setEmployees,
+                                     closeMainDialog
+                                 }: IRegisterEmployeeProps): React.ReactElement {
     const [createDialog, closeDialog] = useDialog();
 
 
     const submit: SubmitHandler<FieldValues> = (data, event) => {
         event?.preventDefault();
-        const employee = data as EmployeeRegister;
+        const employee = data as EmployeeFormType;
 
         managerService.addEmployee(user.email, employee).then(
             employee => {
@@ -48,105 +47,7 @@ export function RegisterEmployee({user, managerService, setEmployees, closeMainD
 
     return (<>
             <h3>Register New Employee</h3>
-            <Grid container
-                  component="form"
-                  spacing={ 2 }
-                  onSubmit={ handleSubmit(submit) }
-                  noValidate>
-                <Grid item xs={ 12 } sm={ 6 }>
-                    <FieldInput register={ register }
-                                errors={ errors }
-                                name="firstName"
-                                label="First Name"
-                                autoComplete="given-name"
-                                type="text"
-                                validation={ {
-                                    required: 'Ce champ est obligatoire!',
-                                    pattern: {
-                                        value: /^[a-zA-Z]+$/,
-                                        message: 'Le prénom doit contenir que des lettres!'
-                                    }
-                                } } />
-                </Grid>
-                <Grid item xs={ 12 } sm={ 6 }>
-                    <FieldInput register={ register }
-                                errors={ errors }
-                                name="lastName"
-                                label="Last Name"
-                                type="text"
-                                autoComplete="family-name"
-                                validation={ {
-                                    required: 'This field is required!',
-                                    pattern: {
-                                        value: /^[a-zA-Z]+$/,
-                                        message: 'The last name must contain only letters!'
-                                    }
-                                } } />
-                </Grid>
-                <Grid item xs={ 12 }>
-                    <FieldInput label="Email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                register={ register }
-                                errors={ errors }
-                                validation={ {
-                                    required: 'This field is required',
-                                    pattern: {
-                                        value: regex.email,
-                                        message: 'Please enter a valid email address'
-                                    }
-                                } }
-                    />
-                </Grid>
-                <Grid item xs={ 12 }>
-                    <FieldInput register={ register }
-                                errors={ errors }
-                                name="phone"
-                                label="Phone Number"
-                                type="tel"
-                                autoComplete="tel-country-code"
-                                validation={ {
-                                    required: 'This field is required!',
-                                    pattern: {
-                                        value: regex.phone,
-                                        message: 'Phone number is not valid!'
-                                    }
-                                } } />
-                </Grid>
-                <Grid item xs={ 12 }>
-                    <FieldInput register={ register }
-                                errors={ errors }
-                                name="role"
-                                label="Role"
-                                type="text"
-                                autoComplete="role"
-                                validation={ {
-                                    required: 'This field is required!',
-                                    pattern: {
-                                        value: /^[a-zA-Z]+$/,
-                                        message: 'The role must contain only letters!'
-                                    }
-                                } } />
-                </Grid>
-                <Grid item xs={ 12 } justifyContent={ 'center' }>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                    >
-                        Submit
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="text"
-                        color="primary"
-                        onClick={ () => closeMainDialog()}
-                    >
-                        Cancel
-                    </Button>
-                </Grid>
-            </Grid>
+            <EmployeeForm submit={ submit } onCancel={ () => closeMainDialog() } />
         </>
     );
 }

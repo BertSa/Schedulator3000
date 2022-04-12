@@ -6,11 +6,12 @@ import { useServices } from '../../../../hooks/use-services';
 import { useAuth } from '../../../../hooks/use-auth';
 import { TableToolbar } from './TableToolbar';
 import { RegisterEmployee } from './RegisterEmployee';
+import { EditEmployee } from './EditEmployee';
 
 
 export function EmployeeTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const {managerService} = useServices();
+    const {managerService, employeeService} = useServices();
     const [openDialog, closeDialog] = useDialog();
     const user = useAuth().getManager();
     const [selected, setSelected] = useState<Employee | null>(null);
@@ -23,12 +24,19 @@ export function EmployeeTable() {
 
     const handleClick = (event: React.MouseEvent<unknown>, employee: Employee) => setSelected(selected => selected?.id === employee.id ? null : employee);
 
-    const createEmployee = () => {
+    const createEmployee = () =>
         openDialog({
             children: <RegisterEmployee user={ user } managerService={ managerService } setEmployees={ setEmployees }
                                         closeMainDialog={ closeDialog } />
         });
-    };
+
+    const editEmployee = () =>
+        openDialog({
+            children: <EditEmployee employee={ selected as Employee } employeeService={ employeeService }
+                                    setEmployees={ setEmployees }
+                                    closeMainDialog={ closeDialog } />
+        });
+
 
     const fireEmployee = () => {
         if (selected) {
@@ -45,7 +53,8 @@ export function EmployeeTable() {
 
     return <>
         <TableContainer component={ Paper }>
-            <TableToolbar selected={ selected } addEmployee={ createEmployee } fireEmployee={ fireEmployee } />
+            <TableToolbar selected={ selected } addEmployee={ createEmployee } fireEmployee={ fireEmployee }
+                          editEmployee={ editEmployee } />
             <Table sx={ {minWidth: 650} } aria-label="simple table">
                 <TableHead>
                     <TableRow>

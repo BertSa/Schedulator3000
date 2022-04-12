@@ -24,10 +24,11 @@ type FieldInputProps = {
     register: Function,
     errors: FieldErrors,
     validation: RegisterOptions,
+    disabled?: boolean
 };
 
 export function FieldInput(props: FieldInputProps) {
-    const {register, errors, label, name, type, validation, autoComplete, defaultValue} = props;
+    const {register, errors, label, name, type, validation, autoComplete, defaultValue, disabled} = props;
     return <TextField
         type={ type }
         label={ label }
@@ -38,5 +39,6 @@ export function FieldInput(props: FieldInputProps) {
         error={ !!errors[name] }
         helperText={ errors[name]?.message ?? ' ' }
         defaultValue={ defaultValue }
+        disabled={ disabled ?? false }
     />;
 }

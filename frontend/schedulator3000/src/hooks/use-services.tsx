@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, useContext } from 'react';
 import { useSnackbar } from 'notistack';
-import { Employee, EmployeeRegister } from '../models/User';
+import { Employee, EmployeeFormType } from '../models/User';
 import { Shift, ShiftWithoutId } from '../models/Shift';
 import { useDialog } from './use-dialog';
 import { ShiftsFromToDto } from '../models/ShiftsFromTo';
@@ -45,8 +45,8 @@ function useProvideManagerService() {
     let [openDialog, closeDialog] = useDialog();
 
 
-    async function addEmployee(emailManager: string, employee: EmployeeRegister): Promise<Employee | undefined> {
-        return await fetch(`/manager/employees/create/${ emailManager }`, requestInit(METHODS.POST, employee)).then(
+    async function addEmployee(emailManager: string, employee: EmployeeFormType): Promise<Employee | undefined> {
+        return await fetch(`/manager/${ emailManager }/employees/create`, requestInit(METHODS.POST, employee)).then(
             response =>
                 response.json().then(
                     body => {
@@ -79,7 +79,7 @@ function useProvideManagerService() {
         }
 
 
-        return await fetch(`/manager/employees/${ idEmployee }/fire/${ emailManager }`, requestInit(METHODS.PUT)).then(
+        return await fetch(`/manager/${ emailManager }/employees/${ idEmployee }/fire`, requestInit(METHODS.PUT)).then(
             response =>
                 response.json().then(
                     body => {
@@ -100,7 +100,7 @@ function useProvideManagerService() {
     }
 
     async function getEmployees(emailManager: string): Promise<Employee[]> {
-        return await fetch(`/manager/employees/${ emailManager }`, requestInit(METHODS.GET)).then(
+        return await fetch(`/manager/${ emailManager }/employees`, requestInit(METHODS.GET)).then(
             response =>
                 response.json().then(
                     body => {
@@ -235,13 +235,46 @@ function useProvideShiftService() {
     };
 }
 
+function useProvideEmployeeService(): IEmployeeService {
+    const {enqueueSnackbar} = useSnackbar();
+
+    async function updateEmployee(body: EmployeeFormType): Promise<Employee | null> {
+        return await fetch(`/employees`, requestInit(METHODS.PUT, body)).then(
+            response =>
+                response.json().then(
+                    body => {
+                        if (response.status === 200) {
+                            enqueueSnackbar('Employee Updated!', {
+                                variant: 'success',
+                                autoHideDuration: 3000
+                            });
+                            return body as Employee;
+                        }
+                        if (response.status === 400) {
+                            enqueueSnackbar(body.message, {
+                                variant: 'error',
+                                autoHideDuration: 3000
+                            });
+                        }
+                        return null;
+                    }));
+    }
+
+
+    return {
+        updateEmployee,
+    }
+}
+
 function useProvideServices(): IProviderServices {
     const managerService = useProvideManagerService();
     const shiftService = useProvideShiftService();
+    const employeeService = useProvideEmployeeService();
 
     return {
         managerService,
-        shiftService
+        employeeService,
+        shiftService,
     };
 }
 
@@ -252,14 +285,20 @@ export type IShiftService = {
     updateShift: (body: Shift) => Promise<Shift | null>,
     deleteShift: (id: number) => Promise<boolean>
 }
+
 export type IManagerService = {
-    addEmployee: (emailManager: string, employee: EmployeeRegister) => Promise<Employee | undefined>,
+    addEmployee: (emailManager: string, employee: EmployeeFormType) => Promise<Employee | undefined>,
     getEmployees: (emailManager: string) => Promise<Employee[]>,
     fireEmployee: (idEmployee: number, emailManager: string) => Promise<Employee | undefined>,
 }
 
-type IProviderServices = {
+export type IEmployeeService = {
+    updateEmployee: (body: EmployeeFormType) => Promise<Employee | null>;
+}
+
+export type IProviderServices = {
     managerService: IManagerService,
+    employeeService: IEmployeeService,
     shiftService: IShiftService,
 };
 

@@ -7,11 +7,11 @@ import { Employee } from '../../../../models/User';
 interface EnhancedTableToolbarProps {
     selected: Employee | null;
     addEmployee: any;
-    // editEmployee: Function;
+    editEmployee: any;
     fireEmployee: any;
 }
 
-export function TableToolbar({selected, addEmployee, fireEmployee}: EnhancedTableToolbarProps) {
+export function TableToolbar({selected, addEmployee, fireEmployee, editEmployee}: EnhancedTableToolbarProps) {
     return (
         <Toolbar
             sx={ {
@@ -45,7 +45,7 @@ export function TableToolbar({selected, addEmployee, fireEmployee}: EnhancedTabl
             { selected !== null ? (
                 <>
                     <Tooltip title="Edit">
-                        <IconButton disabled>
+                        <IconButton onClick={editEmployee}>
                             <Edit />
                         </IconButton>
                     </Tooltip>

@@ -69,4 +69,4 @@ export class Manager extends User {
 }
 
 
-export type EmployeeRegister = Omit<Employee, 'id' | 'active' | 'password'>
+export type EmployeeFormType = Omit<Employee, 'id' | 'active' | 'password'>
