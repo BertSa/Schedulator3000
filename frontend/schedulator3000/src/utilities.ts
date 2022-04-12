@@ -1,5 +1,5 @@
 import { dateFnsLocalizer } from 'react-big-calendar';
-import { format, getDay, parse, startOfWeek } from 'date-fns';
+import { format, getDay, parse, set, startOfWeek } from 'date-fns';
 import enCA from 'date-fns/locale/en-CA';
 
 export const regex = Object.freeze({
@@ -63,7 +63,15 @@ export function getBeginningOfWeek(date: string | Date) {
     date = new Date(date);
     let day = date.getDay();
     let diff = date.getDate() - day;
-    return new Date(date.setDate(diff));
+
+    let begin: Date = new Date(date.setDate(diff));
+    begin = set(begin, {
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0
+    });
+    return begin;
 }
 
 export function toLocalDateString(date: Date) {

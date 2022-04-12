@@ -17,7 +17,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { ShiftsFromToDto } from '../../../models/ShiftsFromTo';
 import { ShiftEvent } from '../../../models/ShiftEvent';
 
-enum SubmitType {
+export enum SubmitType {
     CREATE,
     UPDATE
 }
