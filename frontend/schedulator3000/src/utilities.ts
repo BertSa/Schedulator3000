@@ -28,22 +28,36 @@ export const localizer = dateFnsLocalizer({
     }
 });
 
+//https://github.com/erming/stringcolor/blob/gh-pages/stringcolor.js
 export function stringToColor(string: string) {
     let hash = 0;
-    let i;
+    console.log(string);
 
-    for (i = 0; i < string.length; i++) {
+    for (let i = 0; i < string.length; i++) {
         hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
 
-    let color = '#';
 
-    for (i = 0; i < 3; i++) {
-        const value = (hash >> (i * 8)) & 0xff;
-        color += `00${ value.toString(16) }`.substr(-2);
-    }
 
-    return color;
+    let color = ((hash >> 24) & 0xFF).toString(16) +
+        ((hash >> 16) & 0xFF).toString(16) +
+        ((hash >> 8) & 0xFF).toString(16) +
+        (hash & 0xFF).toString(16);
+
+    let num = parseInt(color, 16),
+        amt = Math.round(2.55 * -10),
+        R = (num >> 16) + amt,
+        G = (num >> 8 & 0x00FF) + amt,
+        B = (num & 0x0000FF) + amt;
+
+    console.log(num);
+    const s: string = (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255))
+        .toString(16)
+        .slice(1);
+    console.log(s);
+    return "#"+s;
 }
 
 export function stringAvatar(name: string) {

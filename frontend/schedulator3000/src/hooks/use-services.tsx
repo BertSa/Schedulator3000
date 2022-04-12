@@ -4,7 +4,7 @@ import { Employee, EmployeeFormType } from '../models/User';
 import { Shift, ShiftWithoutId } from '../models/Shift';
 import { useDialog } from './use-dialog';
 import { ShiftsFromToDto } from '../models/ShiftsFromTo';
-import { WarningDelete } from '../components/WarningDelete';
+import { DialogWarningDelete } from '../components/DialogWarningDelete';
 
 export enum METHODS {
     POST = 'POST',
@@ -69,8 +69,8 @@ function useProvideManagerService() {
     async function fireEmployee(idEmployee: number, emailManager: string): Promise<Employee | undefined> {
         let canceled = await new Promise<boolean>(resolve => {
             openDialog({
-                children: <WarningDelete resolve={ resolve } closeDialog={ closeDialog } title={ 'Wait a minute!' }
-                                         text={ 'Are you sure you want to fire this employee?' } />,
+                children: <DialogWarningDelete resolve={ resolve } closeDialog={ closeDialog } title={ 'Wait a minute!' }
+                                               text={ 'Are you sure you want to fire this employee?' } />,
             });
         });
 
@@ -196,8 +196,8 @@ function useProvideShiftService() {
     async function deleteShift(id: number): Promise<boolean> {
         let canceled = await new Promise<boolean>(resolve => {
             openDialog({
-                children: <WarningDelete resolve={ resolve } closeDialog={ closeDialog } title={ 'Wait a minute!' }
-                                         text={ 'Are you sure you want to delete this shift?' } />,
+                children: <DialogWarningDelete resolve={ resolve } closeDialog={ closeDialog } title={ 'Wait a minute!' }
+                                               text={ 'Are you sure you want to delete this shift?' } />,
             });
         });
 

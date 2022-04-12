@@ -26,14 +26,17 @@ export function EmployeeTable() {
 
     const createEmployee = () =>
         openDialog({
-            children: <RegisterEmployee user={ user } managerService={ managerService } setEmployees={ setEmployees }
+            children: <RegisterEmployee user={ user }
+                                        setEmployees={ setEmployees }
+                                        managerService={ managerService }
                                         closeMainDialog={ closeDialog } />
         });
 
     const editEmployee = () =>
         openDialog({
-            children: <EditEmployee employee={ selected as Employee } employeeService={ employeeService }
+            children: <EditEmployee employee={ selected as Employee }
                                     setEmployees={ setEmployees }
+                                    employeeService={ employeeService }
                                     closeMainDialog={ closeDialog } />
         });
 

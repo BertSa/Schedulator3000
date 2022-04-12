@@ -1,7 +1,7 @@
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import React from 'react';
 
-export function WarningDelete({resolve, closeDialog, title, text}: {resolve: any, closeDialog: any, title: string, text: string}) {
+export function DialogWarningDelete({resolve, closeDialog, title, text}: {resolve: any, closeDialog: any, title: string, text: string}) {
     return <>
         <DialogTitle id="alert-dialog-title">
             { title }
