@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
+import { AppBar, Box, Button, Chip, Container, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import React from 'react';
 import { AccountCircle, Menu as MenuIcon } from '@mui/icons-material';
 import { useAuth } from '../hooks/use-auth';
@@ -36,6 +36,16 @@ export function Navbar() {
             >
                 Schedule
             </Button>
+            <Button
+                onClick={ () => {
+                    history.push('/manager/schedulev2');
+                    handleCloseNavMenu();
+                } }
+                sx={ {my: 2, color: 'white', display: 'block'} }
+            >
+                Schedule V2
+                <Chip color="primary" size="small" title={ 'BETA' } label={ 'BETA' } />
+            </Button>
         </>;
     }
 
@@ -56,6 +66,15 @@ export function Navbar() {
                 handleCloseNavMenu();
             } }>
                 <Typography textAlign="center">Schedule</Typography>
+            </MenuItem>
+            <MenuItem onClick={ () => {
+                history.push('/manager/schedulev2');
+                handleCloseNavMenu();
+            } }>
+                <Typography textAlign="center">
+                    Schedule V2
+                    <Chip color="primary" size="small" title={ 'BETA' } label={ 'BETA' } />
+                </Typography>
             </MenuItem>
         </>;
     }

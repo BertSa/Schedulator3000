@@ -49,7 +49,7 @@ export function TableToolbar({selected, addEmployee, fireEmployee}: EnhancedTabl
                             <Edit />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Fire">
+                    <Tooltip title="Promote to customer">
                         <IconButton onClick={ fireEmployee }>
                             <LocalFireDepartment />
                         </IconButton>

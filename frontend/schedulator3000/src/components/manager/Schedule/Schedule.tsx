@@ -1,4 +1,4 @@
-import React, { Children, ComponentType, useEffect, useState } from 'react';
+import React, { ComponentType, useEffect, useState } from 'react';
 import { Calendar, CalendarProps, Event, Navigate, SlotInfo, stringOrDate, View, Views } from 'react-big-calendar';
 import withDragAndDrop, { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
 import { addDays } from 'date-fns';
@@ -6,17 +6,16 @@ import { Controller, UnpackNestedValue, useForm } from 'react-hook-form';
 import { Avatar, Button, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/lab';
-import { Employee } from '../../models/User';
-import { useAuth } from '../../hooks/use-auth';
-import { getBeginningOfWeek, getCurrentTimezoneDate, localizer, preferences, stringAvatar, stringToColor, toLocalDateString } from '../../utilities';
-import { useDialog } from '../../hooks/use-dialog';
-import { Shift, ShiftWithoutId } from '../../models/Shift';
-import { useServices } from '../../hooks/use-services';
+import { Employee } from '../../../models/User';
+import { useAuth } from '../../../hooks/use-auth';
+import { getBeginningOfWeek, getCurrentTimezoneDate, localizer, preferences, stringAvatar, stringToColor, toLocalDateString } from '../../../utilities';
+import { useDialog } from '../../../hooks/use-dialog';
+import { Shift, ShiftWithoutId } from '../../../models/Shift';
+import { useServices } from '../../../hooks/use-services';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { ShiftsFromToDto } from '../../models/ShiftsFromTo';
-import { ShiftEvent } from '../../models/ShiftEvent';
-import { object } from 'prop-types';
+import { ShiftsFromToDto } from '../../../models/ShiftsFromTo';
+import { ShiftEvent } from '../../../models/ShiftEvent';
 
 enum SubmitType {
     CREATE,
