@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from '@mui/material';
-import { EmployeeTable } from './EmployeeTable/EmployeeTable';
+import { EmployeeTable } from './employee-table/EmployeeTable';
 
 export function EmployeeManagement(): React.ReactElement {
     return <>

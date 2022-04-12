@@ -1,15 +1,15 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Grid } from '@mui/material';
-import { FieldInput } from '../../../shared/form/FormFields';
-import { regex } from '../../../../utilities';
+import { FieldInput } from '../../../../shared/form/FormFields';
+import { regex } from '../../../../../utilities';
 import React from 'react';
-import { Employee, EmployeeFormType } from '../../../../models/User';
+import { Employee, EmployeeFormType } from '../../../../../models/User';
 
 type EmployeeFormProps = {
     submit: SubmitHandler<EmployeeFormType>,
     emailDisabled: boolean,
-    onCancel: VoidFunction
-    employee?: Employee
+    onCancel: VoidFunction,
+    employee?: Employee,
 };
 
 EmployeeForm.defaultProps = {
@@ -117,7 +117,7 @@ export function EmployeeForm({submit, emailDisabled, onCancel, employee}: Employ
                 variant="contained"
                 color="primary"
             >
-                Update
+                Submit
             </Button>
             <Button
                 type="button"

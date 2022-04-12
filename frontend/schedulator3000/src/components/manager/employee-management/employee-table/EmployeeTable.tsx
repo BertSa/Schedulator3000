@@ -4,9 +4,9 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import { useDialog } from '../../../../hooks/use-dialog';
 import { useServices } from '../../../../hooks/use-services';
 import { useAuth } from '../../../../hooks/use-auth';
-import { TableToolbar } from './TableToolbar';
-import { RegisterEmployee } from './RegisterEmployee';
-import { EditEmployee } from './EditEmployee';
+import { EmployeeTableToolbar } from './EmployeeTableToolbar';
+import { RegisterEmployee } from './employee-form/RegisterEmployee';
+import { EditEmployee } from './employee-form/EditEmployee';
 
 
 export function EmployeeTable() {
@@ -53,8 +53,8 @@ export function EmployeeTable() {
 
     return <>
         <TableContainer component={ Paper }>
-            <TableToolbar selected={ selected } addEmployee={ createEmployee } fireEmployee={ fireEmployee }
-                          editEmployee={ editEmployee } />
+            <EmployeeTableToolbar selected={ selected } addEmployee={ createEmployee } fireEmployee={ fireEmployee }
+                                  editEmployee={ editEmployee } />
             <Table sx={ {minWidth: 650} } aria-label="simple table">
                 <TableHead>
                     <TableRow>

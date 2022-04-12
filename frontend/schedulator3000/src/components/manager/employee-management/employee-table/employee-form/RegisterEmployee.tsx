@@ -1,8 +1,8 @@
 import React from 'react';
 import { FieldValues, SubmitHandler } from 'react-hook-form';
-import { useDialog } from '../../../../hooks/use-dialog';
-import { Employee, EmployeeFormType, Manager } from '../../../../models/User';
-import { IManagerService } from '../../../../hooks/use-services';
+import { useDialog } from '../../../../../hooks/use-dialog';
+import { Employee, EmployeeFormType, Manager } from '../../../../../models/User';
+import { IManagerService } from '../../../../../hooks/use-services';
 import { EmployeeForm } from './EmployeeForm';
 
 type IRegisterEmployeeProps = {

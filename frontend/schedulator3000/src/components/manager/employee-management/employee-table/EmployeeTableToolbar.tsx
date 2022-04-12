@@ -11,7 +11,7 @@ interface EnhancedTableToolbarProps {
     fireEmployee: any;
 }
 
-export function TableToolbar({selected, addEmployee, fireEmployee, editEmployee}: EnhancedTableToolbarProps) {
+export function EmployeeTableToolbar({selected, addEmployee, fireEmployee, editEmployee}: EnhancedTableToolbarProps) {
     return (
         <Toolbar
             sx={ {

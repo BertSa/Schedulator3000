@@ -1,7 +1,7 @@
 import React from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { Employee, EmployeeFormType } from '../../../../models/User';
-import { IEmployeeService } from '../../../../hooks/use-services';
+import { Employee, EmployeeFormType } from '../../../../../models/User';
+import { IEmployeeService } from '../../../../../hooks/use-services';
 import { EmployeeForm } from './EmployeeForm';
 
 type IModifyEmployeeProps = {

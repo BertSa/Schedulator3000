@@ -1,10 +1,10 @@
 import { Route, useRouteMatch } from 'react-router-dom';
 import React from 'react';
-import { Schedule } from './Schedule/Schedule';
-import { EmployeeManagement } from './EmployeeManagement/EmployeeManagement';
-import { ScheduleTable } from './Schedule/ScheduleTable';
+import { Schedule } from './schedule/Schedule';
+import { EmployeeManagement } from './employee-management/EmployeeManagement';
+import { ScheduleTable } from './schedule/ScheduleTable';
 
-export function Dashboards(): React.ReactElement {
+export function ManagerPages(): React.ReactElement {
     const {path} = useRouteMatch();
     return <>
         <Route path={ `${ path }/employees` } component={ EmployeeManagement } />
