@@ -53,13 +53,14 @@ public class VacationRequestService {
                 .collect(Collectors.toList());
     }
 
-    public VacationRequest updateVacationRequestStatus(Long id, VacationRequestStatus status) {
+    public VacationRequestDto updateVacationRequestStatus(Long id, VacationRequestStatus status) {
         Assert.notNull(id, "Id must not be null");
 
         final VacationRequest vacationRequest = vacationRequestRepository.getById(id);
         vacationRequest.setStatus(status);
 
-        return vacationRequestRepository.save(vacationRequest);
+        final VacationRequest request = vacationRequestRepository.save(vacationRequest);
+        return request.mapToDto();
     }
 
     public VacationRequestDto update(Long id, VacationRequestDto dto) {
@@ -70,7 +71,7 @@ public class VacationRequestService {
         vacationRequest.setEndDate(dto.getEndDate());
         vacationRequest.setReason(dto.getReason());
 
-        final VacationRequest save = vacationRequestRepository.save(vacationRequest);
-        return save.mapToDto();
+        final VacationRequest request = vacationRequestRepository.save(vacationRequest);
+        return request.mapToDto();
     }
 }

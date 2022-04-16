@@ -29,6 +29,15 @@ export function Navbar() {
             </Button>
             <Button
                 onClick={ () => {
+                    history.push('/manager/vacation-requests');
+                    handleCloseNavMenu();
+                } }
+                sx={ {my: 2, color: 'white', display: 'block'} }
+            >
+                Vacation Requests
+            </Button>
+            <Button
+                onClick={ () => {
                     history.push('/manager/schedule');
                     handleCloseNavMenu();
                 } }
@@ -60,6 +69,12 @@ export function Navbar() {
                 handleCloseNavMenu();
             } }>
                 <Typography textAlign="center">Employee Manager</Typography>
+            </MenuItem>
+            <MenuItem onClick={ () => {
+                history.push('/manager/vacation-requests');
+                handleCloseNavMenu();
+            } }>
+                <Typography textAlign="center">Vacation Requests</Typography>
             </MenuItem>
             <MenuItem onClick={ () => {
                 history.push('/manager/schedule');
