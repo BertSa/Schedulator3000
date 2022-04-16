@@ -1,5 +1,6 @@
 package ca.bertsa.schedulator3000.models;
 
+import ca.bertsa.schedulator3000.dtos.VacationRequestDto;
 import ca.bertsa.schedulator3000.enums.VacationRequestStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,18 @@ public class VacationRequest {
     private LocalDate endDate;
     private String reason;
     @Enumerated(EnumType.STRING)
-    private VacationRequestStatus status = VacationRequestStatus.PENDING;
+    private VacationRequestStatus status;
+
+
+    public VacationRequestDto mapToDto() {
+        VacationRequestDto dto = new VacationRequestDto();
+        dto.setId(this.id);
+        dto.setEmployeeEmail(this.employee.getEmail());
+        dto.setStartDate(this.startDate);
+        dto.setEndDate(this.endDate);
+        dto.setReason(this.reason);
+        dto.setStatus(this.status);
+        return dto;
+    }
 }
 

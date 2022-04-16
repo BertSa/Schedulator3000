@@ -1,5 +1,5 @@
 import { dateFnsLocalizer } from 'react-big-calendar';
-import { format, getDay, parse, set, startOfWeek } from 'date-fns';
+import { format, getDay, isAfter, isBefore, parse, set, startOfWeek } from 'date-fns';
 import enCA from 'date-fns/locale/en-CA';
 
 export const regex = Object.freeze({
@@ -38,7 +38,6 @@ export function stringToColor(string: string) {
     }
 
 
-
     let color = ((hash >> 24) & 0xFF).toString(16) +
         ((hash >> 16) & 0xFF).toString(16) +
         ((hash >> 8) & 0xFF).toString(16) +
@@ -57,7 +56,7 @@ export function stringToColor(string: string) {
         .toString(16)
         .slice(1);
     console.log(s);
-    return "#"+s;
+    return '#' + s;
 }
 
 export function stringAvatar(name: string) {
@@ -94,4 +93,8 @@ export function toLocalDateString(date: Date) {
         day: '2-digit',
         year: 'numeric'
     });
+}
+
+export function isBetween(date: Date, start: Date, end: Date):boolean {
+    return isAfter(date, start) && isBefore(date, end);
 }

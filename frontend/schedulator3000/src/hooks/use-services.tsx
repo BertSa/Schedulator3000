@@ -5,6 +5,7 @@ import { Shift, ShiftWithoutId } from '../models/Shift';
 import { useDialog } from './use-dialog';
 import { ShiftsFromToDto } from '../models/ShiftsFromTo';
 import { DialogWarningDelete } from '../components/DialogWarningDelete';
+import { VacationRequest, VacationRequestSubmit, VacationRequestUpdateStatus } from '../models/VacationRequest';
 
 export enum METHODS {
     POST = 'POST',
@@ -40,6 +41,77 @@ export function ServicesProvider({children}: PropsWithChildren<{}>) {
 
 export const useServices = () => useContext(authContext);
 
+function useProvideVacationRequestService(): IVacationRequestService {
+    const {enqueueSnackbar} = useSnackbar();
+
+    async function create(body: VacationRequestSubmit): Promise<VacationRequest | null> {
+        return await fetch(`/vacation-requests`, requestInit(METHODS.POST, body)).then(
+            response =>
+                response.json().then(
+                    body => {
+                        if (response.status === 201) {
+                            enqueueSnackbar('Vacation sent!', {
+                                variant: 'success',
+                                autoHideDuration: 3000
+                            });
+                            return body as VacationRequest;
+                        } else if (response.status === 400) {
+                            enqueueSnackbar(body.message, {
+                                variant: 'error',
+                                autoHideDuration: 3000
+                            });
+                        }
+                        return null;
+                    }));
+    }
+
+    async function updateStatus(id: number, status: VacationRequestUpdateStatus): Promise<VacationRequest|null> {
+        let endpoint = `/vacation-requests/${ id }/${status}`;
+
+        return await fetch(endpoint, requestInit(METHODS.PUT)).then(
+            response =>
+                response.json().then(
+                    body => {
+                        if (response.status === 200) {
+                            enqueueSnackbar('Vacation updated!', {
+                                variant: 'success',
+                                autoHideDuration: 3000
+                            });
+                            return body as VacationRequest;
+                        } else if (response.status === 400) {
+                            enqueueSnackbar(body.message, {
+                                variant: 'error',
+                                autoHideDuration: 3000
+                            });
+                        }
+                        return null;
+                    }));
+    }
+
+    async function getAllByEmail(endpoint:string, email:string): Promise<VacationRequest[]> {
+        return await fetch(`/vacation-requests/${endpoint}/${email}`, requestInit(METHODS.GET)).then(
+            response =>
+                response.json().then(
+                    body => {
+                        if (response.status === 200) {
+                            return body as VacationRequest[];
+                        }
+
+                        return [];
+                    }));
+    }
+
+    const getAllByEmployeeEmail = (email: string) => getAllByEmail('employee', email);
+    const getAllByManagerEmail = (email: string) => getAllByEmail('manager', email);
+
+    return {
+        create,
+        updateStatus,
+        getAllByEmployeeEmail,
+        getAllByManagerEmail,
+    };
+}
+
 function useProvideManagerService() {
     const {enqueueSnackbar} = useSnackbar();
     let [openDialog, closeDialog] = useDialog();
@@ -69,7 +141,8 @@ function useProvideManagerService() {
     async function fireEmployee(idEmployee: number, emailManager: string): Promise<Employee | undefined> {
         let canceled = await new Promise<boolean>(resolve => {
             openDialog({
-                children: <DialogWarningDelete resolve={ resolve } closeDialog={ closeDialog } title={ 'Wait a minute!' }
+                children: <DialogWarningDelete resolve={ resolve } closeDialog={ closeDialog }
+                                               title={ 'Wait a minute!' }
                                                text={ 'Are you sure you want to fire this employee?' } />,
             });
         });
@@ -196,7 +269,8 @@ function useProvideShiftService() {
     async function deleteShift(id: number): Promise<boolean> {
         let canceled = await new Promise<boolean>(resolve => {
             openDialog({
-                children: <DialogWarningDelete resolve={ resolve } closeDialog={ closeDialog } title={ 'Wait a minute!' }
+                children: <DialogWarningDelete resolve={ resolve } closeDialog={ closeDialog }
+                                               title={ 'Wait a minute!' }
                                                text={ 'Are you sure you want to delete this shift?' } />,
             });
         });
@@ -263,18 +337,20 @@ function useProvideEmployeeService(): IEmployeeService {
 
     return {
         updateEmployee,
-    }
+    };
 }
 
 function useProvideServices(): IProviderServices {
     const managerService = useProvideManagerService();
     const shiftService = useProvideShiftService();
     const employeeService = useProvideEmployeeService();
+    const vacationRequestService = useProvideVacationRequestService();
 
     return {
         managerService,
         employeeService,
         shiftService,
+        vacationRequestService,
     };
 }
 
@@ -296,10 +372,18 @@ export type IEmployeeService = {
     updateEmployee: (body: EmployeeFormType) => Promise<Employee | null>;
 }
 
+export type IVacationRequestService = {
+    create: (body: VacationRequestSubmit) => Promise<VacationRequest | null>,
+    updateStatus: (id: number, status: VacationRequestUpdateStatus) => Promise<VacationRequest|null>,
+    getAllByEmployeeEmail: (email: string) => Promise<VacationRequest[]>,
+    getAllByManagerEmail: (email: string) => Promise<VacationRequest[]>,
+}
+
 export type IProviderServices = {
     managerService: IManagerService,
     employeeService: IEmployeeService,
     shiftService: IShiftService,
+    vacationRequestService: IVacationRequestService
 };
 
 

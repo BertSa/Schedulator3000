@@ -2,12 +2,12 @@ import { Box, Button, Collapse, Container, Grid, IconButton, InputAdornment, Men
 import { AccountCircle, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import React, { useEffect, useState } from 'react';
 import { Employee } from '../../../models/User';
-import { getBeginningOfWeek, getCurrentTimezoneDate, toLocalDateString } from '../../../utilities';
+import { getBeginningOfWeek, getCurrentTimezoneDate, isBetween, toLocalDateString } from '../../../utilities';
 import { Controller, UnpackNestedValue, useForm } from 'react-hook-form';
 import { useAuth } from '../../../hooks/use-auth';
 import { useServices } from '../../../hooks/use-services';
 import { ShiftsFromToDto } from '../../../models/ShiftsFromTo';
-import { addDays, addWeeks, differenceInDays, differenceInMinutes, format, getDay, hoursToMinutes, minutesToHours, subWeeks } from 'date-fns';
+import { addDays, addWeeks, differenceInMinutes, format, getDay, hoursToMinutes, minutesToHours, subWeeks } from 'date-fns';
 import { Shift, ShiftWithoutId } from '../../../models/Shift';
 import { useDialog } from '../../../hooks/use-dialog';
 import { TimePicker } from '@mui/lab';
@@ -316,7 +316,7 @@ export function ScheduleTable() {
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
                 <ScheduleTableToolbar
-                    currentWeek = { getDateOfDay(0) }
+                    currentWeek={ getDateOfDay(0) }
                     prev={ () => setCurrentWeek(curentWeek => subWeeks(curentWeek, 1)) }
                     next={ () => setCurrentWeek(curentWeek => addWeeks(curentWeek, 1)) } />
                 <Table aria-label="collapsible table">
@@ -358,10 +358,7 @@ export function ScheduleTable() {
                     <TableBody>
                         { employees.map((employee) => {
                             const weekShift: Shift[][] = new Array(7);
-                            const filter: Shift[] = shifts.filter(value => {
-                                const number: number = differenceInDays(new Date(value.startTime), curentWeek);
-                                return number >= 0 && number < 7 && value.emailEmployee === employee.email;
-                            });
+                            const filter: Shift[] = shifts.filter(value => isBetween(new Date(value.startTime), curentWeek, addWeeks(curentWeek, 1)) && value.emailEmployee === employee.email);
 
                             for (let i = 0; i < 7; i++) {
                                 const found: Shift | undefined = filter.find(shift => getDay(new Date(shift.startTime)) === i);
