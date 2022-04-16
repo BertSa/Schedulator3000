@@ -40,7 +40,7 @@ export function VacationRequestManagementTableToolbar({
                     id="tableTitle"
                     component="div"
                 >
-                    Vacation Requests
+                    Vacation Requests Management
                 </Typography>
             ) }
 

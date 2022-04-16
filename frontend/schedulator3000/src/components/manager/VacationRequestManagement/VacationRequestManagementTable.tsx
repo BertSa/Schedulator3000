@@ -3,7 +3,7 @@ import { VacationRequest, VacationRequestStatus, VacationRequestUpdateStatus } f
 import { useServices } from '../../../hooks/use-services';
 import { useAuth } from '../../../hooks/use-auth';
 import { Employee, Manager } from '../../../models/User';
-import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
+import { alpha, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
 import { VacationRequestManagementTableToolbar } from './VacationRequestManagementTableToolbar';
 
@@ -43,7 +43,13 @@ export function VacationRequestManagementTable() {
 
 
         return <>
-            <TableRow sx={ {'& > *': {borderBottom: 'unset'}} }
+            <TableRow sx={ {
+                '&:last-child td, &:last-child th': {border: 0},
+                ...(selectedVacation?.id === request.id && {
+                    bgcolor: (theme) =>
+                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                }),
+            } }
                       onClick={ () => setSelectedVacation(selected => selected?.id === request.id ? null : request) }>
                 <TableCell component="th" scope="row">
                     { request.id }

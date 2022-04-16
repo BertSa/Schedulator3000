@@ -1,6 +1,6 @@
 import { Employee } from '../../../../models/User';
 import React, { useEffect, useState } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { alpha, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useDialog } from '../../../../hooks/use-dialog';
 import { useServices } from '../../../../hooks/use-services';
 import { useAuth } from '../../../../hooks/use-auth';
@@ -73,7 +73,12 @@ export function EmployeeTable() {
                     { employees.map((employee) => (
                         <TableRow
                             key={ employee.id }
-                            sx={ {'&:last-child td, &:last-child th': {border: 0}} }
+                            sx={ {'&:last-child td, &:last-child th': {border: 0},
+                                ...(selected?.id === employee.id && {
+                                    bgcolor: (theme) =>
+                                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                                }),
+                            } }
                             onClick={ (event) => handleClick(event, employee) }
                         >
                             <TableCell component="th" scope="row">

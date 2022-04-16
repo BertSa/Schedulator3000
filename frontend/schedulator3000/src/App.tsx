@@ -20,7 +20,7 @@ export default function App() {
     return (
         <Router>
             <Navbar />
-            <div className="container">
+            <main>
                 <RequireAdmin>
                     <Route path="/manager" component={ ManagerPages } />
                 </RequireAdmin>
@@ -33,7 +33,7 @@ export default function App() {
                     <Route path="/register" component={ Register } />
                     <Route path="/signin" component={ SignInPage } />
                 </RequireNoAuth>
-            </div>
+            </main>
         </Router>
     );
 }

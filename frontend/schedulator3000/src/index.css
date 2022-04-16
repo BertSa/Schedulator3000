@@ -7,80 +7,23 @@ body {
     z-index: 0 !important;
 }
 
-body, .navbar{
+body, .navbar {
     padding: 0 !important;
+}
+
+main {
+    padding-top: 100px;
 }
 
 .special-day {
     background-color: #4d4c4c;
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-.container {
-    padding-top: 80px;
+tbody tr.myRow:nth-child(odd) * {
+    border: 0 !important;
 }
 
-.rbc-time-slot{
-    z-index: 10;
+tbody tr.myRow:last-child * {
+    border: 0 !important;
 }
 
-.rbc-event {
-    z-index: 20;
-}
-/*.scheduleContainer {*/
-/*    display: grid;*/
-/*    grid-gap: 0.2rem;*/
-/*    grid-template-columns: 5rem repeat(4, 1fr);*/
-/*    grid-template-rows: repeat(28, 1fr);*/
-/*    grid-template-areas: "time800 stage stage stage stage" "time830 stage stage stage stage" "time900 stage stage stage stage" "time930 stage stage stage stage" "time1000 stage stage stage stage" "time1030 stage stage stage stage" "time1100 stage stage stage stage" "time1130 stage stage stage stage" "time1200 stage stage stage stage" "time1230 stage stage stage stage" "time1300 stage stage stage stage" "time1330 stage stage stage stage" "time1400 stage stage stage stage" "time1430 stage stage stage stage" "time1500 stage stage stage stage" "time1530 stage stage stage stage" "time1600 stage stage stage stage" "time1630 stage stage stage stage" "time1700 stage stage stage stage" "time1730 stage stage stage stage" "time1800 stage stage stage stage" "time1830 stage stage stage stage" "time1900 stage stage stage stage" "time1930 stage stage stage stage" "time2000 stage stage stage stage" "time2030 stage stage stage stage" "time2100 stage stage stage stage" "time2130 stage stage stage stage";*/
-/*}*/
-
-
-/*!***/
-/* * Event*/
-/* *!*/
-/*.event {*/
-/*    display: flex;*/
-/*    justify-content: center;*/
-/*    flex-direction: column;*/
-/*    padding: 0.5rem 1rem;*/
-/*    background-color: orange;*/
-/*    border-radius: 0.2rem;*/
-/*    font-size: 0.8rem;*/
-/*    font-weight: bold;*/
-/*    line-height: 1.4;*/
-/*}*/
-
-/*.event span {*/
-/*    display: block;*/
-/*    width: 100%;*/
-/*    font-size: 0.8em;*/
-/*    font-weight: normal;*/
-/*}*/
-
-/*.event.stage-earth {*/
-/*    background-color: #FFA726;*/
-/*}*/
-
-/*.event.stage-mercury {*/
-/*    background-color: #9CCC65;*/
-/*}*/
-
-/*.event.stage-venus {*/
-/*    background-color: #FF8A65;*/
-/*}*/
-
-/*.event.stage-mars {*/
-/*    background-color: #B3E5FC;*/
-/*}*/
-
-/*.event.stage-jupiter {*/
-/*    background-color: #81D4FA;*/
-/*}*/
-
-/*.event.stage-saturn {*/
-/*    background-color: #26C6DA;*/
-/*}*/
