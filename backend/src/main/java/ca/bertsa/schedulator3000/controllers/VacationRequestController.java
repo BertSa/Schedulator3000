@@ -32,6 +32,21 @@ public class VacationRequestController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody VacationRequestDto dto) {
+        try {
+            final var vacation = vacationRequestService.update(id, dto);
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(vacation);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new ResponseMessage(e.getMessage()));
+        }
+    }
+
     @PutMapping("/{id}/approve")
     public ResponseEntity<?> approveVacation(@PathVariable Long id) {
         try {

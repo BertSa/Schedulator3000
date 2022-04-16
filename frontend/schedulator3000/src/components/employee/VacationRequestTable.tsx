@@ -6,11 +6,15 @@ import { Employee } from '../../models/User';
 import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { VacationRequestTableToolbar } from './VacationRequestTableToolbar';
 import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
+import { useDialog } from '../../hooks/use-dialog';
+import { CreateVacationRequest } from './CreateVacationRequest';
+import { EditVacationRequest } from './EditVacationRequest';
 
 
 export function VacationRequestTable() {
     const [vacations, setVacations] = useState<VacationRequest[]>([]);
     const {vacationRequestService} = useServices();
+    const [openDialog, closeDialog] = useDialog();
     const [selectedVacation, setSelectedVacation] = useState<VacationRequest | null>(null);
     const employee: Employee = useAuth().getEmployee();
 
@@ -18,9 +22,25 @@ export function VacationRequestTable() {
         vacationRequestService.getAllByEmployeeEmail(employee.email)
             .then(response => {
                 setVacations(response);
-                console.log(response);
             });
     }, [employee.email]);
+
+    const createRequest = () =>
+        openDialog({
+            children: <CreateVacationRequest setVacations={ setVacations }
+                                             employee={ employee }
+                                             closeMainDialog={ closeDialog }
+                                             vacationRequestService={ vacationRequestService } />
+        });
+
+    const editRequest = () =>
+        openDialog({
+            children: <EditVacationRequest setVacations={ setVacations }
+                                           closeMainDialog={ closeDialog }
+                                           vacationRequestService={ vacationRequestService }
+                                           vacationRequest={ selectedVacation as VacationRequest } />
+        });
+
 
     function Row({request}: { request: VacationRequest }) {
 
@@ -80,7 +100,10 @@ export function VacationRequestTable() {
     return <>
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
-                <VacationRequestTableToolbar selected={ selectedVacation } cancelRequest={ cancelRequest } />
+                <VacationRequestTableToolbar selected={ selectedVacation }
+                                             cancelRequest={ cancelRequest }
+                                             createRequest={ createRequest }
+                                             editRequest={ editRequest } />
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
@@ -101,7 +124,7 @@ export function VacationRequestTable() {
                     </TableHead>
                     <TableBody>
                         { vacations.map((value) => {
-                            return <Row key={ employee.id } request={ value } />;
+                            return <Row key={ value.id } request={ value } />;
                         }) }
                     </TableBody>
                 </Table>

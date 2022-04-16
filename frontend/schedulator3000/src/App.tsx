@@ -5,7 +5,6 @@ import { SignInPage } from './components/SignInPage';
 import { ManagerPages } from './components/manager/ManagerPages';
 import { ScheduleEmployee } from './components/employee/ScheduleEmployee';
 import { RequireAdmin, RequireEmployee, RequireNoAuth } from './hooks/use-auth';
-import { VacationRequestForm } from './components/employee/VacationRequestForm';
 import { VacationRequestTable } from './components/employee/VacationRequestTable';
 
 
@@ -27,7 +26,6 @@ export default function App() {
                 </RequireAdmin>
                 <RequireEmployee>
                     <h3>Allooooo</h3>
-                    <VacationRequestForm />
                     <VacationRequestTable />
                     <ScheduleEmployee />
                 </RequireEmployee>

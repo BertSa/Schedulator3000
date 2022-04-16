@@ -8,8 +8,9 @@ export interface VacationRequest {
 }
 
 export type VacationRequestSubmit = Omit<VacationRequest, 'id' | 'status'>;
+export type VacationRequestUpdate = Omit<VacationRequest, 'employeeEmail' | 'status'>;
 
-export enum VacationRequestStatus{
+export enum VacationRequestStatus {
     Pending = 'PENDING',
     Approved = 'APPROVED',
     Rejected = 'REJECTED',

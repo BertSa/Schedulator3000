@@ -5,7 +5,7 @@ import { Shift, ShiftWithoutId } from '../models/Shift';
 import { useDialog } from './use-dialog';
 import { ShiftsFromToDto } from '../models/ShiftsFromTo';
 import { DialogWarningDelete } from '../components/DialogWarningDelete';
-import { VacationRequest, VacationRequestSubmit, VacationRequestUpdateStatus } from '../models/VacationRequest';
+import { VacationRequest, VacationRequestSubmit, VacationRequestUpdate, VacationRequestUpdateStatus } from '../models/VacationRequest';
 
 export enum METHODS {
     POST = 'POST',
@@ -65,6 +65,28 @@ function useProvideVacationRequestService(): IVacationRequestService {
                     }));
     }
 
+    async function update(body: VacationRequestUpdate): Promise<VacationRequest | null> {
+
+        return await fetch(`/vacation-requests/${ body.id }`, requestInit(METHODS.PUT, body)).then(
+            response =>
+                response.json().then(
+                    body => {
+                        if (response.status === 200) {
+                            enqueueSnackbar('Vacation Request updated!', {
+                                variant: 'success',
+                                autoHideDuration: 3000
+                            });
+                            return body as VacationRequest;
+                        } else if (response.status === 400) {
+                            enqueueSnackbar(body.message, {
+                                variant: 'error',
+                                autoHideDuration: 3000
+                            });
+                        }
+                        return null;
+                    }));
+    }
+
     async function updateStatus(id: number, status: VacationRequestUpdateStatus): Promise<VacationRequest|null> {
         let endpoint = `/vacation-requests/${ id }/${status}`;
 
@@ -109,6 +131,7 @@ function useProvideVacationRequestService(): IVacationRequestService {
         updateStatus,
         getAllByEmployeeEmail,
         getAllByManagerEmail,
+        update,
     };
 }
 
@@ -377,6 +400,7 @@ export type IVacationRequestService = {
     updateStatus: (id: number, status: VacationRequestUpdateStatus) => Promise<VacationRequest|null>,
     getAllByEmployeeEmail: (email: string) => Promise<VacationRequest[]>,
     getAllByManagerEmail: (email: string) => Promise<VacationRequest[]>,
+    update: (body: VacationRequestUpdate) => Promise<VacationRequest | null>,
 }
 
 export type IProviderServices = {

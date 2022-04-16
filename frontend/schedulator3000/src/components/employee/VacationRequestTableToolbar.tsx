@@ -6,9 +6,16 @@ import { VacationRequest, VacationRequestStatus } from '../../models/VacationReq
 type VacationRequestTableToolbarProps = {
     selected: VacationRequest | null,
     cancelRequest: VoidFunction,
+    createRequest: VoidFunction,
+    editRequest: VoidFunction,
 };
 
-export function VacationRequestTableToolbar({selected, cancelRequest}: VacationRequestTableToolbarProps) {
+export function VacationRequestTableToolbar({
+                                                selected,
+                                                cancelRequest,
+                                                createRequest,
+                                                editRequest
+                                            }: VacationRequestTableToolbarProps) {
     return (
         <Toolbar
             sx={ {
@@ -51,7 +58,7 @@ export function VacationRequestTableToolbar({selected, cancelRequest}: VacationR
                     </Tooltip>
                     <Tooltip title="Edit">
                         <span>
-                        <IconButton disabled={ selected.status.toUpperCase() !== VacationRequestStatus.Pending }>
+                        <IconButton onClick={editRequest} disabled={ selected.status.toUpperCase() !== VacationRequestStatus.Pending }>
                             <Edit />
                         </IconButton>
                         </span>
@@ -59,7 +66,7 @@ export function VacationRequestTableToolbar({selected, cancelRequest}: VacationR
                 </div>
             ) : (<div>
                     <Tooltip title="Request">
-                        <IconButton>
+                        <IconButton onClick={ createRequest }>
                             <Add />
                         </IconButton>
                     </Tooltip>

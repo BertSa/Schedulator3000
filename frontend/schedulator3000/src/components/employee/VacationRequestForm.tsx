@@ -2,51 +2,37 @@ import { DateRangePicker } from '@mui/lab';
 import { Box, Button, Grid, TextField } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import React from 'react';
-import { useServices } from '../../hooks/use-services';
-import { useAuth } from '../../hooks/use-auth';
-import { Employee } from '../../models/User';
-import { DateRange, VacationRequestSubmit } from '../../models/VacationRequest';
+import { DateRange, VacationRequest } from '../../models/VacationRequest';
 import { startOfToday } from 'date-fns';
 
-interface FormFieldValue {
+export interface VacationRequestFormFieldValue {
     startEnd: DateRange;
     reason: string;
 }
 
-export function VacationRequestForm() {
-    const {register, handleSubmit, formState: {errors}, reset, control} = useForm<FormFieldValue>({
+interface VacationRequestFormProps {
+    onSubmit: any;
+    onCancel: any;
+    vacationRequest?: VacationRequest;
+}
+
+export function VacationRequestForm({onSubmit, onCancel, vacationRequest}: VacationRequestFormProps) {
+    const {register, handleSubmit, formState: {errors}, control} = useForm<VacationRequestFormFieldValue>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
         defaultValues: {
-            startEnd: [startOfToday(), startOfToday()],
-            reason: '',
+            startEnd: vacationRequest ? [vacationRequest.startDate, vacationRequest.endDate] : [startOfToday(), startOfToday()],
+            reason: vacationRequest?.reason ?? '',
         }
     });
-    const {vacationRequestService} = useServices();
-    const employee: Employee = useAuth().getEmployee();
 
-
-    function submit(data: FormFieldValue, event?: any): void {
-        event?.preventDefault();
-        let body:VacationRequestSubmit = {
-            employeeEmail: employee.email,
-            startDate: data.startEnd[0],
-            endDate: data.startEnd[1],
-            reason: data.reason,
-        }
-        vacationRequestService.create(body).then(ok => {
-            if (ok) {
-                reset();
-            }
-        });
-    }
 
     return <>
         <Grid container
               component="form"
               spacing={ 2 }
               padding={ 2 }
-              onSubmit={ handleSubmit(submit) }
+              onSubmit={ handleSubmit(onSubmit) }
               noValidate>
             <Grid item xs={ 12 }>
                 <Controller
@@ -85,6 +71,14 @@ export function VacationRequestForm() {
             </Grid>
             <Grid item alignSelf={ 'center' } marginX={ 'auto' }>
                 <Button type="submit" color="primary" variant="contained">Submit</Button>
+                <Button
+                    type="button"
+                    variant="text"
+                    color="primary"
+                    onClick={ onCancel }
+                >
+                    Cancel
+                </Button>
             </Grid>
         </Grid>
     </>;

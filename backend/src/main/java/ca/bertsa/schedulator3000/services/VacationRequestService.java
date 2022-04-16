@@ -61,4 +61,16 @@ public class VacationRequestService {
 
         return vacationRequestRepository.save(vacationRequest);
     }
+
+    public VacationRequestDto update(Long id, VacationRequestDto dto) {
+        Assert.notNull(id, "Id must not be null");
+
+        final VacationRequest vacationRequest = vacationRequestRepository.getById(id);
+        vacationRequest.setStartDate(dto.getStartDate());
+        vacationRequest.setEndDate(dto.getEndDate());
+        vacationRequest.setReason(dto.getReason());
+
+        final VacationRequest save = vacationRequestRepository.save(vacationRequest);
+        return save.mapToDto();
+    }
 }
