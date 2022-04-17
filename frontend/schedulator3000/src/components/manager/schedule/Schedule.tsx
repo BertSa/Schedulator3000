@@ -396,7 +396,6 @@ export const Schedule = () => {
                     eventPropGetter={ (event: Event) => {
                         let employee = employees.find(employee => employee.id === event.resource.employeeId);
                         let fullName = employee?.lastName + ' ' + employee?.firstName;
-                        console.log(fullName);
                         let eventProps = {
                             style: {
                                 backgroundColor: stringToColor(fullName),

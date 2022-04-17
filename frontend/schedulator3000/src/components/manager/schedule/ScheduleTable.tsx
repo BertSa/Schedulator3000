@@ -107,6 +107,7 @@ export function ScheduleTable() {
                         if (deleted) {
                             setShifts(curent => curent.filter(shift => shift.id !== shiftId));
                             closeDialog(id);
+                            setSelected(null);
                         }
                     }
                 );
@@ -129,8 +130,7 @@ export function ScheduleTable() {
                     }
 
                     closeDialog(id);
-                    reset();
-                    setShifts((currentShifts: Shift[]) => [...currentShifts.filter(shift => shift.id !== shiftId),
+                    setShifts((currentShifts: Shift[]) => [...currentShifts.filter(v => v.id !== shiftId),
                         {
                             ...shift,
                             startTime: getCurrentTimezoneDate(shift.startTime),
@@ -234,7 +234,8 @@ export function ScheduleTable() {
                         </Grid>
                     </Grid>
                 </>
-            )
+            ),
+            onExited: () => reset()
         });
     }
 
@@ -268,27 +269,43 @@ export function ScheduleTable() {
 
     const getDateOfDay = (day: number) => format(addDays(curentWeek, day), 'yyyy-MM-dd');
 
-    const create = () => {
+    const createAction = () => {
         if (selected === null) {
             return;
         }
-        reset();
+
         setValue('start', selected.shift?.startTime ?? addDays(curentWeek, selected.day));
         setValue('end', selected.shift?.endTime ?? addDays(curentWeek, selected.day));
         setValue('employeeId', selected.employee.id);
         openMyDialog(SubmitType.CREATE);
     };
-    const update = () => {
+
+    const editAction = () => {
         if (!selected?.shift) {
             return;
         }
-        reset();
+
         setValue('start', selected.shift.startTime);
         setValue('end', selected.shift.endTime);
         setValue('employeeId', selected.employee.id);
         setValue('shiftId', selected.shift.id);
         openMyDialog(SubmitType.UPDATE);
     };
+
+    const removeAction = () => {
+        if (!selected?.shift?.id) {
+            return;
+        }
+
+        shiftService.deleteShift(selected.shift.id).then(deleted => {
+                if (deleted && selected?.shift?.id) {
+                    setShifts(curent => curent.filter(shift => shift.id !== selected?.shift?.id));
+                    setSelected(null);
+                }
+            }
+        );
+    };
+
 
     const getTimeInHourMinutesAMPM = (date: Date) => format(new Date(date), 'h:mma');
 
@@ -301,13 +318,7 @@ export function ScheduleTable() {
 
 
         function getTotal(): string {
-            const number: number = shifts.reduce((acc, curr) => {
-                if (curr) {
-                    return acc + differenceInMinutes(new Date(curr.endTime), new Date(curr.startTime));
-                }
-                return acc;
-            }, 0);
-
+            const number: number = shifts.reduce((acc, curr) => acc + (curr ? differenceInMinutes(new Date(curr.endTime), new Date(curr.startTime)) : 0), 0);
             const hours: number = minutesToHours(number);
             const minutes: number = number - hoursToMinutes(hours);
 
@@ -333,12 +344,20 @@ export function ScheduleTable() {
                     { shifts.map((shift, key) =>
                         <TableCell key={ key }
                                    align="center"
+                                   onClick={ () => {
+                                       setSelected(current => current?.day === key && current?.employee.id === employee.id ?
+                                           null : {
+                                               employee: employee,
+                                               day: key,
+                                               shift: shift
+                                           });
+                                   } }
                                    sx={ {
                                        cursor: 'pointer',
                                        ...({
                                            bgcolor: (theme) => {
                                                const vacationRequest: VacationRequest | undefined = vacations.find(vacation => isBetween(new Date(getDateOfDay(key)), new Date(vacation.startDate), new Date(vacation.endDate)));
-                                               const opacity: number = selected?.day === key && selected?.employee.id === employee.id ? theme.palette.action.focusOpacity : theme.palette.action.disabledOpacity;
+                                               const opacity: number = selected?.day === key && selected?.employee.id === employee.id ? theme.palette.action.selectedOpacity : theme.palette.action.disabledOpacity;
 
                                                switch (vacationRequest?.status) {
                                                    case VacationRequestStatus.Pending:
@@ -346,10 +365,7 @@ export function ScheduleTable() {
                                                    case VacationRequestStatus.Approved:
                                                        return alpha(theme.palette.grey[500], opacity);
                                                    default:
-                                                       if (opacity === theme.palette.action.focusOpacity) {
-                                                           return alpha(theme.palette.primary.main, opacity);
-                                                       }
-                                                       return 'unset';
+                                                       return opacity === theme.palette.action.selectedOpacity ? alpha(theme.palette.primary.main, opacity) : 'unset';
                                                }
                                            }
                                        }),
@@ -367,17 +383,8 @@ export function ScheduleTable() {
                                                return alpha(color, theme.palette.action.activatedOpacity);
                                            }
                                        },
-
-                                   } }
-                                   onClick={ () => {
-                                       setSelected(current => current?.day === key && current?.employee.id === employee.id ?
-                                           null : {
-                                               employee: employee,
-                                               day: key,
-                                               shift: shift
-                                           });
                                    } }>
-                            { shift?.startTime && getTimeInHourMinutesAMPM(shift.startTime) } - { shift?.endTime && getTimeInHourMinutesAMPM(shift.endTime) }
+                            { shift ? `${ shift?.startTime && getTimeInHourMinutesAMPM(shift.startTime) } - ${ shift?.endTime && getTimeInHourMinutesAMPM(shift.endTime) }` : '-' }
                         </TableCell>) }
                     <TableCell align="right">{ getTotal() }</TableCell>
                 </TableRow>
@@ -422,7 +429,11 @@ export function ScheduleTable() {
                     prev={ () => setCurrentWeek(curentWeek => subWeeks(curentWeek, 1)) }
                     next={ () => setCurrentWeek(curentWeek => addWeeks(curentWeek, 1)) }
                     selected={ selected }
-                    create={ create }
+                    actions={ {
+                        create: createAction,
+                        edit: editAction,
+                        remove: removeAction,
+                    } }
                 />
                 <Table aria-label="collapsible table">
                     <TableHead>

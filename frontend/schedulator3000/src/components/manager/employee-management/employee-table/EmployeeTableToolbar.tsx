@@ -6,12 +6,14 @@ import { Employee } from '../../../../models/User';
 
 interface EnhancedTableToolbarProps {
     selected: Employee | null;
-    addEmployee: any;
-    editEmployee: any;
-    fireEmployee: any;
+    actions: {
+        create: VoidFunction;
+        edit: VoidFunction;
+        fire: VoidFunction;
+    };
 }
 
-export function EmployeeTableToolbar({selected, addEmployee, fireEmployee, editEmployee}: EnhancedTableToolbarProps) {
+export function EmployeeTableToolbar({selected, actions: {create, edit, fire}}: EnhancedTableToolbarProps) {
     return (
         <Toolbar
             sx={ {
@@ -45,19 +47,19 @@ export function EmployeeTableToolbar({selected, addEmployee, fireEmployee, editE
             { selected !== null ? (
                 <>
                     <Tooltip title="Edit">
-                        <IconButton onClick={ editEmployee }>
+                        <IconButton onClick={ edit }>
                             <Edit />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Promote to customer">
-                        <IconButton onClick={ fireEmployee }>
+                        <IconButton onClick={ fire }>
                             <LocalFireDepartment />
                         </IconButton>
                     </Tooltip>
                 </>
             ) : (<>
                     <Tooltip title="Add new employee">
-                        <IconButton onClick={ addEmployee }>
+                        <IconButton onClick={ create }>
                             <Add />
                         </IconButton>
                     </Tooltip>

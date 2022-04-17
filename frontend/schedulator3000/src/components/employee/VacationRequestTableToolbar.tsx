@@ -5,16 +5,16 @@ import { VacationRequest, VacationRequestStatus } from '../../models/VacationReq
 
 type VacationRequestTableToolbarProps = {
     selected: VacationRequest | null,
-    cancelRequest: VoidFunction,
-    createRequest: VoidFunction,
-    editRequest: VoidFunction,
+    actions: {
+        create: VoidFunction,
+        edit: VoidFunction,
+        cancel: VoidFunction,
+    },
 };
 
 export function VacationRequestTableToolbar({
                                                 selected,
-                                                cancelRequest,
-                                                createRequest,
-                                                editRequest
+                                                actions: { create, edit, cancel },
                                             }: VacationRequestTableToolbarProps) {
     return (
         <Toolbar
@@ -50,7 +50,7 @@ export function VacationRequestTableToolbar({
                 <div>
                     <Tooltip title="Cancel request">
                         <span>
-                        <IconButton onClick={ cancelRequest }
+                        <IconButton onClick={ cancel }
                                     disabled={ selected.status.toUpperCase() !== VacationRequestStatus.Pending }>
                             <CancelRounded />
                         </IconButton>
@@ -58,7 +58,8 @@ export function VacationRequestTableToolbar({
                     </Tooltip>
                     <Tooltip title="Edit">
                         <span>
-                        <IconButton onClick={editRequest} disabled={ selected.status.toUpperCase() !== VacationRequestStatus.Pending }>
+                        <IconButton onClick={ edit }
+                                    disabled={ selected.status.toUpperCase() !== VacationRequestStatus.Pending }>
                             <Edit />
                         </IconButton>
                         </span>
@@ -66,7 +67,7 @@ export function VacationRequestTableToolbar({
                 </div>
             ) : (<div>
                     <Tooltip title="Request">
-                        <IconButton onClick={ createRequest }>
+                        <IconButton onClick={ create }>
                             <Add />
                         </IconButton>
                     </Tooltip>

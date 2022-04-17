@@ -13,11 +13,11 @@ interface CreateVacationRequestProps {
 }
 
 export function EditVacationRequest({
-                                          setVacations,
-                                          closeMainDialog,
-                                          vacationRequestService,
-                                          vacationRequest
-                                      }: CreateVacationRequestProps) {
+                                        setVacations,
+                                        closeMainDialog,
+                                        vacationRequestService,
+                                        vacationRequest
+                                    }: CreateVacationRequestProps) {
 
 
     const submit: SubmitHandler<VacationRequestFormFieldValue> = (data, event): void => {
@@ -39,6 +39,6 @@ export function EditVacationRequest({
 
     return <VacationRequestForm onSubmit={ submit }
                                 onCancel={ closeMainDialog }
-                                vacationRequest={vacationRequest}
+                                vacationRequest={ vacationRequest }
     />;
 }

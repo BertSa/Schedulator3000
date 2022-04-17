@@ -23,7 +23,7 @@ export function VacationRequestTable() {
             .then(response => setVacations(response));
     }, [employee.email]);
 
-    const createRequest = () =>
+    const createAction = () =>
         openDialog({
             children: <CreateVacationRequest setVacations={ setVacations }
                                              employee={ employee }
@@ -31,7 +31,7 @@ export function VacationRequestTable() {
                                              vacationRequestService={ vacationRequestService } />
         });
 
-    const editRequest = () =>
+    const editAction = () =>
         openDialog({
             children: <EditVacationRequest setVacations={ setVacations }
                                            closeMainDialog={ closeDialog }
@@ -87,7 +87,7 @@ export function VacationRequestTable() {
         </>;
     }
 
-    function cancelRequest(): void {
+    function cancelAction(): void {
         if (!selectedVacation) {
             return;
         }
@@ -104,9 +104,11 @@ export function VacationRequestTable() {
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
                 <VacationRequestTableToolbar selected={ selectedVacation }
-                                             cancelRequest={ cancelRequest }
-                                             createRequest={ createRequest }
-                                             editRequest={ editRequest } />
+                                             actions={{
+                                                 create: createAction,
+                                                 edit: editAction,
+                                                 cancel: cancelAction,
+                                             }} />
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>

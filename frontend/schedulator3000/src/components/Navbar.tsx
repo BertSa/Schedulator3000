@@ -17,7 +17,8 @@ export function Navbar() {
             return null;
         }
 
-        return <>
+        return <Box sx={ {flexGrow: 1, display: {xs: 'none', md: 'flex'}} }>
+
             <Button
                 onClick={ () => {
                     history.push('/manager/employees');
@@ -55,12 +56,12 @@ export function Navbar() {
                 Schedule V2
                 <Chip color="primary" size="small" title={ 'BETA' } label={ 'BETA' } />
             </Button>
-        </>;
+        </Box>;
     }
 
-    function ManagerLinksSm(): JSX.Element | null {
+    function ManagerLinksSm() {
         if (!auth.isManager()) {
-            return null;
+            return <MenuItem>allo</MenuItem>;
         }
 
         return <>
@@ -88,8 +89,8 @@ export function Navbar() {
             } }>
                 <Typography textAlign="center">
                     Schedule V2
-                    <Chip color="primary" size="small" title={ 'BETA' } label={ 'BETA' } />
                 </Typography>
+                <Chip color="primary" size="small" label={ 'BETA' } />
             </MenuItem>
         </>;
     }
@@ -205,9 +206,7 @@ export function Navbar() {
                     >
                         { process.env.REACT_APP_NAME }
                     </Typography>
-                    <Box sx={ {flexGrow: 1, display: {xs: 'none', md: 'flex'}} }>
-                        <ManagerLinks />
-                    </Box>
+                    <ManagerLinks />
                     <Box sx={ {flexGrow: 0} }>
                         <RightSide />
                     </Box>

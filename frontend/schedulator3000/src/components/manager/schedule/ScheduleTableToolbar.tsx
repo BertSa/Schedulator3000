@@ -1,5 +1,5 @@
 import { alpha, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
-import { Add, ArrowBack, ArrowForward, Edit, LocalFireDepartment } from '@mui/icons-material';
+import { Add, ArrowBack, ArrowForward, Delete, Edit } from '@mui/icons-material';
 import React from 'react';
 import { Employee } from '../../../models/User';
 import { Shift } from '../../../models/Shift';
@@ -10,16 +10,15 @@ type ScheduleTableToolbarProps = {
     prev: VoidFunction,
     next: VoidFunction,
     selected: null | { employee: Employee, day: number, shift: Shift | undefined },
-    create: VoidFunction,
+    actions: {
+        create: VoidFunction,
+        edit: VoidFunction,
+        remove: VoidFunction,
+    }
 };
 
-export function ScheduleTableToolbar({currentWeek, prev, next, selected,create}: ScheduleTableToolbarProps) {
-    const getDateOfDay = (day: number) => {
-        console.log(day);
-        console.log(currentWeek);
-        console.log(addDays(currentWeek, day));
-        return format(addDays(new Date(currentWeek), day), 'yyyy-MM-dd');
-    };
+export function ScheduleTableToolbar({currentWeek, prev, next, selected, actions:{create, edit, remove}}: ScheduleTableToolbarProps) {
+    const getDateOfDay = (day: number) => format(addDays(new Date(currentWeek), day), 'yyyy-MM-dd');
 
     return (
         <Toolbar
@@ -49,13 +48,18 @@ export function ScheduleTableToolbar({currentWeek, prev, next, selected,create}:
             </Typography>
             { selected !== null ? (
                     <div>
-                        <Tooltip title="Promote to customer">
-                            <IconButton>
-                                <LocalFireDepartment />
+                        <Tooltip title="Delete">
+                            <IconButton onClick={ remove }>
+                                <Delete />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit">
+                            <IconButton onClick={ edit }>
+                                <Edit />
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Add">
-                            <IconButton onClick={create}>
+                            <IconButton onClick={ create }>
                                 <Add />
                             </IconButton>
                         </Tooltip>

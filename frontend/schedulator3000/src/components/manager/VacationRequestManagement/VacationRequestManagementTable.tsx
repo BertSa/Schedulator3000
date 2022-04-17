@@ -3,7 +3,7 @@ import { VacationRequest, VacationRequestStatus, VacationRequestUpdateStatus } f
 import { useServices } from '../../../hooks/use-services';
 import { useAuth } from '../../../hooks/use-auth';
 import { Employee, Manager } from '../../../models/User';
-import { alpha, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
+import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
 import { VacationRequestManagementTableToolbar } from './VacationRequestManagementTableToolbar';
 
@@ -43,13 +43,12 @@ export function VacationRequestManagementTable() {
 
 
         return <>
-            <TableRow sx={ {
-                '&:last-child td, &:last-child th': {border: 0},
-                ...(selectedVacation?.id === request.id && {
-                    bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                }),
-            } }
+            <TableRow selected={ selectedVacation?.id === request.id }
+                      hover
+                      sx={ {
+                          cursor: 'pointer',
+                          '&:last-child td, &:last-child th': {border: 0},
+                      } }
                       onClick={ () => setSelectedVacation(selected => selected?.id === request.id ? null : request) }>
                 <TableCell component="th" scope="row">
                     { request.id }
@@ -86,14 +85,17 @@ export function VacationRequestManagementTable() {
             });
     }
 
-    const approveRequest = (): void => updateRequest(VacationRequestUpdateStatus.Approve);
-    const rejectRequest = (): void => updateRequest(VacationRequestUpdateStatus.Reject);
+    const approveAction = (): void => updateRequest(VacationRequestUpdateStatus.Approve);
+    const rejectAction = (): void => updateRequest(VacationRequestUpdateStatus.Reject);
 
     return <>
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
-                <VacationRequestManagementTableToolbar selected={ selectedVacation } approveRequest={ approveRequest }
-                                                       rejectRequest={ rejectRequest } />
+                <VacationRequestManagementTableToolbar selected={ selectedVacation }
+                                                       actions={ {
+                                                           approve: approveAction,
+                                                           reject: rejectAction,
+                                                       } } />
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
