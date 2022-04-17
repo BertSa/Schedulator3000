@@ -3,7 +3,7 @@ import { VacationRequest, VacationRequestStatus, VacationRequestUpdateStatus } f
 import { useServices } from '../../hooks/use-services';
 import { useAuth } from '../../hooks/use-auth';
 import { Employee } from '../../models/User';
-import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
+import { alpha, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { VacationRequestTableToolbar } from './VacationRequestTableToolbar';
 import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
 import { useDialog } from '../../hooks/use-dialog';
@@ -20,9 +20,7 @@ export function VacationRequestTable() {
 
     useEffect(() => {
         vacationRequestService.getAllByEmployeeEmail(employee.email)
-            .then(response => {
-                setVacations(response);
-            });
+            .then(response => setVacations(response));
     }, [employee.email]);
 
     const createRequest = () =>
@@ -61,10 +59,15 @@ export function VacationRequestTable() {
         }
 
         return <>
-            <TableRow sx={ {'& > *': {borderBottom: 'unset'}} }
-                      onClick={ () => {
-                          setSelectedVacation(selected => selected?.id === request.id ? null : request);
-                      } }>
+            <TableRow
+                sx={ {
+                    ...(selectedVacation?.id === request.id && {
+                        bgcolor: (theme) =>
+                            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+                    }),
+                    '& > *': {borderBottom: 0},
+                } }
+                onClick={ () => setSelectedVacation(selected => selected?.id === request.id ? null : request) }>
                 <TableCell component="th" scope="row">
                     { request.id }
                 </TableCell>

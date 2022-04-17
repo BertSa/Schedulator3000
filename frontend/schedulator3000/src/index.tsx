@@ -31,7 +31,7 @@ const themeOptions: ThemeOptions = createTheme({
         secondary: {
             main: '#b2ebf2'
         }
-    }
+    },
 });
 
 ReactDOM.render(

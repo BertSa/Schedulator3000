@@ -1,4 +1,4 @@
-import { alpha, Box, Button, Collapse, Container, Grid, IconButton, InputAdornment, MenuItem, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { alpha, Box, Button, Collapse, Container, Grid, IconButton, InputAdornment, MenuItem, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Theme, Typography } from '@mui/material';
 import { AccountCircle, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import React, { useEffect, useState } from 'react';
 import { Employee } from '../../../models/User';
@@ -22,11 +22,30 @@ type FormFieldValue = {
     shiftId?: number,
 }
 
+
+function getColor(vacations: VacationRequest[], getDateOfDay: (day: number) => string, key: number, theme: Theme): string {
+    const vacationRequest: VacationRequest | undefined = vacations.find(vacation => isBetween(new Date(getDateOfDay(key)), new Date(vacation.startDate), new Date(vacation.endDate)));
+    let color: string;
+    switch (vacationRequest?.status) {
+        case VacationRequestStatus.Pending:
+            color = theme.palette.warning.main;
+            break;
+        case VacationRequestStatus.Approved:
+            color = theme.palette.grey[500];
+            break;
+        default:
+            color = theme.palette.primary.main;
+            break;
+    }
+    return color;
+}
+
 export function ScheduleTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [shifts, setShifts] = useState<Shift[]>([]);
     const [vacations, setVacations] = useState<VacationRequest[]>([]);
     const [curentWeek, setCurrentWeek] = useState<Date>(getBeginningOfWeek(getCurrentTimezoneDate(new Date())));
+    const [selected, setSelected] = useState<null | { employee: Employee, day: number, shift: Shift | undefined }>(null);
     const [openDialog, closeDialog] = useDialog();
     const {setValue, getValues, register, handleSubmit, formState: {errors}, reset, control} = useForm<FormFieldValue>({
         mode: 'onSubmit',
@@ -249,30 +268,44 @@ export function ScheduleTable() {
 
     const getDateOfDay = (day: number) => format(addDays(curentWeek, day), 'yyyy-MM-dd');
 
+    const create = () => {
+        if (selected === null) {
+            return;
+        }
+        reset();
+        setValue('start', selected.shift?.startTime ?? addDays(curentWeek, selected.day));
+        setValue('end', selected.shift?.endTime ?? addDays(curentWeek, selected.day));
+        setValue('employeeId', selected.employee.id);
+        openMyDialog(SubmitType.CREATE);
+    };
+    const update = () => {
+        if (!selected?.shift) {
+            return;
+        }
+        reset();
+        setValue('start', selected.shift.startTime);
+        setValue('end', selected.shift.endTime);
+        setValue('employeeId', selected.employee.id);
+        setValue('shiftId', selected.shift.id);
+        openMyDialog(SubmitType.UPDATE);
+    };
+
+    const getTimeInHourMinutesAMPM = (date: Date) => format(new Date(date), 'h:mma');
+
     function Row({
                      employee,
                      shifts,
                      vacations
-                 }: { employee: Employee, shifts: Shift[][], vacations: VacationRequest[] }) {
+                 }: { employee: Employee, shifts: (Shift | undefined)[], vacations: VacationRequest[] }) {
         const [open, setOpen] = useState(false);
 
-        const getTimeInHourMinutesAMPM = (date: Date) => format(new Date(date), 'h:mma');
-
-        function isDuringVacation(dayOfWeek: number) {
-            const dateOfDay: string = getDateOfDay(dayOfWeek);
-            for (const vacation of vacations) {
-                if (isBetween(new Date(dateOfDay), new Date(vacation.startDate), new Date(vacation.endDate))) {
-                    return true;
-                }
-            }
-            return false;
-        }
 
         function getTotal(): string {
             const number: number = shifts.reduce((acc, curr) => {
-                return acc + curr.reduce((acc, curr) => {
+                if (curr) {
                     return acc + differenceInMinutes(new Date(curr.endTime), new Date(curr.startTime));
-                }, 0);
+                }
+                return acc;
             }, 0);
 
             const hours: number = minutesToHours(number);
@@ -297,36 +330,54 @@ export function ScheduleTable() {
                     <TableCell component="th" scope="row">
                         { employee.firstName } { employee.lastName }
                     </TableCell>
-                    { shifts.map((day, key) =>
-                        <TableCell key={ key } align="center" sx={ {
-                            cursor: 'pointer',
-                            ...(isDuringVacation(key) && {
-                                bgcolor: (theme) => {
-                                    const vacationRequest: VacationRequest | undefined = vacations.find(vacation => isBetween(new Date(getDateOfDay(key)), new Date(vacation.startDate), new Date(vacation.endDate)));
-                                    switch (vacationRequest?.status) {
-                                        case VacationRequestStatus.Pending:
-                                            return alpha(theme.palette.warning.main, theme.palette.action.activatedOpacity);
-                                        case VacationRequestStatus.Approved:
-                                            return alpha(theme.palette.grey[500], theme.palette.action.activatedOpacity);
-                                        default:
-                                            return 'unset';
-                                    }
-                                }
-                            }),
-                        } } onClick={ () => {
-                            reset();
-                            setValue('start', day[0]?.startTime ?? addDays(curentWeek, key));
-                            setValue('end', day[0]?.endTime ?? addDays(curentWeek, key));
-                            setValue('employeeId', employee.id);
-                            if (day[0]) {
-                                setValue('shiftId', day[0].id);
-                                openMyDialog(SubmitType.UPDATE);
-                            } else {
-                                openMyDialog(SubmitType.CREATE);
-                            }
-                        } }>
-                            {
-                                day[0]?.startTime && getTimeInHourMinutesAMPM(day[0].startTime) } - { day[0]?.endTime && getTimeInHourMinutesAMPM(day[0].endTime) }
+                    { shifts.map((shift, key) =>
+                        <TableCell key={ key }
+                                   align="center"
+                                   sx={ {
+                                       cursor: 'pointer',
+                                       ...({
+                                           bgcolor: (theme) => {
+                                               const vacationRequest: VacationRequest | undefined = vacations.find(vacation => isBetween(new Date(getDateOfDay(key)), new Date(vacation.startDate), new Date(vacation.endDate)));
+                                               const opacity: number = selected?.day === key && selected?.employee.id === employee.id ? theme.palette.action.focusOpacity : theme.palette.action.disabledOpacity;
+
+                                               switch (vacationRequest?.status) {
+                                                   case VacationRequestStatus.Pending:
+                                                       return alpha(theme.palette.warning.main, opacity);
+                                                   case VacationRequestStatus.Approved:
+                                                       return alpha(theme.palette.grey[500], opacity);
+                                                   default:
+                                                       if (opacity === theme.palette.action.focusOpacity) {
+                                                           return alpha(theme.palette.primary.main, opacity);
+                                                       }
+                                                       return 'unset';
+                                               }
+                                           }
+                                       }),
+                                       '&:hover': {
+                                           bgcolor: (theme) => {
+                                               let color = getColor(vacations, getDateOfDay, key, theme);
+
+                                               return alpha(color, theme.palette.action.hoverOpacity);
+                                           }
+                                       },
+                                       '&:active': {
+                                           bgcolor: (theme) => {
+                                               let color = getColor(vacations, getDateOfDay, key, theme);
+
+                                               return alpha(color, theme.palette.action.activatedOpacity);
+                                           }
+                                       },
+
+                                   } }
+                                   onClick={ () => {
+                                       setSelected(current => current?.day === key && current?.employee.id === employee.id ?
+                                           null : {
+                                               employee: employee,
+                                               day: key,
+                                               shift: shift
+                                           });
+                                   } }>
+                            { shift?.startTime && getTimeInHourMinutesAMPM(shift.startTime) } - { shift?.endTime && getTimeInHourMinutesAMPM(shift.endTime) }
                         </TableCell>) }
                     <TableCell align="right">{ getTotal() }</TableCell>
                 </TableRow>
@@ -367,9 +418,12 @@ export function ScheduleTable() {
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
                 <ScheduleTableToolbar
-                    currentWeek={ getDateOfDay(0) }
+                    currentWeek={ curentWeek }
                     prev={ () => setCurrentWeek(curentWeek => subWeeks(curentWeek, 1)) }
-                    next={ () => setCurrentWeek(curentWeek => addWeeks(curentWeek, 1)) } />
+                    next={ () => setCurrentWeek(curentWeek => addWeeks(curentWeek, 1)) }
+                    selected={ selected }
+                    create={ create }
+                />
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
@@ -408,11 +462,10 @@ export function ScheduleTable() {
                     </TableHead>
                     <TableBody>
                         { employees.map((employee) => {
-                            const weekShift: Shift[][] = new Array(7);
+                            const weekShift: (Shift | undefined)[] = new Array(7);
                             const filter: Shift[] = shifts.filter(value => isBetween(new Date(value.startTime), curentWeek, addWeeks(curentWeek, 1)) && value.emailEmployee === employee.email);
                             for (let i = 0; i < 7; i++) {
-                                const found: Shift | undefined = filter.find(shift => getDay(new Date(shift.startTime)) === i);
-                                weekShift[i] = found ? [found] : [];
+                                weekShift[i] = filter.find(shift => getDay(new Date(shift.startTime)) === i);
                             }
                             const requests: VacationRequest[] = vacations.filter(value => value.employeeEmail === employee.email);
 
