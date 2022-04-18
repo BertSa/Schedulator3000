@@ -2,7 +2,7 @@ import { Employee } from '../../../../models/User';
 import React, { useEffect, useState } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useDialog } from '../../../../hooks/use-dialog';
-import { useServices } from '../../../../hooks/use-services';
+import { useServices } from '../../../../hooks/use-services/use-services';
 import { useAuth } from '../../../../hooks/use-auth';
 import { EmployeeTableToolbar } from './EmployeeTableToolbar';
 import { RegisterEmployee } from './employee-form/RegisterEmployee';
@@ -44,11 +44,9 @@ export function EmployeeTable() {
     const fireAction = () => {
         if (selected) {
             managerService.fireEmployee(selected.id, user.email).then(
-                emp => {
-                    if (emp) {
-                        setEmployees(employees.filter(employee => employee.id !== selected.id));
-                        setSelected(null);
-                    }
+                () => {
+                    setEmployees(employees.filter(employee => employee.id !== selected.id));
+                    setSelected(null);
                 });
         }
     };

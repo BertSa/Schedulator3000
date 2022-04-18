@@ -14,11 +14,10 @@ export function Navbar() {
 
     function ManagerLinks(): JSX.Element | null {
         if (!auth.isManager()) {
-            return null;
+            return <></>;
         }
 
-        return <Box sx={ {flexGrow: 1, display: {xs: 'none', md: 'flex'}} }>
-
+        return <>
             <Button
                 onClick={ () => {
                     history.push('/manager/employees');
@@ -56,7 +55,7 @@ export function Navbar() {
                 Schedule V2
                 <Chip color="primary" size="small" title={ 'BETA' } label={ 'BETA' } />
             </Button>
-        </Box>;
+        </>;
     }
 
     function ManagerLinksSm() {
@@ -206,7 +205,9 @@ export function Navbar() {
                     >
                         { process.env.REACT_APP_NAME }
                     </Typography>
-                    <ManagerLinks />
+                    <Box sx={ {flexGrow: 1, display: {xs: 'none', md: 'flex'}} }>
+                        <ManagerLinks />
+                    </Box>
                     <Box sx={ {flexGrow: 0} }>
                         <RightSide />
                     </Box>

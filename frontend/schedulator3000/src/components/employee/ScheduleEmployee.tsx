@@ -1,4 +1,4 @@
-import { useServices } from '../../hooks/use-services';
+import { useServices } from '../../hooks/use-services/use-services';
 import React, { useEffect, useState } from 'react';
 import { ShiftsFromToDto } from '../../models/ShiftsFromTo';
 import { getBeginningOfWeek, getCurrentTimezoneDate, localizer, preferences, toLocalDateString } from '../../utilities';

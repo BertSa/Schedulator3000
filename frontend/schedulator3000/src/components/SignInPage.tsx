@@ -19,17 +19,9 @@ export function SignInPage() {
         const {email, password} = data;
 
         if (tab === 0) {
-            auth.signInEmployee(email, password).then(ok => {
-                if (ok) {
-                    history.push('/');
-                }
-            });
+            auth.signInEmployee(email, password).then(() => history.push('/'));
         } else if (tab === 1) {
-            auth.signInManager(email, password).then(ok => {
-                if (ok) {
-                    history.push('/manager/dashboard');
-                }
-            });
+            auth.signInManager(email, password).then(() => history.push('/manager/dashboard'));
         }
     };
 

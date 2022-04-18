@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { VacationRequest, VacationRequestStatus, VacationRequestUpdateStatus } from '../../models/VacationRequest';
-import { useServices } from '../../hooks/use-services';
+import { useServices } from '../../hooks/use-services/use-services';
 import { useAuth } from '../../hooks/use-auth';
 import { Employee } from '../../models/User';
-import { alpha, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
+import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { VacationRequestTableToolbar } from './VacationRequestTableToolbar';
 import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
 import { useDialog } from '../../hooks/use-dialog';
@@ -19,8 +19,7 @@ export function VacationRequestTable() {
     const employee: Employee = useAuth().getEmployee();
 
     useEffect(() => {
-        vacationRequestService.getAllByEmployeeEmail(employee.email)
-            .then(response => setVacations(response));
+        vacationRequestService.getAllByEmployeeEmail(employee.email).then(response => setVacations(response));
     }, [employee.email]);
 
     const createAction = () =>
@@ -60,12 +59,11 @@ export function VacationRequestTable() {
 
         return <>
             <TableRow
+                selected={ selectedVacation?.id === request.id }
+                hover
                 sx={ {
-                    ...(selectedVacation?.id === request.id && {
-                        bgcolor: (theme) =>
-                            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                    }),
-                    '& > *': {borderBottom: 0},
+                    cursor: 'pointer',
+                    '&:last-child td, &:last-child th': {border: 0},
                 } }
                 onClick={ () => setSelectedVacation(selected => selected?.id === request.id ? null : request) }>
                 <TableCell component="th" scope="row">
@@ -93,10 +91,8 @@ export function VacationRequestTable() {
         }
         vacationRequestService.updateStatus(selectedVacation.id, VacationRequestUpdateStatus.Cancel)
             .then(response => {
-                if (response) {
-                    setVacations(current => [...current.filter(v => v.id !== selectedVacation.id), response]);
-                    setSelectedVacation(response);
-                }
+                setVacations(current => [...current.filter(v => v.id !== selectedVacation.id), response]);
+                setSelectedVacation(response);
             });
     }
 
@@ -104,11 +100,11 @@ export function VacationRequestTable() {
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
                 <VacationRequestTableToolbar selected={ selectedVacation }
-                                             actions={{
+                                             actions={ {
                                                  create: createAction,
                                                  edit: editAction,
                                                  cancel: cancelAction,
-                                             }} />
+                                             } } />
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>

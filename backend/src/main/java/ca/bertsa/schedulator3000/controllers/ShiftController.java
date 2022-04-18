@@ -1,13 +1,14 @@
 package ca.bertsa.schedulator3000.controllers;
 
-import ca.bertsa.schedulator3000.dtos.ShiftDto;
 import ca.bertsa.schedulator3000.dtos.ResponseMessage;
+import ca.bertsa.schedulator3000.dtos.ShiftDto;
 import ca.bertsa.schedulator3000.dtos.ShiftsFromToDto;
 import ca.bertsa.schedulator3000.services.ShiftService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -18,70 +19,34 @@ public class ShiftController {
     private final ShiftService shiftService;
 
     @PostMapping("/manager/create")
-    public ResponseEntity<?> create(@RequestBody ShiftDto dto) {
-        try {
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(shiftService.create(dto));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public ShiftDto create(@RequestBody ShiftDto dto) {
+        return shiftService.create(dto);
     }
 
     @PutMapping("/manager/update")
-    public ResponseEntity<?> update(@RequestBody ShiftDto dto) {
-        try {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(shiftService.update(dto));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public ShiftDto update(@RequestBody ShiftDto dto) {
+        return shiftService.update(dto);
     }
 
     @DeleteMapping("/manager/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        try {
-            shiftService.delete(id);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ResponseMessage("Shift deleted"));
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseMessage delete(@PathVariable Long id) {
+        shiftService.delete(id);
+        return new ResponseMessage("Shift deleted");
     }
 
     @PostMapping("/manager")
-    public ResponseEntity<?> getAll(@RequestBody ShiftsFromToDto dto) {
-        try {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(shiftService.getAllFromTo(dto));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public List<ShiftDto> getAll(@RequestBody ShiftsFromToDto dto) {
+        return shiftService.getAllFromTo(dto);
     }
 
     @PostMapping("/employee")
-    public ResponseEntity<?> getScheduleOfEmployee(@RequestBody ShiftsFromToDto dto) {
-        try {
-            final var schedule = shiftService.getScheduleOfEmployee(dto);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(schedule);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public List<ShiftDto> getScheduleOfEmployee(@RequestBody ShiftsFromToDto dto) {
+        return shiftService.getScheduleOfEmployee(dto);
     }
 
 }

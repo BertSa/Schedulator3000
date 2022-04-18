@@ -2,8 +2,8 @@ import React from 'react';
 import { FieldValues, SubmitHandler } from 'react-hook-form';
 import { useDialog } from '../../../../../hooks/use-dialog';
 import { Employee, EmployeeFormType, Manager } from '../../../../../models/User';
-import { IManagerService } from '../../../../../hooks/use-services';
 import { EmployeeForm } from './EmployeeForm';
+import { IManagerService } from '../../../../../hooks/use-services/use-provide-manager-service';
 
 type IRegisterEmployeeProps = {
     user: Manager,
@@ -27,20 +27,18 @@ export function RegisterEmployee({
 
         managerService.addEmployee(user.email, employee).then(
             employee => {
-                if (employee !== undefined) {
-                    setEmployees((curentEmployees: Employee[]) => [...curentEmployees, employee]);
-                    closeMainDialog();
-                    const defaultMessage = `Hi ${ employee.firstName } ${ employee.lastName } here's your password:`;
-                    createDialog({
-                        children: <form action={ `mailto:${ employee.email }` } method="post" encType="text/plain">
-                            <input type="text" name="template" value={ defaultMessage } />
-                            <input type="text" name="code" disabled value={ employee.password }
-                                   onClick={ () => navigator.clipboard.writeText(employee.password).then() }
-                                   size={ 50 } />
-                            <input type={ 'submit' } onClick={ () => closeDialog() } value="Send" />
-                        </form>
-                    });
-                }
+                setEmployees((curentEmployees: Employee[]) => [...curentEmployees, employee]);
+                closeMainDialog();
+                const defaultMessage = `Hi ${ employee.firstName } ${ employee.lastName } here's your password:`;
+                createDialog({
+                    children: <form action={ `mailto:${ employee.email }` } method="post" encType="text/plain">
+                        <input type="text" name="template" value={ defaultMessage } />
+                        <input type="text" name="code" disabled value={ employee.password }
+                               onClick={ () => navigator.clipboard.writeText(employee.password).then() }
+                               size={ 50 } />
+                        <input type={ 'submit' } onClick={ () => closeDialog() } value="Send" />
+                    </form>
+                });
             });
     };
 

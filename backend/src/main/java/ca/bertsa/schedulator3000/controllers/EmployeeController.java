@@ -2,12 +2,10 @@ package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
 import ca.bertsa.schedulator3000.dtos.PasswordChangeDto;
-import ca.bertsa.schedulator3000.dtos.ResponseMessage;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.services.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,45 +16,20 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping("signin")
-    public ResponseEntity<?> signIn(@RequestBody ConnectionDto dto) {
-        try {
-            final var employee = employeeService.signIn(dto);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(employee);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public Employee signIn(@RequestBody ConnectionDto dto) {
+        return employeeService.signIn(dto);
     }
 
     @PostMapping("/password/update")
-    public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeDto dto){
-        try {
-            final var employee = employeeService.updatePassword(dto);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(employee);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public Employee updatePassword(@RequestBody PasswordChangeDto dto) {
+        return employeeService.updatePassword(dto);
     }
 
     @PutMapping
-    public ResponseEntity<?> updateEmployee(@RequestBody Employee employee) {
-        try {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(employeeService.updateEmployee(employee));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public Employee updateEmployee(@RequestBody Employee employee) {
+        return employeeService.updateEmployee(employee);
     }
 }

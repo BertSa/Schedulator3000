@@ -1,13 +1,13 @@
 package ca.bertsa.schedulator3000.controllers;
 
-import ca.bertsa.schedulator3000.dtos.ResponseMessage;
 import ca.bertsa.schedulator3000.dtos.VacationRequestDto;
 import ca.bertsa.schedulator3000.enums.VacationRequestStatus;
 import ca.bertsa.schedulator3000.services.VacationRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -17,108 +17,44 @@ public class VacationRequestController {
     private final VacationRequestService vacationRequestService;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody VacationRequestDto dto) {
-
-        try {
-            final var vacation = vacationRequestService.createVacationRequest(dto);
-
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(vacation);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public VacationRequestDto create(@RequestBody VacationRequestDto dto) {
+        return vacationRequestService.createVacationRequest(dto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody VacationRequestDto dto) {
-        try {
-            final var vacation = vacationRequestService.update(id, dto);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(vacation);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public VacationRequestDto update(@PathVariable Long id, @RequestBody VacationRequestDto dto) {
+        return vacationRequestService.update(id, dto);
     }
 
     @PutMapping("/{id}/approve")
-    public ResponseEntity<?> approveVacation(@PathVariable Long id) {
-        try {
-            final var vacation = vacationRequestService.updateVacationRequestStatus(id, VacationRequestStatus.APPROVED);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(vacation);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public VacationRequestDto approveVacation(@PathVariable Long id) {
+        return vacationRequestService.updateVacationRequestStatus(id, VacationRequestStatus.APPROVED);
     }
 
     @PutMapping("/{id}/reject")
-    public ResponseEntity<?> rejectVacation(@PathVariable Long id) {
-        try {
-            final var vacation = vacationRequestService.updateVacationRequestStatus(id, VacationRequestStatus.REJECTED);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(vacation);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public VacationRequestDto rejectVacation(@PathVariable Long id) {
+        return vacationRequestService.updateVacationRequestStatus(id, VacationRequestStatus.REJECTED);
     }
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<?> cancelVacation(@PathVariable Long id) {
-        try {
-            final var vacation = vacationRequestService.updateVacationRequestStatus(id, VacationRequestStatus.CANCELLED);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(vacation);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public VacationRequestDto cancelVacation(@PathVariable Long id) {
+        return vacationRequestService.updateVacationRequestStatus(id, VacationRequestStatus.CANCELLED);
     }
 
     @GetMapping("/manager/{managerEmail}")
-    public ResponseEntity<?> getAllByEmployeeManagerEmail(@PathVariable String managerEmail) {
-        try {
-            final var vacations = vacationRequestService.getAllVacationRequestByEmployeeManagerEmail(managerEmail);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(vacations);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public List<VacationRequestDto> getAllByEmployeeManagerEmail(@PathVariable String managerEmail) {
+        return vacationRequestService.getAllVacationRequestByEmployeeManagerEmail(managerEmail);
     }
 
     @GetMapping("/employee/{employeeEmail}")
-    public ResponseEntity<?> getAllByEmployeeEmail(@PathVariable String employeeEmail) {
-        try {
-            final var vacations = vacationRequestService.getAllVacationRequestByEmployeeEmail(employeeEmail);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(vacations);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public List<VacationRequestDto> getAllByEmployeeEmail(@PathVariable String employeeEmail) {
+        return vacationRequestService.getAllVacationRequestByEmployeeEmail(employeeEmail);
     }
 }

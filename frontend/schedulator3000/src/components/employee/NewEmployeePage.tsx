@@ -25,9 +25,7 @@ export function NewEmployeePage() {
             newPassword
         };
 
-        updatePassword(pwdChange).then(() => {
-            history.replace('/');
-        });
+        updatePassword(pwdChange).then(() => history.replace('/'));
     };
 
     return <>

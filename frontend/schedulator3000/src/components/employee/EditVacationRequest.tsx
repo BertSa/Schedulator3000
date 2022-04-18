@@ -2,7 +2,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { VacationRequestForm, VacationRequestFormFieldValue } from './VacationRequestForm';
 import { VacationRequest, VacationRequestUpdate } from '../../models/VacationRequest';
 import React from 'react';
-import { IVacationRequestService } from '../../hooks/use-services';
+import { IVacationRequestService } from '../../hooks/use-services/use-provide-vacation-request-service';
 
 
 interface CreateVacationRequestProps {
@@ -30,10 +30,8 @@ export function EditVacationRequest({
         };
 
         vacationRequestService.update(body).then(response => {
-            if (response) {
-                closeMainDialog();
-                setVacations(prevState => [...prevState.filter(value => value.id !== response.id), response]);
-            }
+            closeMainDialog();
+            setVacations(prevState => [...prevState.filter(value => value.id !== response.id), response]);
         });
     };
 

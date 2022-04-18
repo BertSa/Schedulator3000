@@ -1,10 +1,11 @@
 package ca.bertsa.schedulator3000.exceptions;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
-public class EmployeeInactiveException extends Exception {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+public class EmployeeInactiveException extends RuntimeException {
     public EmployeeInactiveException(String s) {
         super(s);
     }

@@ -3,6 +3,7 @@ package ca.bertsa.schedulator3000.services;
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
 import ca.bertsa.schedulator3000.dtos.PasswordChangeDto;
 import ca.bertsa.schedulator3000.exceptions.EmployeeInactiveException;
+import ca.bertsa.schedulator3000.exceptions.UserNotFoundException;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.EmployeeRepository;
@@ -45,13 +46,13 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public Employee signIn(ConnectionDto dto) throws EmployeeInactiveException {
+    public Employee signIn(ConnectionDto dto) {
         Assert.notNull(dto, "Email and password cannot be null!");
 
         Employee employee = employeeRepository.getByEmailIgnoreCaseAndPassword(dto.getEmail(), dto.getPassword());
 
         if (employee == null) {
-            throw new EntityNotFoundException("Invalid email or password!");
+            throw new UserNotFoundException("Invalid email or password!");
         }
 
         if (Boolean.FALSE.equals(employee.getActive())) {

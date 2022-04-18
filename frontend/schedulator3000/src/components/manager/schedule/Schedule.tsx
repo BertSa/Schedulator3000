@@ -11,7 +11,7 @@ import { useAuth } from '../../../hooks/use-auth';
 import { getBeginningOfWeek, getCurrentTimezoneDate, localizer, preferences, stringAvatar, stringToColor, toLocalDateString } from '../../../utilities';
 import { useDialog } from '../../../hooks/use-dialog';
 import { Shift, ShiftWithoutId } from '../../../models/Shift';
-import { useServices } from '../../../hooks/use-services';
+import { useServices } from '../../../hooks/use-services/use-services';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { ShiftsFromToDto } from '../../../models/ShiftsFromTo';
@@ -148,10 +148,6 @@ export const Schedule = () => {
 
             shiftService.create(newShift).then(
                 shift => {
-                    if (!shift) {
-                        return;
-                    }
-
                     let event: ShiftEvent = {
                         resourceId: shift.id,
                         title: employee?.lastName + ' ' + employee?.firstName,
@@ -178,11 +174,9 @@ export const Schedule = () => {
             }
 
             if (submitter === 'delete') {
-                shiftService.deleteShift(shiftId).then(deleted => {
-                        if (deleted) {
-                            setEvents(curent => curent.filter(shift => shift.resourceId !== shiftId));
-                            closeDialog(id);
-                        }
+                shiftService.deleteShift(shiftId).then(() => {
+                        setEvents(curent => curent.filter(shift => shift.resourceId !== shiftId));
+                        closeDialog(id);
                     }
                 );
                 return;
@@ -199,10 +193,6 @@ export const Schedule = () => {
 
             shiftService.updateShift(newShift).then(
                 shift => {
-                    if (!shift?.id) {
-                        return;
-                    }
-
                     let event: ShiftEvent = {
                         resourceId: shift.id,
                         title: employee?.lastName + ' ' + employee?.firstName,
@@ -482,8 +472,7 @@ export const Schedule = () => {
                     <ListItemText>Duplicate</ListItemText>
                 </MenuItem>
                 <MenuItem sx={ {alignContent: 'center'} } onClick={ () => {
-                    shiftService.deleteShift(contextMenu?.shiftEvent?.resourceId as number).then(deleted =>
-                        deleted && setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent?.resourceId))
+                    shiftService.deleteShift(contextMenu?.shiftEvent?.resourceId as number).then(() => setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent?.resourceId))
                     );
                     handleClose();
                 } }>

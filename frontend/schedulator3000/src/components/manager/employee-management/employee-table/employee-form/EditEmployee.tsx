@@ -1,8 +1,8 @@
 import React from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { Employee, EmployeeFormType } from '../../../../../models/User';
-import { IEmployeeService } from '../../../../../hooks/use-services';
 import { EmployeeForm } from './EmployeeForm';
+import { IEmployeeService } from '../../../../../hooks/use-services/use-provide-employee-service';
 
 type IModifyEmployeeProps = {
     employeeService: IEmployeeService,
@@ -24,10 +24,8 @@ export function EditEmployee({
 
         employeeService.updateEmployee(employee).then(
             employee => {
-                if (employee !== null) {
-                    setEmployees((curentEmployees: Employee[]) => [...curentEmployees.filter(emp => emp.id !== employee.id), employee]);
-                    closeMainDialog();
-                }
+                setEmployees((curentEmployees: Employee[]) => [...curentEmployees.filter(emp => emp.id !== employee.id), employee]);
+                closeMainDialog();
             });
     };
 

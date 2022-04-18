@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { VacationRequest, VacationRequestStatus, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
-import { useServices } from '../../../hooks/use-services';
+import { useServices } from '../../../hooks/use-services/use-services';
 import { useAuth } from '../../../hooks/use-auth';
 import { Employee, Manager } from '../../../models/User';
 import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
@@ -78,10 +78,8 @@ export function VacationRequestManagementTable() {
         }
         vacationRequestService.updateStatus(selectedVacation.id, status)
             .then(response => {
-                if (response !== null) {
-                    setVacations(current => [...current.filter(v => v.id !== selectedVacation.id), response]);
-                    setSelectedVacation(response);
-                }
+                setVacations(current => [...current.filter(v => v.id !== selectedVacation.id), response]);
+                setSelectedVacation(response);
             });
     }
 

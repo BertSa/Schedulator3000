@@ -11,7 +11,7 @@ import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import DialogProvider from './hooks/use-dialog';
 import { AuthProvider } from './hooks/use-auth';
-import { ServicesProvider } from './hooks/use-services';
+import { ServicesProvider } from './hooks/use-services/use-services';
 
 const backup = console.error;
 console.error = function filter(msg) {

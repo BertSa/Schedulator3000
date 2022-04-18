@@ -5,7 +5,7 @@ import { Employee } from '../../../models/User';
 import { getBeginningOfWeek, getCurrentTimezoneDate, isBetween, toLocalDateString } from '../../../utilities';
 import { Controller, UnpackNestedValue, useForm } from 'react-hook-form';
 import { useAuth } from '../../../hooks/use-auth';
-import { useServices } from '../../../hooks/use-services';
+import { useServices } from '../../../hooks/use-services/use-services';
 import { ShiftsFromToDto } from '../../../models/ShiftsFromTo';
 import { addDays, addWeeks, differenceInMinutes, format, getDay, hoursToMinutes, minutesToHours, subWeeks } from 'date-fns';
 import { Shift, ShiftWithoutId } from '../../../models/Shift';
@@ -79,9 +79,6 @@ export function ScheduleTable() {
 
             shiftService.create(newShift).then(
                 shift => {
-                    if (!shift) {
-                        return;
-                    }
                     setShifts((currentShifts: Shift[]) => [...currentShifts, {
                         ...shift,
                         startTime: getCurrentTimezoneDate(shift.startTime),
@@ -103,12 +100,10 @@ export function ScheduleTable() {
             }
 
             if (submitter === 'delete') {
-                shiftService.deleteShift(shiftId).then(deleted => {
-                        if (deleted) {
-                            setShifts(curent => curent.filter(shift => shift.id !== shiftId));
-                            closeDialog(id);
-                            setSelected(null);
-                        }
+                shiftService.deleteShift(shiftId).then(() => {
+                        setShifts(curent => curent.filter(shift => shift.id !== shiftId));
+                        closeDialog(id);
+                        setSelected(null);
                     }
                 );
                 return;
@@ -125,10 +120,6 @@ export function ScheduleTable() {
 
             shiftService.updateShift(newShift).then(
                 shift => {
-                    if (!shift?.id) {
-                        return;
-                    }
-
                     closeDialog(id);
                     setShifts((currentShifts: Shift[]) => [...currentShifts.filter(v => v.id !== shiftId),
                         {
@@ -297,11 +288,9 @@ export function ScheduleTable() {
             return;
         }
 
-        shiftService.deleteShift(selected.shift.id).then(deleted => {
-                if (deleted && selected?.shift?.id) {
-                    setShifts(curent => curent.filter(shift => shift.id !== selected?.shift?.id));
-                    setSelected(null);
-                }
+        shiftService.deleteShift(selected.shift.id).then(() => {
+                setShifts(curent => curent.filter(shift => shift.id !== selected?.shift?.id));
+                setSelected(null);
             }
         );
     };
@@ -426,10 +415,10 @@ export function ScheduleTable() {
             <TableContainer component={ Paper }>
                 <ScheduleTableToolbar
                     currentWeek={ curentWeek }
-                    prev={ () => setCurrentWeek(curentWeek => subWeeks(curentWeek, 1)) }
-                    next={ () => setCurrentWeek(curentWeek => addWeeks(curentWeek, 1)) }
                     selected={ selected }
                     actions={ {
+                        prev: () => setCurrentWeek(curentWeek => subWeeks(curentWeek, 1)),
+                        next: () => setCurrentWeek(curentWeek => addWeeks(curentWeek, 1)),
                         create: createAction,
                         edit: editAction,
                         remove: removeAction,

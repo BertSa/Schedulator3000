@@ -7,17 +7,21 @@ import { addDays, format } from 'date-fns';
 
 type ScheduleTableToolbarProps = {
     currentWeek: Date,
-    prev: VoidFunction,
-    next: VoidFunction,
     selected: null | { employee: Employee, day: number, shift: Shift | undefined },
     actions: {
+        prev: VoidFunction,
+        next: VoidFunction,
         create: VoidFunction,
         edit: VoidFunction,
         remove: VoidFunction,
     }
 };
 
-export function ScheduleTableToolbar({currentWeek, prev, next, selected, actions:{create, edit, remove}}: ScheduleTableToolbarProps) {
+export function ScheduleTableToolbar({
+                                         currentWeek,
+                                         selected,
+                                         actions: {prev, next, create, edit, remove}
+                                     }: ScheduleTableToolbarProps) {
     const getDateOfDay = (day: number) => format(addDays(new Date(currentWeek), day), 'yyyy-MM-dd');
 
     return (
@@ -49,19 +53,28 @@ export function ScheduleTableToolbar({currentWeek, prev, next, selected, actions
             { selected !== null ? (
                     <div>
                         <Tooltip title="Delete">
-                            <IconButton onClick={ remove }>
+                            <span>
+                            <IconButton onClick={ remove }
+                                        disabled={ !selected?.shift }>
                                 <Delete />
                             </IconButton>
+                            </span>
                         </Tooltip>
                         <Tooltip title="Edit">
-                            <IconButton onClick={ edit }>
+                            <span>
+                            <IconButton onClick={ edit }
+                                        disabled={ !selected?.shift }>
                                 <Edit />
                             </IconButton>
+                            </span>
                         </Tooltip>
                         <Tooltip title="Add">
-                            <IconButton onClick={ create }>
+                            <span>
+                            <IconButton onClick={ create }
+                                        disabled={ !!selected?.shift }>
                                 <Add />
                             </IconButton>
+                            </span>
                         </Tooltip>
                     </div>
                 ) :

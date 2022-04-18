@@ -1,13 +1,14 @@
 package ca.bertsa.schedulator3000.controllers;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
-import ca.bertsa.schedulator3000.dtos.ResponseMessage;
+import ca.bertsa.schedulator3000.dtos.ManagerDto;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.services.ManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -18,62 +19,26 @@ public class ManagerController {
     private final ManagerService managerService;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@RequestBody ConnectionDto dto) {
-        try {
-            final var manager = managerService.signIn(dto);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(manager);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public ManagerDto signIn(@RequestBody ConnectionDto dto) {
+        return managerService.signIn(dto);
     }
 
     @GetMapping("/{emailManager}/employees")
-    public ResponseEntity<?> getAllEmployeeOfManager(@PathVariable String emailManager) {
-        try {
-            final var employees = managerService.getAllEmployee(emailManager);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(employees);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public List<Employee> getAllEmployeeOfManager(@PathVariable String emailManager) {
+        return managerService.getAllEmployee(emailManager);
     }
 
     @PostMapping("/{emailManager}/employees/create")
-    public ResponseEntity<?> createEmployee(@PathVariable String emailManager, @RequestBody Employee employee) {
-        try {
-            final var employeeAdded = managerService.createEmployee(emailManager, employee);
-
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(employeeAdded);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public Employee createEmployee(@PathVariable String emailManager, @RequestBody Employee employee) {
+        return managerService.createEmployee(emailManager, employee);
     }
 
     @PutMapping("/{emailManager}/employees/{id}/fire")
-    public ResponseEntity<?> fireEmployee(@PathVariable Long id, @PathVariable String emailManager) {
-        try {
-            final var employeeFired = managerService.fireEmployee(id, emailManager);
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(employeeFired);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseMessage(e.getMessage()));
-        }
+    @ResponseStatus(HttpStatus.OK)
+    public Employee fireEmployee(@PathVariable Long id, @PathVariable String emailManager) {
+        return managerService.fireEmployee(id, emailManager);
     }
 }

@@ -1,7 +1,7 @@
 import React, { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { Employee, Manager } from '../models/User';
 import { useSnackbar } from 'notistack';
-import { METHODS, requestInit } from './use-services';
+import { http } from './use-services/use-services';
 import { PasswordChangeDto } from '../models/PasswordChangeDto';
 import { NewEmployeePage } from '../components/employee/NewEmployeePage';
 
@@ -96,33 +96,30 @@ function useProvideAuth(): ProviderAuth {
         }
     }, [user, isManager, isEmployee]);
 
-    const signInManager = async (email: string, password: string): Promise<boolean> => signIn('manager', Manager.prototype, email, password);
-    const signInEmployee = async (email: string, password: string): Promise<boolean> => signIn('employees', Employee.prototype, email, password);
+    const signInManager = async (email: string, password: string): Promise<void> => signIn('manager', Manager.prototype, email, password);
+    const signInEmployee = async (email: string, password: string): Promise<void> => signIn('employees', Employee.prototype, email, password);
 
 
-    const signIn = async (endpoint: string, prototype: Manager | Employee, email: string, password: string): Promise<boolean> => {
-        return await fetch(`/${ endpoint }/signin`, requestInit(METHODS.POST, {email: email, password: password})).then(
-            response => {
-                return response.json().then(
-                    body => {
-                        if (response.status === 200) {
-                            setUser(Object.setPrototypeOf(body, prototype));
-                            enqueueSnackbar('You are connected!', {
-                                variant: 'success',
-                                autoHideDuration: 3000
-                            });
-                        }
-                        if (response.status === 400) {
-                            enqueueSnackbar(body.message, {
-                                variant: 'error',
-                                autoHideDuration: 3000
-                            });
-                        }
-                        return response.ok;
-                    }
-                );
-            }
-        );
+    const signIn = async (endpoint: string, prototype: Manager | Employee, email: string, password: string): Promise<void> => {
+        const {response, body} = await http.post(`/${ endpoint }/signin`, {
+            email: email,
+            password: password
+        });
+
+        if (response.ok) {
+            setUser(Object.setPrototypeOf(body, prototype));
+            enqueueSnackbar('You are connected!', {
+                variant: 'success',
+                autoHideDuration: 3000
+            });
+            return Promise.resolve();
+        }
+        enqueueSnackbar(body.message, {
+            variant: 'error',
+            autoHideDuration: 3000
+        });
+
+        return Promise.reject(body.message);
     };
 
     const signOut = (): void => {
@@ -159,36 +156,30 @@ function useProvideAuth(): ProviderAuth {
         }
     };
 
-    const updatePassword = async (passwordChange: PasswordChangeDto): Promise<boolean> => {
+    const updatePassword = async (passwordChange: PasswordChangeDto): Promise<void> => {
         if (!isAuthenticated()) {
-            return false;
+            return Promise.reject('You are not authenticated!');
         }
 
         let endpoint: string = isManager() ? 'manager' : 'employees';
         passwordChange.email = user?.email;
 
-        return await fetch(`/${ endpoint }/password/update`, requestInit(METHODS.POST, passwordChange)).then(
-            response => {
-                return response.json().then(
-                    body => {
-                        if (response.status === 200) {
-                            setActive();
-                            enqueueSnackbar('Password Updated!', {
-                                variant: 'success',
-                                autoHideDuration: 3000
-                            });
-                        }
-                        if (response.status === 400) {
-                            enqueueSnackbar(body.message, {
-                                variant: 'error',
-                                autoHideDuration: 3000
-                            });
-                        }
-                        return response.ok;
-                    }
-                );
-            }
-        );
+        const {response, body} = await http.post(`/${ endpoint }/password/update`, passwordChange);
+
+        if (response.status === 200) {
+            setActive();
+            enqueueSnackbar('Password Updated!', {
+                variant: 'success',
+                autoHideDuration: 3000
+            });
+            return Promise.resolve();
+        }
+        enqueueSnackbar(body.message, {
+            variant: 'error',
+            autoHideDuration: 3000
+        });
+
+        return Promise.reject(body.message);
 
     };
 
@@ -206,9 +197,9 @@ function useProvideAuth(): ProviderAuth {
 }
 
 type ProviderAuth = {
-    updatePassword: (passwordChange: PasswordChangeDto) => Promise<boolean>;
-    signInManager: (email: string, password: string) => Promise<boolean>;
-    signInEmployee: (email: string, password: string) => Promise<boolean>;
+    updatePassword: (passwordChange: PasswordChangeDto) => Promise<void>;
+    signInManager: (email: string, password: string) => Promise<void>;
+    signInEmployee: (email: string, password: string) => Promise<void>;
     signOut: () => void;
     isAuthenticated: () => boolean;
     isManager: () => boolean;

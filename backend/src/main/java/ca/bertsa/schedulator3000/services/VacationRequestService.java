@@ -22,7 +22,7 @@ public class VacationRequestService {
     private final VacationRequestRepository vacationRequestRepository;
     private final EmployeeService employeeService;
 
-    public VacationRequest createVacationRequest(VacationRequestDto dto) {
+    public VacationRequestDto createVacationRequest(VacationRequestDto dto) {
         final VacationRequest vacationRequest = dto.mapToVacationRequest();
         vacationRequest.setStatus(VacationRequestStatus.PENDING);
         vacationRequest.setId(null);
@@ -30,7 +30,8 @@ public class VacationRequestService {
         final Employee employee = employeeService.getOneByEmail(dto.getEmployeeEmail());
         vacationRequest.setEmployee(employee);
 
-        return vacationRequestRepository.save(vacationRequest);
+        final VacationRequest save = vacationRequestRepository.save(vacationRequest);
+        return save.mapToDto();
     }
 
     public List<VacationRequestDto> getAllVacationRequestByEmployeeManagerEmail(String email) {

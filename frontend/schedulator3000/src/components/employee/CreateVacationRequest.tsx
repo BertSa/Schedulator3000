@@ -3,7 +3,7 @@ import { VacationRequestForm, VacationRequestFormFieldValue } from './VacationRe
 import { VacationRequest, VacationRequestSubmit } from '../../models/VacationRequest';
 import React from 'react';
 import { Employee } from '../../models/User';
-import { IVacationRequestService } from '../../hooks/use-services';
+import { IVacationRequestService } from '../../hooks/use-services/use-provide-vacation-request-service';
 
 
 interface CreateVacationRequestProps {
@@ -31,10 +31,8 @@ export function CreateVacationRequest({
         };
 
         vacationRequestService.create(body).then(response => {
-            if (response) {
-                closeMainDialog();
-                setVacations(prevState => [...prevState.filter(value => value.id !== response.id), response]);
-            }
+            closeMainDialog();
+            setVacations(prevState => [...prevState.filter(value => value.id !== response.id), response]);
         });
     };
 
