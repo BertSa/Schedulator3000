@@ -1,5 +1,5 @@
 import { dateFnsLocalizer } from 'react-big-calendar';
-import { format, getDay, isAfter, isBefore, isSameDay, parse, set, startOfWeek } from 'date-fns';
+import { format, getDay, isAfter, isBefore, isSameDay, parse, startOfWeek } from 'date-fns';
 import enCA from 'date-fns/locale/en-CA';
 
 export const regex = Object.freeze({
@@ -69,21 +69,6 @@ export function getCurrentTimezoneDate(date: Date) {
     return new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
 }
 
-export function getBeginningOfWeek(date: string | Date) {
-    date = new Date(date);
-    let day = date.getDay();
-    let diff = date.getDate() - day;
-
-    let begin: Date = new Date(date.setDate(diff));
-    begin = set(begin, {
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-        milliseconds: 0
-    });
-    return begin;
-}
-
 export function toLocalDateString(date: Date) {
     return date.toLocaleDateString('en-CA', {
         month: '2-digit',
@@ -93,5 +78,9 @@ export function toLocalDateString(date: Date) {
 }
 
 export function isBetween(date: Date, start: Date, end: Date): boolean {
+    date = new Date(date);
+    start = new Date(start);
+    end = new Date(end);
+
     return (isAfter(date, start) || isSameDay(date, start)) && (isBefore(date, end) || isSameDay(date, end));
 }

@@ -21,7 +21,6 @@ export function DialogWarningDelete({resolve, closeDialog, title, text}: {resolv
             <Button onClick={ () => {
                 resolve(true);
                 closeDialog();
-                console.log('delete');
             } }>Cancel</Button>
         </DialogActions>
     </>;

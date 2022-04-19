@@ -1,14 +1,14 @@
 import React, { ComponentType, useEffect, useState } from 'react';
 import { Calendar, CalendarProps, Event, Navigate, SlotInfo, stringOrDate, View, Views } from 'react-big-calendar';
 import withDragAndDrop, { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
-import { addDays } from 'date-fns';
+import { addDays, startOfWeek } from 'date-fns';
 import { Controller, UnpackNestedValue, useForm } from 'react-hook-form';
 import { Avatar, Button, Container, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/lab';
 import { Employee } from '../../../models/User';
 import { useAuth } from '../../../hooks/use-auth';
-import { getBeginningOfWeek, getCurrentTimezoneDate, localizer, preferences, stringAvatar, stringToColor, toLocalDateString } from '../../../utilities';
+import { getCurrentTimezoneDate, localizer, preferences, stringAvatar, stringToColor, toLocalDateString } from '../../../utilities';
 import { useDialog } from '../../../hooks/use-dialog';
 import { Shift, ShiftWithoutId } from '../../../models/Shift';
 import { useServices } from '../../../hooks/use-services/use-services';
@@ -16,6 +16,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { ShiftsFromToDto } from '../../../models/ShiftsFromTo';
 import { ShiftEvent } from '../../../models/ShiftEvent';
+import { zonedTimeToUtc } from 'date-fns-tz';
 
 export enum SubmitType {
     CREATE,
@@ -44,7 +45,7 @@ type FormFieldValue = {
 export const Schedule = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [events, setEvents] = useState<ShiftEvent[]>([]);
-    const [curentWeek, setCurrentWeek] = useState<Date>(getBeginningOfWeek(getCurrentTimezoneDate(new Date())));
+    const [curentWeek, setCurrentWeek] = useState<Date>(startOfWeek(getCurrentTimezoneDate(new Date())));
     const [openDialog, closeDialog] = useDialog();
     const {setValue, getValues, register, handleSubmit, formState: {errors}, reset, control} = useForm<FormFieldValue>({
         mode: 'onSubmit',
@@ -83,8 +84,8 @@ export const Schedule = () => {
                             let event: ShiftEvent = {
                                 resourceId: shift.id,
                                 title: employee?.lastName + ' ' + employee?.firstName,
-                                start: getCurrentTimezoneDate(shift.startTime),
-                                end: getCurrentTimezoneDate(shift.endTime),
+                                start: zonedTimeToUtc(shift.startTime, 'UTC'),
+                                end: zonedTimeToUtc(shift.endTime, 'UTC'),
                                 resource: {
                                     employeeId: employee?.id
                                 }
@@ -98,7 +99,7 @@ export const Schedule = () => {
 
     function ToolbarCalendar(props: { onView: Function, date: stringOrDate, view: View, onNavigate: Function }) {
         useEffect(() => {
-            setCurrentWeek(getBeginningOfWeek(props.date));
+            setCurrentWeek(startOfWeek(new Date(props.date)));
         }, [props.date]);
 
         return <>
@@ -149,8 +150,8 @@ export const Schedule = () => {
                     let event: ShiftEvent = {
                         resourceId: shift.id,
                         title: employee?.lastName + ' ' + employee?.firstName,
-                        start: getCurrentTimezoneDate(shift.startTime),
-                        end: getCurrentTimezoneDate(shift.endTime),
+                        start: zonedTimeToUtc(shift.startTime, 'UTC'),
+                        end: zonedTimeToUtc(shift.endTime, 'UTC'),
                         resource: {
                             employeeId: employeeId
                         }
@@ -194,8 +195,8 @@ export const Schedule = () => {
                     let event: ShiftEvent = {
                         resourceId: shift.id,
                         title: employee?.lastName + ' ' + employee?.firstName,
-                        start: getCurrentTimezoneDate(shift.startTime),
-                        end: getCurrentTimezoneDate(shift.endTime),
+                        start: zonedTimeToUtc(shift.startTime, 'UTC'),
+                        end: zonedTimeToUtc(shift.endTime, 'UTC'),
                         resource: {
                             employeeId: employeeId
                         }
@@ -347,7 +348,7 @@ export const Schedule = () => {
             <Container maxWidth="lg">
                 <DnDCalendar
                     defaultView={ Views.WEEK }
-                    defaultDate={ getBeginningOfWeek(new Date()) }
+                    defaultDate={ startOfWeek(new Date()) }
                     views={ [Views.WEEK, Views.DAY] }
                     events={ events }
                     localizer={ localizer }

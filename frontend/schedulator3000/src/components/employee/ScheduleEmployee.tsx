@@ -1,23 +1,25 @@
 import { useServices } from '../../hooks/use-services/use-services';
 import React, { useEffect, useState } from 'react';
 import { ShiftsFromToDto } from '../../models/ShiftsFromTo';
-import { getBeginningOfWeek, getCurrentTimezoneDate, localizer, preferences, toLocalDateString } from '../../utilities';
-import { addDays } from 'date-fns';
+import { localizer, preferences, toLocalDateString } from '../../utilities';
+import { startOfWeek } from 'date-fns';
 import { ShiftEvent } from '../../models/ShiftEvent';
 import { Calendar, Event, Views } from 'react-big-calendar';
 import { useAuth } from '../../hooks/use-auth';
+import useCurrentWeek from '../../hooks/use-currentWeek';
+import { zonedTimeToUtc } from 'date-fns-tz';
 
 export function ScheduleEmployee() {
     const {shiftService} = useServices();
     const user = useAuth().getEmployee();
-    const [curentWeek, setCurrentWeek] = useState<Date>(getBeginningOfWeek(getCurrentTimezoneDate(new Date())));
+    const currentWeek = useCurrentWeek();
     const [events, setEvents] = useState<ShiftEvent[]>([]);
 
     useEffect(() => {
         let body: ShiftsFromToDto = {
             userEmail: user.email,
-            from: toLocalDateString(addDays(curentWeek, -7)),
-            to: toLocalDateString(addDays(curentWeek, 14))
+            from: toLocalDateString(currentWeek.getPreviousWeek()),
+            to: toLocalDateString(currentWeek.getNextWeek())
         };
         shiftService.getShiftsEmployee(body).then(
             shifts => {
@@ -33,8 +35,8 @@ export function ScheduleEmployee() {
                     let event: ShiftEvent = {
                         resourceId: shift.id,
                         title: 'Title',
-                        start: getCurrentTimezoneDate(shift.startTime),
-                        end: getCurrentTimezoneDate(shift.endTime),
+                        start: zonedTimeToUtc(shift.startTime, 'UTC'),
+                        end: zonedTimeToUtc(shift.endTime, 'UTC'),
                         resource: {}
                     };
 
@@ -42,14 +44,14 @@ export function ScheduleEmployee() {
                 });
                 setEvents(shiftEvents);
             });
-    }, [user.email, curentWeek, shiftService]);
+    }, [user.email, shiftService]);
 
     return (
         <>
             <h1>Schedule Employee</h1>
             <Calendar
                 defaultView={ Views.WEEK }
-                defaultDate={ getBeginningOfWeek(new Date()) }
+                defaultDate={ startOfWeek(new Date()) }
                 views={ [Views.WEEK, Views.WORK_WEEK, Views.DAY] }
                 events={ events }
                 localizer={ localizer }
@@ -79,7 +81,8 @@ export function ScheduleEmployee() {
                 max={ new Date('2022-03-20T03:59:00.000Z') }
                 dayLayoutAlgorithm={ 'overlap' }
                 onNavigate={ (date: Date) => {
-                    setCurrentWeek(date);
+                    // setCurrentWeek(date);
+
                 } }
                 components={
                     {
