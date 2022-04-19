@@ -30,15 +30,13 @@ export function RegisterEmployee({
                 setEmployees((curentEmployees: Employee[]) => [...curentEmployees, employee]);
                 closeMainDialog();
                 const defaultMessage = `Hi ${ employee.firstName } ${ employee.lastName } here's your password:`;
-                createDialog({
-                    children: <form action={ `mailto:${ employee.email }` } method="post" encType="text/plain">
-                        <input type="text" name="template" value={ defaultMessage } />
-                        <input type="text" name="code" disabled value={ employee.password }
-                               onClick={ () => navigator.clipboard.writeText(employee.password).then() }
-                               size={ 50 } />
-                        <input type={ 'submit' } onClick={ () => closeDialog() } value="Send" />
-                    </form>
-                });
+                createDialog(<form action={ `mailto:${ employee.email }` } method="post" encType="text/plain">
+                    <input type="text" name="template" value={ defaultMessage } />
+                    <input type="text" name="code" disabled value={ employee.password }
+                           onClick={ () => navigator.clipboard.writeText(employee.password).then() }
+                           size={ 50 } />
+                    <input type={ 'submit' } onClick={ () => closeDialog() } value="Send" />
+                </form>);
             });
     };
 

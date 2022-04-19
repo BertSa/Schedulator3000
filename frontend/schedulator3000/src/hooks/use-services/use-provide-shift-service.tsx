@@ -71,12 +71,10 @@ export function useProvideShiftService(): IShiftService {
 
     async function deleteShift(id: number): Promise<void> {
         const canceled = await new Promise<boolean>(resolve => {
-            openDialog({
-                children: <DialogWarningDelete resolve={ resolve }
-                                               closeDialog={ closeDialog }
-                                               title={ 'Wait a minute!' }
-                                               text={ 'Are you sure you want to delete this shift?' } />,
-            });
+            openDialog(<DialogWarningDelete resolve={ resolve }
+                                            closeDialog={ closeDialog }
+                                            title={ 'Wait a minute!' }
+                                            text={ 'Are you sure you want to delete this shift?' } />);
         });
 
         if (canceled) {

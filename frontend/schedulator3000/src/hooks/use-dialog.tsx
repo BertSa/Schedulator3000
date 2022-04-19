@@ -1,7 +1,7 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useEffect } from 'react';
 import { Dialog } from '@mui/material';
 
-type ProviderContext = readonly [(option: DialogParams) => number, (id?: number) => void];
+type ProviderContext = readonly [(option: DialogParams) => void, (id?: number) => void];
 
 type DialogParams = PropsWithChildren<{
     idDialog?: number;
@@ -17,8 +17,38 @@ type DialogContainerProps = PropsWithChildren<{
 }>;
 
 
+function* idGenerator() {
+    let id = 1;
+    while (true) {
+        yield id++;
+    }
+}
+
+
+const generator: Generator<number, void> = idGenerator();
+
 const DialogContext = React.createContext<ProviderContext>({} as ProviderContext);
-export const useDialog = () => React.useContext(DialogContext);
+
+export const useDialog = (): [(container: ReactNode, onExited?: VoidFunction) => void, VoidFunction] => {
+    const [createDialog, closeDialog] = React.useContext(DialogContext);
+    let idDialog: number = -1;
+
+    const handleOpen = useCallback((container: ReactNode, onExited?: VoidFunction) => {
+        idDialog = generator.next().value as number;
+        createDialog({
+            children: container,
+            onExited: onExited,
+            idDialog: idDialog,
+        });
+    }, [createDialog, closeDialog]);
+
+    const handleClose = useCallback(() => {
+        closeDialog(idDialog);
+    }, [closeDialog, idDialog]);
+
+
+    return [handleOpen, handleClose];
+};
 
 function DialogContainer({children, open, onClose, onEnded}: DialogContainerProps) {
     return (
@@ -32,38 +62,41 @@ function DialogContainer({children, open, onClose, onEnded}: DialogContainerProp
 
 export default function DialogProvider({children}: PropsWithChildren<{}>) {
     const [dialogs, setDialogs] = React.useState<DialogParams[]>([]);
-    let numberOfDialogCreated = 0;
+    const [dialogsToRemove, setDialogsToRemove] = React.useState<number[]>([]);
 
-    const createDialog = (option: DialogParams): number => {
-        numberOfDialogCreated++;
-        const dialog: DialogParams = {...option, open: true, idDialog: numberOfDialogCreated};
-        setDialogs(dialogs => [...dialogs, dialog]);
-        return numberOfDialogCreated;
-    };
+    useEffect(() => {
+        function removeDialog() {
+            if (dialogsToRemove.length > 0) {
+                setDialogs((dialogs) => dialogs.map(dialog => {
+                    if (dialog?.idDialog !== undefined && dialogsToRemove.indexOf(dialog.idDialog) !== -1) {
+                        return {...dialog, open: false};
+                    }
+                    return dialog;
+                }));
+                setDialogsToRemove([]);
+            }
+        }
 
-    const closeDialog = (idDialog?: number) => {
-        setDialogs(dialogs => {
-            let latestDialog;
+        removeDialog();
+    }, [dialogsToRemove]);
 
-            if (idDialog) {
-                let index = dialogs.findIndex(dialog => dialog.idDialog === idDialog);
-                latestDialog = dialogs.at(index);
-                dialogs.splice(index, 1);
-            } else {
-                latestDialog = dialogs.pop();
+
+    const createDialog = (option: DialogParams): void => setDialogs(dialogs => [...dialogs, {...option, open: true}]);
+
+    const closeDialog = (idDialog?: number) =>
+        setDialogsToRemove(dialogsToRemove => {
+            if (idDialog === undefined) {
+                const id = dialogs[dialogs.length - 1]?.idDialog;
+                if (id === undefined) {
+                    return dialogsToRemove;
+                }
+
+                return [...dialogsToRemove, id];
             }
 
-            if (!latestDialog) {
-                return dialogs;
-            }
-
-            if (latestDialog.onClose) {
-                latestDialog.onClose();
-            }
-
-            return [...dialogs, {...latestDialog, open: false}];
+            return [...dialogsToRemove, idDialog];
         });
-    };
+
     const contextValue = React.useRef([createDialog, closeDialog] as const);
 
     return (
@@ -80,14 +113,15 @@ export default function DialogProvider({children}: PropsWithChildren<{}>) {
 
                 return (
                     <DialogContainer
-                        key={index}
-                        onClose={closeDialog}
-                        onEnded={handleOnEnded}
-                        open={dialogParams.open ?? false}>
-                        {dialogParams.children}
+                        key={ index }
+                        onClose={ () => closeDialog() }
+                        onEnded={ handleOnEnded }
+                        open={ dialogParams.open ?? false }>
+                        { dialogParams.children }
                     </DialogContainer>
                 );
             }) }
         </DialogContext.Provider>
     );
 }
+

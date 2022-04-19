@@ -23,20 +23,16 @@ export function VacationRequestTable() {
     }, [employee.email]);
 
     const createAction = () =>
-        openDialog({
-            children: <CreateVacationRequest setVacations={ setVacations }
+        openDialog(<CreateVacationRequest setVacations={ setVacations }
                                              employee={ employee }
                                              closeMainDialog={ closeDialog }
-                                             vacationRequestService={ vacationRequestService } />
-        });
+                                             vacationRequestService={ vacationRequestService } />);
 
     const editAction = () =>
-        openDialog({
-            children: <EditVacationRequest setVacations={ setVacations }
+        openDialog(<EditVacationRequest setVacations={ setVacations }
                                            closeMainDialog={ closeDialog }
                                            vacationRequestService={ vacationRequestService }
-                                           vacationRequest={ selectedVacation as VacationRequest } />
-        });
+                                           vacationRequest={ selectedVacation as VacationRequest } />);
 
 
     function Row({request}: { request: VacationRequest }) {

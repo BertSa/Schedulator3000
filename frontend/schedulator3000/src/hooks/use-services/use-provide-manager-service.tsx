@@ -36,11 +36,9 @@ export function useProvideManagerService(): IManagerService {
 
     async function fireEmployee(idEmployee: number, emailManager: string): Promise<Employee> {
         const canceled = await new Promise<boolean>(resolve => {
-            openDialog({
-                children: <DialogWarningDelete resolve={ resolve } closeDialog={ closeDialog }
-                                               title={ 'Wait a minute!' }
-                                               text={ 'Are you sure you want to fire this employee?' } />,
-            });
+            openDialog(<DialogWarningDelete resolve={ resolve } closeDialog={ closeDialog }
+                                            title={ 'Wait a minute!' }
+                                            text={ 'Are you sure you want to fire this employee?' } />);
         });
 
         if (canceled) {

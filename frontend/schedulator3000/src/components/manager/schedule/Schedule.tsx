@@ -129,8 +129,6 @@ export const Schedule = () => {
 
 
     function openMyDialog(submitType: SubmitType) {
-        let id: number;
-
         function submitCreate({
                                   start,
                                   end,
@@ -158,7 +156,7 @@ export const Schedule = () => {
                         }
                     };
                     setEvents((currentEvents: ShiftEvent[]) => [...currentEvents, event]);
-                    closeDialog(id);
+                    closeDialog();
                     reset();
                 }
             );
@@ -176,7 +174,7 @@ export const Schedule = () => {
             if (submitter === 'delete') {
                 shiftService.deleteShift(shiftId).then(() => {
                         setEvents(curent => curent.filter(shift => shift.resourceId !== shiftId));
-                        closeDialog(id);
+                        closeDialog();
                     }
                 );
                 return;
@@ -202,109 +200,106 @@ export const Schedule = () => {
                             employeeId: employeeId
                         }
                     };
-                    closeDialog(id);
+                    closeDialog();
                     reset();
                     setEvents((currentEvents: ShiftEvent[]) => [...currentEvents.filter(event => event.resourceId !== shiftId), event]);
                 }
             );
         }
 
-        id = openDialog({
-            children: (
-                <>
-                    <Typography variant="h5"
-                                component="h5">{ submitType === SubmitType.CREATE ? 'Create Shift' : 'Modify Shift' }</Typography>
-                    <Grid container columnSpacing={ 2 } rowSpacing={ 2 } padding={ 2 } component="form"
-                          onSubmit={ handleSubmit(submitType === SubmitType.CREATE ? submitCreate : update) }
-                          noValidate>
-                        <Grid item xs={ 12 }>
-                            <TextField
-                                select
-                                label="Select"
-                                fullWidth
-                                defaultValue={ getValues().employeeId ?? '-1' }
-                                SelectProps={ {
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <AccountCircle />
-                                        </InputAdornment>
-                                    )
-                                } }
-                                { ...register('employeeId', {
-                                    required: true,
-                                    validate: (value: number) => value !== -1 ? undefined : 'Please select an employee',
-                                }) }
-                                helperText={ errors.employeeId ?? ' ' }
-                                error={ !!errors.employeeId }
-                            >
-                                <MenuItem hidden aria-hidden value={ -1 } />
-                                { employees.map(user => <MenuItem key={ user.id }
-                                                                  value={ user.id }><Avatar { ...stringAvatar(user.firstName + ' ' + user.lastName) } /> { user.firstName } { user.lastName }
-                                </MenuItem>) }
-                            </TextField>
-                        </Grid>
-                        <Grid item xs={ 6 }>
-                            <Controller
-                                name="start"
-                                control={ control }
-                                rules={ {
-                                    required: true
-                                } }
-                                render={ ({fieldState, formState, field}) => (
-                                    <DateTimePicker
-                                        label="Start Time"
-                                        renderInput={ (props) => <TextField { ...props }
-                                                                            helperText={ errors.start ?? ' ' }
-                                                                            error={ !!errors.start } /> }
-                                        { ...field }
-                                        { ...fieldState }
-                                        { ...formState }
-                                    />
-                                ) }
-                            />
-                        </Grid>
-                        <Grid item xs={ 6 }>
-                            <Controller
-                                name="end"
-                                control={ control }
-                                rules={ {
-                                    required: true,
-                                    validate: (value) => {
-                                        if (value < getValues().start) {
-                                            return 'End time must be after start time';
-                                        }
-                                    }
-                                } }
-                                render={ ({fieldState, formState, field}) => (
-                                    <DateTimePicker
-                                        label="End Time"
-                                        renderInput={ (props) => <TextField helperText={ errors.end?.message ?? ' ' }
-                                                                            error={ !!errors.end }
-                                                                            { ...props } /> }
-                                        { ...field }
-                                        { ...fieldState }
-                                        { ...formState }
-                                    />
-                                ) }
-                            />
-                        </Grid>
-                        <Grid item alignSelf={ 'center' } marginX={ 'auto' }>
-                            <Stack spacing={ 2 } direction="row">
-                                <Button type="submit" color="primary"
-                                        variant="contained">{ submitType === SubmitType.CREATE ? 'Submit' : 'Update' }</Button>
-                                { submitType === SubmitType.UPDATE &&
-                                    <Button value="delete" type="submit" color="error"
-                                            variant="contained">Delete</Button> }
-                                <Button value="cancel" type="button" color="primary" variant="text" onClick={ () => {
-                                    closeDialog(id);
-                                    reset();
-                                } }>Cancel</Button>
-                            </Stack>
-                        </Grid>
+        openDialog(
+            <>
+                <Typography variant="h5"
+                            component="h5">{ submitType === SubmitType.CREATE ? 'Create Shift' : 'Modify Shift' }</Typography>
+                <Grid container columnSpacing={ 2 } rowSpacing={ 2 } padding={ 2 } component="form"
+                      onSubmit={ handleSubmit(submitType === SubmitType.CREATE ? submitCreate : update) }
+                      noValidate>
+                    <Grid item xs={ 12 }>
+                        <TextField
+                            select
+                            label="Select"
+                            fullWidth
+                            defaultValue={ getValues().employeeId ?? '-1' }
+                            SelectProps={ {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <AccountCircle />
+                                    </InputAdornment>
+                                )
+                            } }
+                            { ...register('employeeId', {
+                                required: true,
+                                validate: (value: number) => value !== -1 ? undefined : 'Please select an employee',
+                            }) }
+                            helperText={ errors.employeeId ?? ' ' }
+                            error={ !!errors.employeeId }
+                        >
+                            <MenuItem hidden aria-hidden value={ -1 } />
+                            { employees.map(user => <MenuItem key={ user.id }
+                                                              value={ user.id }><Avatar { ...stringAvatar(user.firstName + ' ' + user.lastName) } /> { user.firstName } { user.lastName }
+                            </MenuItem>) }
+                        </TextField>
                     </Grid>
-                </>
-            )
-        });
+                    <Grid item xs={ 6 }>
+                        <Controller
+                            name="start"
+                            control={ control }
+                            rules={ {
+                                required: true
+                            } }
+                            render={ ({fieldState, formState, field}) => (
+                                <DateTimePicker
+                                    label="Start Time"
+                                    renderInput={ (props) => <TextField { ...props }
+                                                                        helperText={ errors.start ?? ' ' }
+                                                                        error={ !!errors.start } /> }
+                                    { ...field }
+                                    { ...fieldState }
+                                    { ...formState }
+                                />
+                            ) }
+                        />
+                    </Grid>
+                    <Grid item xs={ 6 }>
+                        <Controller
+                            name="end"
+                            control={ control }
+                            rules={ {
+                                required: true,
+                                validate: (value) => {
+                                    if (value < getValues().start) {
+                                        return 'End time must be after start time';
+                                    }
+                                }
+                            } }
+                            render={ ({fieldState, formState, field}) => (
+                                <DateTimePicker
+                                    label="End Time"
+                                    renderInput={ (props) => <TextField helperText={ errors.end?.message ?? ' ' }
+                                                                        error={ !!errors.end }
+                                                                        { ...props } /> }
+                                    { ...field }
+                                    { ...fieldState }
+                                    { ...formState }
+                                />
+                            ) }
+                        />
+                    </Grid>
+                    <Grid item alignSelf={ 'center' } marginX={ 'auto' }>
+                        <Stack spacing={ 2 } direction="row">
+                            <Button type="submit" color="primary"
+                                    variant="contained">{ submitType === SubmitType.CREATE ? 'Submit' : 'Update' }</Button>
+                            { submitType === SubmitType.UPDATE &&
+                                <Button value="delete" type="submit" color="error"
+                                        variant="contained">Delete</Button> }
+                            <Button value="cancel" type="button" color="primary" variant="text" onClick={ () => {
+                                closeDialog();
+                                reset();
+                            } }>Cancel</Button>
+                        </Stack>
+                    </Grid>
+                </Grid>
+            </>);
     }
 
     function updateEvent(data: { event: ShiftEvent; start: stringOrDate; end: stringOrDate; isAllDay: boolean }) {

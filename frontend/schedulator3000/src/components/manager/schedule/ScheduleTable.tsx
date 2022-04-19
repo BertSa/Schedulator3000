@@ -60,8 +60,6 @@ export function ScheduleTable() {
     const {managerService, shiftService, vacationRequestService} = useServices();
 
     function openMyDialog(submitType: SubmitType) {
-        let id: number;
-
         function submitCreate({
                                   start,
                                   end,
@@ -84,7 +82,7 @@ export function ScheduleTable() {
                         startTime: getCurrentTimezoneDate(shift.startTime),
                         endTime: getCurrentTimezoneDate(shift.endTime),
                     }]);
-                    closeDialog(id);
+                    closeDialog();
                     reset();
                 }
             );
@@ -102,7 +100,7 @@ export function ScheduleTable() {
             if (submitter === 'delete') {
                 shiftService.deleteShift(shiftId).then(() => {
                         setShifts(curent => curent.filter(shift => shift.id !== shiftId));
-                        closeDialog(id);
+                        closeDialog();
                         setSelected(null);
                     }
                 );
@@ -120,7 +118,7 @@ export function ScheduleTable() {
 
             shiftService.updateShift(newShift).then(
                 shift => {
-                    closeDialog(id);
+                    closeDialog();
                     setShifts((currentShifts: Shift[]) => [...currentShifts.filter(v => v.id !== shiftId),
                         {
                             ...shift,
@@ -131,9 +129,7 @@ export function ScheduleTable() {
             );
         }
 
-        id = openDialog({
-            children: (
-                <>
+        openDialog(<>
                     <Typography variant="h5"
                                 component="h5">{ submitType === SubmitType.CREATE ? 'Create Shift' : 'Modify Shift' }</Typography>
                     <Grid container columnSpacing={ 2 } rowSpacing={ 2 } padding={ 2 } component="form"
@@ -219,15 +215,12 @@ export function ScheduleTable() {
                                     <Button value="delete" type="submit" color="error"
                                             variant="contained">Delete</Button> }
                                 <Button value="cancel" type="button" color="primary" variant="text" onClick={ () => {
-                                    closeDialog(id);
+                                    closeDialog();
                                 } }>Cancel</Button>
                             </Stack>
                         </Grid>
                     </Grid>
-                </>
-            ),
-            onExited: () => reset()
-        });
+                </>,() => reset());
     }
 
 

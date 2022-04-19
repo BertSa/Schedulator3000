@@ -25,20 +25,16 @@ export function EmployeeTable() {
     const handleClick = (event: React.MouseEvent<unknown>, employee: Employee) => setSelected(selected => selected?.id === employee.id ? null : employee);
 
     const createAction = () =>
-        openDialog({
-            children: <RegisterEmployee user={ user }
-                                        setEmployees={ setEmployees }
-                                        managerService={ managerService }
-                                        closeMainDialog={ closeDialog } />
-        });
+        openDialog(<RegisterEmployee user={ user }
+                                     setEmployees={ setEmployees }
+                                     managerService={ managerService }
+                                     closeMainDialog={ closeDialog } />);
 
     const editAction = () =>
-        openDialog({
-            children: <EditEmployee employee={ selected as Employee }
-                                    setEmployees={ setEmployees }
-                                    employeeService={ employeeService }
-                                    closeMainDialog={ closeDialog } />
-        });
+        openDialog(<EditEmployee employee={ selected as Employee }
+                                 setEmployees={ setEmployees }
+                                 employeeService={ employeeService }
+                                 closeMainDialog={ closeDialog } />);
 
 
     const fireAction = () => {
