@@ -3,9 +3,8 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { SignInPage } from './components/SignInPage';
 import { ManagerPages } from './components/manager/ManagerPages';
-import { ScheduleEmployee } from './components/employee/ScheduleEmployee';
 import { RequireAdmin, RequireEmployee, RequireNoAuth } from './hooks/use-auth';
-import { VacationRequestTable } from './components/employee/VacationRequestTable';
+import { EmployeePages } from './components/employee/EmployeePages';
 
 
 export default function App() {
@@ -25,9 +24,7 @@ export default function App() {
                     <Route path="/manager" component={ ManagerPages } />
                 </RequireAdmin>
                 <RequireEmployee>
-                    <h3>Allooooo</h3>
-                    <VacationRequestTable />
-                    <ScheduleEmployee />
+                    <EmployeePages />
                 </RequireEmployee>
                 <RequireNoAuth>
                     <Route path="/register" component={ Register } />

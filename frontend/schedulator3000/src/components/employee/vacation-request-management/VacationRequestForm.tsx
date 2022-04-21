@@ -2,7 +2,7 @@ import { DateRangePicker } from '@mui/lab';
 import { Box, Button, Grid, TextField } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import React from 'react';
-import { DateRange, VacationRequest } from '../../models/VacationRequest';
+import { DateRange, VacationRequest } from '../../../models/VacationRequest';
 import { startOfToday } from 'date-fns';
 
 export interface VacationRequestFormFieldValue {

@@ -40,7 +40,7 @@ export const useDialog = (): [(container: ReactNode, onExited?: VoidFunction) =>
             onExited: onExited,
             idDialog: idDialog,
         });
-    }, [createDialog, closeDialog]);
+    }, [createDialog]);
 
     const handleClose = useCallback(() => {
         closeDialog(idDialog);
@@ -81,9 +81,11 @@ export default function DialogProvider({children}: PropsWithChildren<{}>) {
     }, [dialogsToRemove]);
 
 
-    const createDialog = (option: DialogParams): void => setDialogs(dialogs => [...dialogs, {...option, open: true}]);
+    function createDialog(option: DialogParams): void {
+        return setDialogs(dialogs => [...dialogs, {...option, open: true}]);
+    }
 
-    const closeDialog = (idDialog?: number) =>
+    function closeDialog(idDialog?: number): void {
         setDialogsToRemove(dialogsToRemove => {
             if (idDialog === undefined) {
                 const id = dialogs[dialogs.length - 1]?.idDialog;
@@ -96,6 +98,7 @@ export default function DialogProvider({children}: PropsWithChildren<{}>) {
 
             return [...dialogsToRemove, idDialog];
         });
+    }
 
     const contextValue = React.useRef([createDialog, closeDialog] as const);
 
@@ -104,12 +107,13 @@ export default function DialogProvider({children}: PropsWithChildren<{}>) {
             { children }
             { dialogs.map((dialog, index) => {
                 const {onClose, ...dialogParams} = dialog;
-                const handleOnEnded = () => {
+
+                function handleOnEnded() {
                     if (dialog.onExited) {
                         dialog.onExited();
                     }
                     setDialogs(dialogs => dialogs.slice(0, dialogs.length - 1));
-                };
+                }
 
                 return (
                     <DialogContainer

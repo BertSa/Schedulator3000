@@ -58,6 +58,33 @@ export function Navbar() {
         </>;
     }
 
+    function EmployeeLinks(): JSX.Element | null {
+        if (!auth.isEmployee()) {
+            return <></>;
+        }
+
+        return <>
+            <Button
+                onClick={ () => {
+                    history.push('/vacation-requests');
+                    handleCloseNavMenu();
+                } }
+                sx={ {my: 2, color: 'white', display: 'block'} }
+            >
+                Vacation Requests
+            </Button>
+            <Button
+                onClick={ () => {
+                    history.push('/schedule');
+                    handleCloseNavMenu();
+                } }
+                sx={ {my: 2, color: 'white', display: 'block'} }
+            >
+                Schedule
+            </Button>
+        </>;
+    }
+
     function ManagerLinksSm() {
         if (!auth.isManager()) {
             return <MenuItem>allo</MenuItem>;
@@ -90,6 +117,27 @@ export function Navbar() {
                     Schedule V2
                 </Typography>
                 <Chip color="primary" size="small" label={ 'BETA' } />
+            </MenuItem>
+        </>;
+    }
+
+    function EmployeeLinksSm() {
+        if (!auth.isEmployee()) {
+            return <MenuItem>allo</MenuItem>;
+        }
+
+        return <>
+            <MenuItem onClick={ () => {
+                history.push('/vacation-requests');
+                handleCloseNavMenu();
+            } }>
+                <Typography textAlign="center">Vacation Requests</Typography>
+            </MenuItem>
+            <MenuItem onClick={ () => {
+                history.push('/schedule');
+                handleCloseNavMenu();
+            } }>
+                <Typography textAlign="center">Schedule</Typography>
             </MenuItem>
         </>;
     }
@@ -195,6 +243,7 @@ export function Navbar() {
                             } }
                         >
                             <ManagerLinksSm />
+                            <EmployeeLinksSm />
                         </Menu>
                     </Box>
                     <Typography
@@ -207,6 +256,7 @@ export function Navbar() {
                     </Typography>
                     <Box sx={ {flexGrow: 1, display: {xs: 'none', md: 'flex'}} }>
                         <ManagerLinks />
+                        <EmployeeLinks />
                     </Box>
                     <Box sx={ {flexGrow: 0} }>
                         <RightSide />

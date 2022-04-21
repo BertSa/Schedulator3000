@@ -2,28 +2,45 @@ import { useCallback, useState } from 'react';
 import { isBetween } from '../utilities';
 import { addDays, addWeeks, startOfWeek, subWeeks } from 'date-fns';
 
-export default function useCurrentWeek(defaultValue?: Date): {
-    value: Date, next: VoidFunction, previous: VoidFunction, getPreviousWeek: () => Date, getNextWeek: () => Date, getDayOfWeek: (day: number) => Date,
+type useCurrentWeekProps = {
+    value: Date,
+    next: VoidFunction,
+    previous: VoidFunction,
+    getPreviousWeek: () => Date,
+    getNextWeek: () => Date,
+    getDayOfWeek: (day: number) => Date,
     isDuringWeek: (date: Date) => boolean
-} {
+}
+
+export default function useCurrentWeek(defaultValue?: Date): useCurrentWeekProps {
     const [value, setCurrentWeek] = useState<Date>(startOfWeek(defaultValue ?? new Date()));
 
-    const previous: () => void = useCallback(() => setCurrentWeek(curentWeek => getPreviousWeek(curentWeek)), [value]);
-    const next: () => void = useCallback(() => setCurrentWeek(curentWeek => getNextWeek(curentWeek)), [value]);
+    const previous = useCallback(() => setCurrentWeek(curentWeek => getPreviousWeek(curentWeek)), [value]);
+    const next = useCallback(() => setCurrentWeek(curentWeek => getNextWeek(curentWeek)), [value]);
 
-    const getDayOfWeek = (val: number) => addDays(value, val);
-    const getPreviousWeek = (date?: Date) => subWeeks(date ?? value, 1);
-    const getNextWeek = (date?: Date) => addWeeks(date ?? value, 1);
+    function getDayOfWeek(val: number): Date {
+        return addDays(value, val);
+    }
 
-    const isDuringWeek = (date: Date) => isBetween(date, value, getNextWeek());
+    function getPreviousWeek(date?: Date): Date {
+        return subWeeks(date ?? value, 1);
+    }
+
+    function getNextWeek(date?: Date): Date {
+        return addWeeks(date ?? value, 1);
+    }
+
+    function isDuringWeek(date: Date): boolean {
+        return isBetween(date, value, getNextWeek());
+    }
 
     return {
-        value,
-        previous,
-        next,
+        value: value,
+        previous: previous,
+        next: next,
         getDayOfWeek: getDayOfWeek,
-        getPreviousWeek,
-        getNextWeek,
-        isDuringWeek,
+        getPreviousWeek: getPreviousWeek,
+        getNextWeek: getNextWeek,
+        isDuringWeek: isDuringWeek,
     };
 }

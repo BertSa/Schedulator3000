@@ -1,55 +1,39 @@
-import { alpha, Box, Button, Collapse, Container, Grid, IconButton, InputAdornment, MenuItem, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Theme, Typography } from '@mui/material';
-import { AccountCircle, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import { Button, Container, Grid, InputAdornment, MenuItem, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { AccountCircle } from '@mui/icons-material';
 import React, { useEffect, useState } from 'react';
 import { Employee } from '../../../models/User';
-import { isBetween, toLocalDateString } from '../../../utilities';
+import { toLocalDateString } from '../../../utilities';
 import { Controller, UnpackNestedValue, useForm } from 'react-hook-form';
 import { useAuth } from '../../../hooks/use-auth';
 import { useServices } from '../../../hooks/use-services/use-services';
 import { ShiftsFromToDto } from '../../../models/ShiftsFromTo';
-import { differenceInMinutes, format, getDay, hoursToMinutes, minutesToHours } from 'date-fns';
+import { format, getDay } from 'date-fns';
 import { Shift, ShiftWithoutId } from '../../../models/Shift';
 import { useDialog } from '../../../hooks/use-dialog';
 import { TimePicker } from '@mui/lab';
 import { SubmitType } from './Schedule';
 import { ScheduleTableToolbar } from './ScheduleTableToolbar';
-import { VacationRequest, VacationRequestStatus } from '../../../models/VacationRequest';
-import useToggle from '../../../hooks/use-toggle';
+import { VacationRequest } from '../../../models/VacationRequest';
 import useCurrentWeek from '../../../hooks/use-currentWeek';
 import { zonedTimeToUtc } from 'date-fns-tz';
+import { EmployeeWeekRow } from './EmployeeWeekRow';
 
 type FormFieldValue = {
     start: Date,
     end: Date,
     employeeId: number,
     shiftId?: number,
-}
+};
 
-
-function getColor(vacations: VacationRequest[], date: Date, theme: Theme): string {
-    const vacationRequest: VacationRequest | undefined = vacations.find(vacation => isBetween(date, vacation.startDate, vacation.endDate));
-    let color: string;
-    switch (vacationRequest?.status) {
-        case VacationRequestStatus.Pending:
-            color = theme.palette.warning.main;
-            break;
-        case VacationRequestStatus.Approved:
-            color = theme.palette.grey[500];
-            break;
-        default:
-            color = theme.palette.primary.main;
-            break;
-    }
-    return color;
-}
+export type SelectedType = null | { employee: Employee, day: number, shift: Shift | undefined };
 
 export function ScheduleTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [shifts, setShifts] = useState<Shift[]>([]);
     const [vacations, setVacations] = useState<VacationRequest[]>([]);
-    const currentWeek = useCurrentWeek();
-    const [selected, setSelected] = useState<null | { employee: Employee, day: number, shift: Shift | undefined }>(null);
+    const [selected, setSelected] = useState<SelectedType>(null);
     const {managerService, shiftService, vacationRequestService} = useServices();
+    const currentWeek = useCurrentWeek();
     const [openDialog, closeDialog] = useDialog();
     const {setValue, getValues, register, handleSubmit, formState: {errors}, reset, control} = useForm<FormFieldValue>({
         mode: 'onSubmit',
@@ -291,120 +275,6 @@ export function ScheduleTable() {
     };
 
 
-    const getTimeInHourMinutesAMPM = (date: Date) => format(new Date(date), 'h:mma');
-
-    function Row({
-                     employee,
-                     shifts,
-                     vacations
-                 }: { employee: Employee, shifts: (Shift | undefined)[], vacations: VacationRequest[] }) {
-        const [open, toggle] = useToggle();
-
-
-        function getTotal(): string {
-            const number: number = shifts.reduce((acc, curr) => acc + (curr ? differenceInMinutes(new Date(curr.endTime), new Date(curr.startTime)) : 0), 0);
-            const hours: number = minutesToHours(number);
-            const minutes: number = number - hoursToMinutes(hours);
-
-            return `${ hours }:${ minutes < 10 ? `0${ minutes }` : minutes }`;
-        }
-
-
-        return (
-            <>
-                <TableRow className="myRow">
-                    <TableCell>
-                        <IconButton
-                            aria-label="expand row"
-                            size="small"
-                            onClick={ toggle }
-                        >
-                            { open ? <KeyboardArrowUp /> : <KeyboardArrowDown /> }
-                        </IconButton>
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                        { employee.firstName } { employee.lastName }
-                    </TableCell>
-                    { shifts.map((shift, key) =>
-                        <TableCell key={ key }
-                                   align="center"
-                                   onClick={ () => {
-                                       setSelected(current => current?.day === key && current?.employee.id === employee.id ?
-                                           null : {
-                                               employee: employee,
-                                               day: key,
-                                               shift: shift
-                                           });
-                                   } }
-                                   sx={ {
-                                       cursor: 'pointer',
-                                       ...({
-                                           bgcolor: (theme) => {
-                                               const vacationRequest: VacationRequest | undefined = vacations.find(vacation => isBetween(currentWeek.getDayOfWeek(key), vacation.startDate, vacation.endDate));
-                                               const opacity: number = selected?.day === key && selected?.employee.id === employee.id ? theme.palette.action.selectedOpacity : theme.palette.action.disabledOpacity;
-
-                                               switch (vacationRequest?.status) {
-                                                   case VacationRequestStatus.Pending:
-                                                       return alpha(theme.palette.warning.main, opacity);
-                                                   case VacationRequestStatus.Approved:
-                                                       return alpha(theme.palette.grey[500], opacity);
-                                                   default:
-                                                       return opacity === theme.palette.action.selectedOpacity ? alpha(theme.palette.primary.main, opacity) : 'unset';
-                                               }
-                                           }
-                                       }),
-                                       '&:hover': {
-                                           bgcolor: (theme) => {
-                                               let color = getColor(vacations, currentWeek.getDayOfWeek(key), theme);
-
-                                               return alpha(color, theme.palette.action.hoverOpacity);
-                                           }
-                                       },
-                                       '&:active': {
-                                           bgcolor: (theme) => {
-                                               let color = getColor(vacations, currentWeek.getDayOfWeek(key), theme);
-
-                                               return alpha(color, theme.palette.action.activatedOpacity);
-                                           }
-                                       },
-                                   } }>
-                            { shift ? `${ shift?.startTime && getTimeInHourMinutesAMPM(shift.startTime) } - ${ shift?.endTime && getTimeInHourMinutesAMPM(shift.endTime) }` : '-' }
-                        </TableCell>) }
-                    <TableCell align="right">{ getTotal() }</TableCell>
-                </TableRow>
-                <TableRow className="myRow">
-                    <TableCell style={ {paddingBottom: 0, paddingTop: 0} } colSpan={ 6 }>
-                        <Collapse in={ open } timeout="auto" unmountOnExit>
-                            <Box sx={ {margin: 1} }>
-                                <Typography variant="h6" gutterBottom component="div">
-                                    Preferences and Notes
-                                </Typography>
-                            </Box>
-                        </Collapse>
-                    </TableCell>
-                    <TableCell style={ {paddingBottom: 0, paddingTop: 0} } colSpan={ 6 }>
-                        <Collapse in={ open } timeout="auto" unmountOnExit>
-                            <Box sx={ {margin: 1} }>
-                                <Table>
-                                    <TableBody>
-                                        { vacations.map((value, key) =>
-                                            <TableRow key={ key }>
-                                                <TableCell component="th" scope="row">
-                                                    { value.reason }
-                                                </TableCell>
-                                                <TableCell align="right">{ value.status }</TableCell>
-                                            </TableRow>) }
-                                    </TableBody>
-                                </Table>
-                            </Box>
-                        </Collapse>
-                    </TableCell>
-                </TableRow>
-            </>
-        );
-    }
-
-
     return (
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
@@ -464,8 +334,14 @@ export function ScheduleTable() {
                             }
                             const requests: VacationRequest[] = vacations.filter(value => value.employeeEmail === employee.email);
 
-                            return <Row key={ employee.id } employee={ employee } shifts={ weekShift }
-                                        vacations={ requests } />;
+                            return <EmployeeWeekRow key={ employee.id }
+                                                    employee={ employee }
+                                                    shifts={ weekShift }
+                                                    vacations={ requests }
+                                                    selected={ selected }
+                                                    currentWeek={ currentWeek }
+                                                    setSelected={ setSelected }
+                            />;
                         }) }
                     </TableBody>
                 </Table>

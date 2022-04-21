@@ -1,7 +1,7 @@
 import { alpha, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { Add, CancelRounded, Edit } from '@mui/icons-material';
 import React from 'react';
-import { VacationRequest, VacationRequestStatus } from '../../models/VacationRequest';
+import { VacationRequest, VacationRequestStatus } from '../../../models/VacationRequest';
 
 type VacationRequestTableToolbarProps = {
     selected: VacationRequest | null,

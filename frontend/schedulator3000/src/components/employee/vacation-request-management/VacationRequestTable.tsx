@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { VacationRequest, VacationRequestStatus, VacationRequestUpdateStatus } from '../../models/VacationRequest';
-import { useServices } from '../../hooks/use-services/use-services';
-import { useAuth } from '../../hooks/use-auth';
-import { Employee } from '../../models/User';
+import { VacationRequest, VacationRequestStatus, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
+import { useServices } from '../../../hooks/use-services/use-services';
+import { useAuth } from '../../../hooks/use-auth';
+import { Employee } from '../../../models/User';
 import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { VacationRequestTableToolbar } from './VacationRequestTableToolbar';
 import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
-import { useDialog } from '../../hooks/use-dialog';
+import { useDialog } from '../../../hooks/use-dialog';
 import { CreateVacationRequest } from './CreateVacationRequest';
 import { EditVacationRequest } from './EditVacationRequest';
 
@@ -120,9 +120,7 @@ export function VacationRequestTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { vacations.map((value) => {
-                            return <Row key={ value.id } request={ value } />;
-                        }) }
+                        { vacations.map((value) => <Row key={ value.id } request={ value } />) }
                     </TableBody>
                 </Table>
             </TableContainer>
