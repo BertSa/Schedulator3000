@@ -2,10 +2,11 @@ import { alpha, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { Add, Edit, LocalFireDepartment } from '@mui/icons-material';
 import React from 'react';
 import { Employee } from '../../../../models/User';
+import { Nullable } from '../../../../models/Nullable';
 
 
 interface EnhancedTableToolbarProps {
-    selected: Employee | null;
+    selected: Nullable<Employee>;
     actions: {
         create: VoidFunction;
         edit: VoidFunction;

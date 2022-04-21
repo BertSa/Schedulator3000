@@ -17,15 +17,16 @@ import { VacationRequest } from '../../../models/VacationRequest';
 import useCurrentWeek from '../../../hooks/use-currentWeek';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { EmployeeWeekRow } from './EmployeeWeekRow';
+import { Nullable } from '../../../models/Nullable';
 
-type FormFieldValue = {
+export type SelectedType = Nullable<{ employee: Employee, day: number, shift: Shift | undefined }>;
+
+interface FormFieldValue {
     start: Date,
     end: Date,
     employeeId: number,
     shiftId?: number,
-};
-
-export type SelectedType = null | { employee: Employee, day: number, shift: Shift | undefined };
+}
 
 export function ScheduleTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -80,7 +81,7 @@ export function ScheduleTable() {
                                   start,
                                   end,
                                   employeeId
-                              }: { start: Date, end: Date, employeeId: number }, event?: React.BaseSyntheticEvent) {
+                              }: UnpackNestedValue<FormFieldValue>, event?: React.BaseSyntheticEvent) {
             event?.preventDefault();
             let employee = employees.find(employee => employee.id === employeeId);
 
@@ -327,10 +328,11 @@ export function ScheduleTable() {
                     </TableHead>
                     <TableBody>
                         { employees.map((employee) => {
-                            const weekShift: (Shift | undefined)[] = new Array(7);
+                            const weekShift: Nullable<Shift>[] = new Array(7);
                             const filter: Shift[] = shifts.filter(value => currentWeek.isDuringWeek(value.startTime) && value.emailEmployee === employee.email);
                             for (let i = 0; i < 7; i++) {
-                                weekShift[i] = filter.find(shift => getDay(new Date(shift.startTime)) === i);
+                                const shift = filter.find(shift => getDay(new Date(shift.startTime)) === i);
+                                weekShift[i] = shift ?? null;
                             }
                             const requests: VacationRequest[] = vacations.filter(value => value.employeeEmail === employee.email);
 

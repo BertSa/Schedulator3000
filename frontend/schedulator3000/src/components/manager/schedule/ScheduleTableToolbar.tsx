@@ -1,13 +1,12 @@
 import { alpha, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { Add, ArrowBack, ArrowForward, Delete, Edit } from '@mui/icons-material';
 import React from 'react';
-import { Employee } from '../../../models/User';
-import { Shift } from '../../../models/Shift';
 import { addDays, format } from 'date-fns';
+import { SelectedType } from './ScheduleTable';
 
-type ScheduleTableToolbarProps = {
+interface ScheduleTableToolbarProps {
     currentWeek: Date,
-    selected: null | { employee: Employee, day: number, shift: Shift | undefined },
+    selected: SelectedType,
     actions: {
         prev: VoidFunction,
         next: VoidFunction,
@@ -15,7 +14,7 @@ type ScheduleTableToolbarProps = {
         edit: VoidFunction,
         remove: VoidFunction,
     }
-};
+}
 
 export function ScheduleTableToolbar({
                                          currentWeek,

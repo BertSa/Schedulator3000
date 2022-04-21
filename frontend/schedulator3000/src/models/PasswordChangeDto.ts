@@ -1,9 +1,12 @@
-export interface PasswordChangeDto {
-    email?: string;
+interface PasswordChange {
     currentPassword: string;
     newPassword: string;
 }
 
-export type PasswordChangeWithPwdConfirmation = Omit<PasswordChangeDto, "email"> & {
+export interface PasswordChangeDto extends PasswordChange {
+    email?: string;
+}
+
+export interface PasswordChangeWithPwdConfirmation extends PasswordChange {
     confirmationPassword: string;
 }

@@ -8,12 +8,13 @@ import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import React from 'react';
 import { SelectedType } from './ScheduleTable';
 import { EmployeeWeekColumn } from './EmployeeWeekColumn';
+import { Nullable } from '../../../models/Nullable';
 
 
 interface EmployeeWeekRowProps {
     selected: SelectedType,
     employee: Employee,
-    shifts: (Shift | undefined)[],
+    shifts: Nullable<Shift>[],
     vacations: VacationRequest[],
     currentWeek: any,
     setSelected: React.Dispatch<React.SetStateAction<SelectedType>>,

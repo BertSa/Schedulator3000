@@ -5,7 +5,7 @@ import { DialogWarningDelete } from '../../components/DialogWarningDelete';
 import React from 'react';
 import { http } from './use-services';
 
-export type IManagerService = {
+export interface IManagerService {
     addEmployee: (emailManager: string, employee: EmployeeFormType) => Promise<Employee>,
     getEmployees: (emailManager: string) => Promise<Employee[]>,
     fireEmployee: (idEmployee: number, emailManager: string) => Promise<Employee>,

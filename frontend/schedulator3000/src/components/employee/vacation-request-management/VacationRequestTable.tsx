@@ -9,13 +9,14 @@ import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
 import { useDialog } from '../../../hooks/use-dialog';
 import { CreateVacationRequest } from './CreateVacationRequest';
 import { EditVacationRequest } from './EditVacationRequest';
+import { Nullable } from '../../../models/Nullable';
 
 
 export function VacationRequestTable() {
     const [vacations, setVacations] = useState<VacationRequest[]>([]);
+    const [selectedVacation, setSelectedVacation] = useState<Nullable<VacationRequest>>(null);
     const {vacationRequestService} = useServices();
     const [openDialog, closeDialog] = useDialog();
-    const [selectedVacation, setSelectedVacation] = useState<VacationRequest | null>(null);
     const employee: Employee = useAuth().getEmployee();
 
     useEffect(() => {

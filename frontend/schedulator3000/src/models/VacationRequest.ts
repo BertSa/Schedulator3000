@@ -7,8 +7,8 @@ export interface VacationRequest {
     status: VacationRequestStatus;
 }
 
-export type VacationRequestSubmit = Omit<VacationRequest, 'id' | 'status'>;
-export type VacationRequestUpdate = Omit<VacationRequest, 'employeeEmail' | 'status'>;
+export type VacationRequestSubmit = Omit<VacationRequest, 'status' | 'id'>;
+export type VacationRequestUpdate = Omit<VacationRequest, 'status' | 'employeeEmail'>;
 
 export enum VacationRequestStatus {
     Pending = 'PENDING',

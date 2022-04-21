@@ -5,7 +5,7 @@ import { Employee, EmployeeFormType, Manager } from '../../../../../models/User'
 import { EmployeeForm } from './EmployeeForm';
 import { IManagerService } from '../../../../../hooks/use-services/use-provide-manager-service';
 
-type IRegisterEmployeeProps = {
+interface IRegisterEmployeeProps {
     user: Manager,
     managerService: IManagerService,
     setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>,

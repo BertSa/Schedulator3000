@@ -5,12 +5,12 @@ import { regex } from '../../../../../utilities';
 import React from 'react';
 import { Employee, EmployeeFormType } from '../../../../../models/User';
 
-type EmployeeFormProps = {
+interface EmployeeFormProps {
     submit: SubmitHandler<EmployeeFormType>,
     emailDisabled: boolean,
     onCancel: VoidFunction,
     employee?: Employee,
-};
+}
 
 EmployeeForm.defaultProps = {
     emailDisabled: false

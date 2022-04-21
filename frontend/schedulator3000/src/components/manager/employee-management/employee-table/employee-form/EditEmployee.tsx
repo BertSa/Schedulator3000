@@ -4,7 +4,7 @@ import { Employee, EmployeeFormType } from '../../../../../models/User';
 import { EmployeeForm } from './EmployeeForm';
 import { IEmployeeService } from '../../../../../hooks/use-services/use-provide-employee-service';
 
-type IModifyEmployeeProps = {
+interface IModifyEmployeeProps {
     employeeService: IEmployeeService,
     setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>,
     closeMainDialog: VoidFunction,

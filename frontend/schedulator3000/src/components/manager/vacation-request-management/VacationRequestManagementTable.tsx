@@ -6,13 +6,14 @@ import { Employee, Manager } from '../../../models/User';
 import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
 import { VacationRequestManagementTableToolbar } from './VacationRequestManagementTableToolbar';
+import { Nullable } from '../../../models/Nullable';
 
 
 export function VacationRequestManagementTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [vacations, setVacations] = useState<VacationRequest[]>([]);
     const {managerService, vacationRequestService} = useServices();
-    const [selectedVacation, setSelectedVacation] = useState<VacationRequest | null>(null);
+    const [selectedVacation, setSelectedVacation] = useState<Nullable<VacationRequest>>(null);
     const manager: Manager = useAuth().getManager();
 
     useEffect(() => {

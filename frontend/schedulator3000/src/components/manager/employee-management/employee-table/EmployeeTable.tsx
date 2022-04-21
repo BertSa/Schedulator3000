@@ -7,14 +7,15 @@ import { useAuth } from '../../../../hooks/use-auth';
 import { EmployeeTableToolbar } from './EmployeeTableToolbar';
 import { RegisterEmployee } from './employee-form/RegisterEmployee';
 import { EditEmployee } from './employee-form/EditEmployee';
+import { Nullable } from '../../../../models/Nullable';
 
 
 export function EmployeeTable() {
-    const [employees, setEmployees] = useState<Employee[]>([]);
     const {managerService, employeeService} = useServices();
     const [openDialog, closeDialog] = useDialog();
     const user = useAuth().getManager();
-    const [selected, setSelected] = useState<Employee | null>(null);
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [selected, setSelected] = useState<Nullable<Employee>>(null);
 
     useEffect(() => {
         managerService.getEmployees(user.email).then(
@@ -24,20 +25,22 @@ export function EmployeeTable() {
 
     const handleClick = (event: React.MouseEvent<unknown>, employee: Employee) => setSelected(selected => selected?.id === employee.id ? null : employee);
 
-    const createAction = () =>
+    function createAction() {
         openDialog(<RegisterEmployee user={ user }
-                                     setEmployees={ setEmployees }
-                                     managerService={ managerService }
-                                     closeMainDialog={ closeDialog } />);
+                                            setEmployees={ setEmployees }
+                                            managerService={ managerService }
+                                            closeMainDialog={ closeDialog } />);
+    }
 
-    const editAction = () =>
+    function editAction() {
         openDialog(<EditEmployee employee={ selected as Employee }
-                                 setEmployees={ setEmployees }
-                                 employeeService={ employeeService }
-                                 closeMainDialog={ closeDialog } />);
+                                        setEmployees={ setEmployees }
+                                        employeeService={ employeeService }
+                                        closeMainDialog={ closeDialog } />);
+    }
 
 
-    const fireAction = () => {
+    function fireAction() {
         if (selected) {
             managerService.fireEmployee(selected.id, user.email).then(
                 () => {
@@ -45,7 +48,7 @@ export function EmployeeTable() {
                     setSelected(null);
                 });
         }
-    };
+    }
 
 
     return <>

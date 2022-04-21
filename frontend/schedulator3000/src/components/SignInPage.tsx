@@ -7,7 +7,7 @@ import { regex } from '../utilities';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
 export function SignInPage() {
-    const [tab, setTab] = useState(0);
+    const [tab, setTab] = useState<number>(0);
     const auth = useAuth();
     const history = useHistory();
     const {register, handleSubmit, formState: {errors}} = useForm({

@@ -2,14 +2,15 @@ import { alpha, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
 import { CheckCircle, FlagCircle } from '@mui/icons-material';
 import React from 'react';
 import { VacationRequest, VacationRequestStatus } from '../../../models/VacationRequest';
+import { Nullable } from '../../../models/Nullable';
 
-type VacationRequestManagementTableToolbarProps = {
-    selected: VacationRequest | null,
+interface VacationRequestManagementTableToolbarProps {
+    selected: Nullable<VacationRequest>,
     actions: {
         approve: VoidFunction,
         reject: VoidFunction,
     },
-};
+}
 
 export function VacationRequestManagementTableToolbar({
                                                           selected,

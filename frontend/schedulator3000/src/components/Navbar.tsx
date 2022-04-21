@@ -3,16 +3,17 @@ import React from 'react';
 import { AccountCircle, Menu as MenuIcon } from '@mui/icons-material';
 import { useAuth } from '../hooks/use-auth';
 import { useHistory } from 'react-router-dom';
+import { Nullable } from '../models/Nullable';
 
 export function Navbar() {
-    const [anchorElNav, setAnchorElNav] = React.useState<HTMLElement | null>(null);
+    const [anchorElNav, setAnchorElNav] = React.useState<Nullable<HTMLElement>>(null);
     const history = useHistory();
     const auth = useAuth();
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>): void => setAnchorElNav(event.currentTarget);
     const handleCloseNavMenu = (): void => setAnchorElNav(null);
 
-    function ManagerLinks(): JSX.Element | null {
+    function ManagerLinks(): JSX.Element {
         if (!auth.isManager()) {
             return <></>;
         }
@@ -58,7 +59,7 @@ export function Navbar() {
         </>;
     }
 
-    function EmployeeLinks(): JSX.Element | null {
+    function EmployeeLinks(): JSX.Element {
         if (!auth.isEmployee()) {
             return <></>;
         }
@@ -143,7 +144,7 @@ export function Navbar() {
     }
 
     function RightSide(): JSX.Element | null {
-        const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+        const [anchorEl, setAnchorEl] = React.useState<Nullable<HTMLElement>>(null);
 
         const handleMenu = (event: React.MouseEvent<HTMLElement>): void => setAnchorEl(event.currentTarget);
         const handleClose = (): void => setAnchorEl(null);
