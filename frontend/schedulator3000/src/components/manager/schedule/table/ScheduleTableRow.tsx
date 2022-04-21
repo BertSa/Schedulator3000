@@ -6,18 +6,19 @@ import { differenceInMinutes, hoursToMinutes, minutesToHours } from 'date-fns';
 import { Box, Collapse, IconButton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import React from 'react';
-import { SelectedType } from './ScheduleTable';
+import { SelectedItemType } from './ScheduleTable';
 import { ScheduleTableColumnWeek } from './ScheduleTableColumnWeek';
 import { Nullable } from '../../../../models/Nullable';
+import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
 
 
 interface EmployeeWeekRowProps {
-    selected: SelectedType,
+    selected: SelectedItemType,
     employee: Employee,
     shifts: Nullable<Shift>[],
     vacations: VacationRequest[],
-    currentWeek: any,
-    setSelected: React.Dispatch<React.SetStateAction<SelectedType>>,
+    currentWeek: ICurrentWeek,
+    setSelected: React.Dispatch<React.SetStateAction<SelectedItemType>>,
 }
 
 

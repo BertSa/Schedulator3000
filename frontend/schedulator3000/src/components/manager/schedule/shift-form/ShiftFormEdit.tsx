@@ -2,16 +2,15 @@ import { UnpackNestedValue } from 'react-hook-form';
 import React from 'react';
 import { Shift } from '../../../../models/Shift';
 import { Typography } from '@mui/material';
-import { ShiftForm, ShiftFormType } from './ShiftForm';
+import { ShiftForm, ShiftFormFieldValue } from './ShiftForm';
 import { IShiftService } from '../../../../hooks/use-services/use-provide-shift-service';
 import { Employee, Manager } from '../../../../models/User';
-import { ShiftFormFieldValue } from '../table/ScheduleTable';
 
 interface ScheduleUpdateShiftProps {
     shiftService: IShiftService,
     employees: Employee[],
     manager: Manager,
-    selected: ShiftFormType,
+    selected: ShiftFormFieldValue,
     callbackUpdate: (shift: Shift) => void,
     callbackDelete: VoidFunction,
     closeDialog: VoidFunction,

@@ -13,45 +13,50 @@ import { VacationRequestTableRow } from './VacationRequestTableRow';
 
 
 export function VacationRequestTable() {
-    const [vacations, setVacations] = useState<VacationRequest[]>([]);
-    const [selectedVacation, setSelectedVacation] = useState<Nullable<VacationRequest>>(null);
+    const [vacationRequests, setVacationRequests] = useState<VacationRequest[]>([]);
+    const [selectedVacationRequest, setSelectedVacationRequest] = useState<Nullable<VacationRequest>>(null);
     const {vacationRequestService} = useServices();
     const [openDialog, closeDialog] = useDialog();
     const employee: Employee = useAuth().getEmployee();
 
     useEffect(() => {
-        vacationRequestService.getAllByEmployeeEmail(employee.email).then(response => setVacations(response));
+        vacationRequestService.getAllByEmployeeEmail(employee.email).then(response => setVacationRequests(response));
     }, [employee.email]);
 
-    function createAction() {
-        return openDialog(<VacationRequestFormCreate setVacations={ setVacations }
-                                                     employee={ employee }
-                                                     closeMainDialog={ closeDialog }
-                                                     vacationRequestService={ vacationRequestService } />);
+    function callback(vacationRequest: VacationRequest): void {
+        closeDialog();
+        setVacationRequests(current => [...current.filter(value => value.id !== vacationRequest.id), vacationRequest]);
     }
 
-    function editAction() {
-        return openDialog(<VacationRequestFormEdit setVacations={ setVacations }
-                                                   closeMainDialog={ closeDialog }
-                                                   vacationRequestService={ vacationRequestService }
-                                                   vacationRequest={ selectedVacation as VacationRequest } />);
+    function createAction(): void {
+        return openDialog(<VacationRequestFormCreate vacationRequestService={ vacationRequestService }
+                                                     callback={ callback }
+                                                     onCancel={ closeDialog }
+                                                     employee={ employee } />);
+    }
+
+    function editAction(): void {
+        return openDialog(<VacationRequestFormEdit vacationRequestService={ vacationRequestService }
+                                                   callback={ callback }
+                                                   onCancel={ closeDialog }
+                                                   vacationRequest={ selectedVacationRequest as VacationRequest } />);
     }
 
     function cancelAction(): void {
-        if (!selectedVacation) {
+        if (!selectedVacationRequest) {
             return;
         }
-        vacationRequestService.updateStatus(selectedVacation.id, VacationRequestUpdateStatus.Cancel)
+        vacationRequestService.updateStatus(selectedVacationRequest.id, VacationRequestUpdateStatus.Cancel)
             .then(response => {
-                setVacations(current => [...current.filter(v => v.id !== selectedVacation.id), response]);
-                setSelectedVacation(response);
+                setVacationRequests(current => [...current.filter(v => v.id !== selectedVacationRequest.id), response]);
+                setSelectedVacationRequest(response);
             });
     }
 
     return <>
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
-                <VacationRequestTableToolbar selected={ selectedVacation }
+                <VacationRequestTableToolbar selected={ selectedVacationRequest }
                                              actions={ {
                                                  create: createAction,
                                                  edit: editAction,
@@ -76,10 +81,10 @@ export function VacationRequestTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { vacations.map(request => <VacationRequestTableRow key={ request.id }
-                                                                            request={ request }
-                                                                            isSelected={ selectedVacation?.id === request.id}
-                                                                            onClick={ () => setSelectedVacation(selected => selected?.id === request.id ? null : request) }
+                        { vacationRequests.map(request => <VacationRequestTableRow key={ request.id }
+                                                                                   request={ request }
+                                                                                   isSelected={ selectedVacationRequest?.id === request.id }
+                                                                                   onClick={ () => setSelectedVacationRequest(selected => selected?.id === request.id ? null : request) }
                         />) }
                     </TableBody>
                 </Table>

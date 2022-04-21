@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import React from 'react';
 import { Shift } from '../../../../models/Shift';
 import { Nullable } from '../../../../models/Nullable';
+import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
 
 
 interface EmployeeWeekColumnProps {
@@ -13,7 +14,7 @@ interface EmployeeWeekColumnProps {
     isSelected: boolean,
     vacations: VacationRequest[],
     shift: Nullable<Shift>,
-    currentWeek: any,
+    currentWeek: ICurrentWeek,
 }
 
 export function ScheduleTableColumnWeek({

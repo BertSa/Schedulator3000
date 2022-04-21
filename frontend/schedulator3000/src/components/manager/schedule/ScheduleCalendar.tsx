@@ -45,7 +45,7 @@ type FormFieldValue = {
 export const ScheduleCalendar = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [events, setEvents] = useState<ShiftEvent[]>([]);
-    const [curentWeek, setCurrentWeek] = useState<Date>(startOfWeek(getCurrentTimezoneDate(new Date())));
+    const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(getCurrentTimezoneDate(new Date())));
     const [openDialog, closeDialog] = useDialog();
     const {setValue, getValues, register, handleSubmit, formState: {errors}, reset, control} = useForm<FormFieldValue>({
         mode: 'onSubmit',
@@ -63,8 +63,8 @@ export const ScheduleCalendar = () => {
     useEffect(() => {
         let body: ShiftsFromToDto = {
             userEmail: user.email,
-            from: toLocalDateString(addDays(curentWeek, -7)),
-            to: toLocalDateString(addDays(curentWeek, 14))
+            from: toLocalDateString(addDays(currentWeek, -7)),
+            to: toLocalDateString(addDays(currentWeek, 14))
         };
         managerService.getEmployees(user.email ?? '').then(
             list => {
@@ -95,7 +95,7 @@ export const ScheduleCalendar = () => {
                         setEvents(map);
                     });
             });
-    }, [curentWeek, managerService, user.email, shiftService]);
+    }, [currentWeek, managerService, user.email, shiftService]);
 
     function ToolbarCalendar(props: { onView: Function, date: stringOrDate, view: View, onNavigate: Function }) {
         useEffect(() => {
@@ -174,7 +174,7 @@ export const ScheduleCalendar = () => {
 
             if (submitter === 'delete') {
                 shiftService.deleteShift(shiftId).then(() => {
-                        setEvents(curent => curent.filter(shift => shift.resourceId !== shiftId));
+                        setEvents(current => current.filter(shift => shift.resourceId !== shiftId));
                         closeDialog();
                     }
                 );
@@ -468,8 +468,7 @@ export const ScheduleCalendar = () => {
                     <ListItemText>Duplicate</ListItemText>
                 </MenuItem>
                 <MenuItem sx={ {alignContent: 'center'} } onClick={ () => {
-                    shiftService.deleteShift(contextMenu?.shiftEvent?.resourceId as number).then(() => setEvents(curent => curent.filter(shift => shift.resourceId !== contextMenu?.shiftEvent?.resourceId))
-                    );
+                    shiftService.deleteShift(contextMenu?.shiftEvent?.resourceId as number).then(() => setEvents(current => current.filter(shift => shift.resourceId !== contextMenu?.shiftEvent?.resourceId)));
                     handleClose();
                 } }>
                     <ListItemIcon>

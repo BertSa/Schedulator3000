@@ -2,16 +2,15 @@ import { UnpackNestedValue } from 'react-hook-form';
 import React from 'react';
 import { Shift, ShiftWithoutId } from '../../../../models/Shift';
 import { Typography } from '@mui/material';
-import { ShiftForm, ShiftFormType } from './ShiftForm';
+import { ShiftForm, ShiftFormFieldValue } from './ShiftForm';
 import { IShiftService } from '../../../../hooks/use-services/use-provide-shift-service';
 import { Employee, Manager } from '../../../../models/User';
-import { ShiftFormFieldValue } from '../table/ScheduleTable';
 
 interface ScheduleCreateShiftProps {
     shiftService: IShiftService,
     employees: Employee[],
     manager: Manager,
-    selected: ShiftFormType,
+    selected: ShiftFormFieldValue,
     callback: (shift: Shift) => void,
     closeDialog: VoidFunction,
 }
@@ -29,7 +28,7 @@ export function ShiftFormCreate({
         const {start, end, employeeId} = data;
         const employee = employees.find(employee => employee.id === employeeId);
 
-        if (!employee){
+        if (!employee) {
             return;
         }
 

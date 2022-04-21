@@ -10,31 +10,23 @@ import { Shift } from '../../../../models/Shift';
 import { useDialog } from '../../../../hooks/use-dialog';
 import { ScheduleTableToolbar } from './ScheduleTableToolbar';
 import { VacationRequest } from '../../../../models/VacationRequest';
-import useCurrentWeek from '../../../../hooks/use-currentWeek';
+import useCurrentWeek, { ICurrentWeek } from '../../../../hooks/use-currentWeek';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { ScheduleTableRow } from './ScheduleTableRow';
 import { Nullable } from '../../../../models/Nullable';
-import { ShiftFormType } from '../shift-form/ShiftForm';
+import { ShiftFormFieldValue } from '../shift-form/ShiftForm';
 import { ShiftFormCreate } from '../shift-form/ShiftFormCreate';
 import { ShiftFormEdit } from '../shift-form/ShiftFormEdit';
 
-export type SelectedType = Nullable<{ employee: Employee, day: number, shift: Nullable<Shift> }>;
-
-export interface ShiftFormFieldValue {
-    start: Date,
-    end: Date,
-    employeeId: number,
-    shiftId?: number,
-}
-
+export type SelectedItemType = Nullable<{ employee: Employee, day: number, shift: Nullable<Shift> }>;
 
 export function ScheduleTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [shifts, setShifts] = useState<Shift[]>([]);
-    const [vacations, setVacations] = useState<VacationRequest[]>([]);
-    const [selected, setSelected] = useState<SelectedType>(null);
+    const [vacationRequests, setVacationRequests] = useState<VacationRequest[]>([]);
+    const [selectedItem, setSelectedItem] = useState<SelectedItemType>(null);
     const {managerService, shiftService, vacationRequestService} = useServices();
-    const currentWeek = useCurrentWeek();
+    const currentWeek: ICurrentWeek = useCurrentWeek();
     const [openDialog, closeDialog] = useDialog();
     const manager = useAuth().getManager();
 
@@ -59,19 +51,19 @@ export function ScheduleTable() {
                             }))));
             });
 
-        vacationRequestService.getAllByManagerEmail(manager.email).then(response => setVacations(response));
+        vacationRequestService.getAllByManagerEmail(manager.email).then(response => setVacationRequests(response));
     }, [managerService, vacationRequestService, manager.email, shiftService]);
 
     function createAction() {
-        if (selected === null) {
+        if (selectedItem === null) {
             return;
         }
 
-        const dayOfWeek: Date = currentWeek.getDayOfWeek(selected.day);
-        const selectedValue: ShiftFormType = {
-            employeeId: selected.employee.id,
-            startTime: selected.shift?.startTime ?? dayOfWeek,
-            endTime: selected.shift?.endTime ?? dayOfWeek
+        const dayOfWeek: Date = currentWeek.getDayOfWeek(selectedItem.day);
+        const selectedValue: ShiftFormFieldValue = {
+            employeeId: selectedItem.employee.id,
+            start: selectedItem.shift?.startTime ?? dayOfWeek,
+            end: selectedItem.shift?.endTime ?? dayOfWeek
         };
 
         function callback(shift: Shift) {
@@ -82,7 +74,7 @@ export function ScheduleTable() {
             };
             closeDialog();
             setShifts((currentShifts: Shift[]) => [...currentShifts, newShift]);
-            setSelected(current => current && ({...current, shift: newShift}));
+            setSelectedItem(current => current && ({...current, shift: newShift}));
         }
 
         openDialog(<ShiftFormCreate shiftService={ shiftService }
@@ -95,21 +87,21 @@ export function ScheduleTable() {
     }
 
     function editAction() {
-        if (!selected?.shift) {
+        if (!selectedItem?.shift) {
             return;
         }
 
-        const selectedValue: ShiftFormType = {
-            id: selected.shift.id,
-            employeeId: selected.employee.id,
-            startTime: selected.shift.startTime,
-            endTime: selected.shift.endTime,
+        const selectedValue: ShiftFormFieldValue = {
+            shiftId: selectedItem.shift.id,
+            employeeId: selectedItem.employee.id,
+            start: selectedItem.shift.startTime,
+            end: selectedItem.shift.endTime,
         };
 
         function callbackDelete() {
             closeDialog();
-            setShifts(current => current.filter(shift => shift.id !== selectedValue.id));
-            setSelected(null);
+            setShifts(current => current.filter(shift => shift.id !== selectedValue.shiftId));
+            setSelectedItem(null);
         }
 
         function callbackUpdate(shift: Shift) {
@@ -133,13 +125,13 @@ export function ScheduleTable() {
     }
 
     function removeAction() {
-        if (!selected?.shift?.id) {
+        if (!selectedItem?.shift?.id) {
             return;
         }
 
-        shiftService.deleteShift(selected.shift.id).then(() => {
-                setShifts(curent => curent.filter(shift => shift.id !== selected?.shift?.id));
-                setSelected(null);
+        shiftService.deleteShift(selectedItem.shift.id).then(() => {
+                setShifts(current => current.filter(shift => shift.id !== selectedItem?.shift?.id));
+                setSelectedItem(null);
             }
         );
     }
@@ -150,7 +142,7 @@ export function ScheduleTable() {
             <TableContainer component={ Paper }>
                 <ScheduleTableToolbar
                     currentWeek={ currentWeek.value }
-                    selected={ selected }
+                    selected={ selectedItem }
                     actions={ {
                         prev: currentWeek.previous,
                         next: currentWeek.next,
@@ -203,15 +195,15 @@ export function ScheduleTable() {
                                 const shift = filter.find(shift => getDay(new Date(shift.startTime)) === i);
                                 weekShift[i] = shift ?? null;
                             }
-                            const requests: VacationRequest[] = vacations.filter(value => value.employeeEmail === employee.email);
+                            const requests: VacationRequest[] = vacationRequests.filter(value => value.employeeEmail === employee.email);
 
                             return <ScheduleTableRow key={ employee.id }
                                                      employee={ employee }
                                                      shifts={ weekShift }
                                                      vacations={ requests }
-                                                     selected={ selected }
+                                                     selected={ selectedItem }
                                                      currentWeek={ currentWeek }
-                                                     setSelected={ setSelected }
+                                                     setSelected={ setSelectedItem }
                             />;
                         }) }
                     </TableBody>

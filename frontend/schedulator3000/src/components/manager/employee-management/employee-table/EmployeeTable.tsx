@@ -11,11 +11,11 @@ import { Nullable } from '../../../../models/Nullable';
 
 
 export function EmployeeTable() {
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [selectedEmployee, setSelectedEmployee] = useState<Nullable<Employee>>(null);
     const {managerService, employeeService} = useServices();
     const [openDialog, closeDialog] = useDialog();
     const user = useAuth().getManager();
-    const [employees, setEmployees] = useState<Employee[]>([]);
-    const [selected, setSelected] = useState<Nullable<Employee>>(null);
 
     useEffect(() => {
         managerService.getEmployees(user.email).then(
@@ -23,29 +23,43 @@ export function EmployeeTable() {
     }, [managerService, user.email]);
 
 
-    const handleClick = (event: React.MouseEvent<unknown>, employee: Employee) => setSelected(selected => selected?.id === employee.id ? null : employee);
+    const handleClick = (event: React.MouseEvent<unknown>, employee: Employee) => setSelectedEmployee(selected => selected?.id === employee.id ? null : employee);
 
     function createAction() {
+        function callback(employee: Employee) {
+            setEmployees(current => [...current, employee]);
+            closeDialog();
+        }
+
         openDialog(<EmployeeFormRegister user={ user }
-                                         setEmployees={ setEmployees }
+                                         callback={ callback }
                                          managerService={ managerService }
-                                         closeMainDialog={ closeDialog } />);
+                                         onCancel={ closeDialog } />);
     }
 
     function editAction() {
-        openDialog(<EmployeeFormEdit employee={ selected as Employee }
-                                     setEmployees={ setEmployees }
+        if (!selectedEmployee) {
+            return;
+        }
+
+        function callback(employee: Employee) {
+            setEmployees(current => [...current.filter(emp => emp.id !== employee.id), employee]);
+            closeDialog();
+        }
+
+        openDialog(<EmployeeFormEdit employee={ selectedEmployee }
+                                     callback={ callback }
                                      employeeService={ employeeService }
-                                     closeMainDialog={ closeDialog } />);
+                                     onCancel={ closeDialog } />);
     }
 
 
     function fireAction() {
-        if (selected) {
-            managerService.fireEmployee(selected.id, user.email).then(
+        if (selectedEmployee) {
+            managerService.fireEmployee(selectedEmployee.id, user.email).then(
                 () => {
-                    setEmployees(employees.filter(employee => employee.id !== selected.id));
-                    setSelected(null);
+                    setEmployees(employees.filter(employee => employee.id !== selectedEmployee.id));
+                    setSelectedEmployee(null);
                 });
         }
     }
@@ -53,7 +67,7 @@ export function EmployeeTable() {
 
     return <>
         <TableContainer component={ Paper }>
-            <EmployeeTableToolbar selected={ selected }
+            <EmployeeTableToolbar selected={ selectedEmployee }
                                   actions={ {
                                       create: createAction,
                                       edit: editAction,
@@ -75,13 +89,12 @@ export function EmployeeTable() {
                         <TableRow
                             key={ employee.id }
                             hover
-                            selected={ selected?.id === employee.id }
+                            selected={ selectedEmployee?.id === employee.id }
                             onClick={ (event) => handleClick(event, employee) }
                             sx={ {
                                 cursor: 'pointer',
                                 '&:last-child td, &:last-child th': {border: 0},
-                            } }
-                        >
+                            } }>
                             <TableCell component="th" scope="row">
                                 { employee.id }
                             </TableCell>

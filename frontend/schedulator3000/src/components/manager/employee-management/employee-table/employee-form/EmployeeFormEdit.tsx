@@ -6,30 +6,25 @@ import { IEmployeeService } from '../../../../../hooks/use-services/use-provide-
 
 interface EmployeeFormEditProps {
     employeeService: IEmployeeService,
-    setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>,
-    closeMainDialog: VoidFunction,
+    callback: (employee: Employee) => void,
+    onCancel: VoidFunction,
     employee: Employee,
 }
 
 export function EmployeeFormEdit({
                                  employeeService,
-                                 setEmployees,
-                                 closeMainDialog,
+                                 callback,
+                                 onCancel,
                                  employee
                              }: EmployeeFormEditProps): React.ReactElement {
 
     const submit: SubmitHandler<EmployeeFormType> = (data, event) => {
         event?.preventDefault();
-        employeeService.updateEmployee(data).then(
-            employee => {
-                setEmployees((curentEmployees: Employee[]) => [...curentEmployees.filter(emp => emp.id !== employee.id), employee]);
-                closeMainDialog();
-            });
+        employeeService.updateEmployee(data).then(callback);
     };
 
-    return (<>
+    return <>
             <h3>Modify Employee</h3>
-            <EmployeeForm submit={ submit } emailDisabled onCancel={ () => closeMainDialog() } employee={ employee } />
-        </>
-    );
+            <EmployeeForm submit={ submit } emailDisabled onCancel={ onCancel } employee={ employee } />
+        </>;
 }

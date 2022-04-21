@@ -7,18 +7,18 @@ import { IVacationRequestService } from '../../../../hooks/use-services/use-prov
 
 
 interface VacationRequestFormCreateProps {
-    setVacations: React.Dispatch<React.SetStateAction<VacationRequest[]>>;
-    closeMainDialog: VoidFunction;
-    employee: Employee;
     vacationRequestService: IVacationRequestService;
+    callback: (vacationRequest: VacationRequest) => void;
+    onCancel: VoidFunction;
+    employee: Employee;
 }
 
 export function VacationRequestFormCreate({
-                                          setVacations,
-                                          employee,
-                                          closeMainDialog,
-                                          vacationRequestService
-                                      }: VacationRequestFormCreateProps) {
+                                              vacationRequestService,
+                                              onCancel,
+                                              callback,
+                                              employee,
+                                          }: VacationRequestFormCreateProps) {
 
 
     const submit: SubmitHandler<VacationRequestFormFieldValue> = (data, event): void => {
@@ -30,13 +30,10 @@ export function VacationRequestFormCreate({
             reason: data.reason,
         };
 
-        vacationRequestService.create(body).then(response => {
-            closeMainDialog();
-            setVacations(prevState => [...prevState.filter(value => value.id !== response.id), response]);
-        });
+        vacationRequestService.create(body).then(callback);
     };
 
     return <VacationRequestForm submit={ submit }
-                                onCancel={ closeMainDialog }
+                                onCancel={ onCancel }
     />;
 }

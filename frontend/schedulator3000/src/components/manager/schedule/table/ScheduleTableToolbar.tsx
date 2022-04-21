@@ -2,11 +2,11 @@ import { alpha, IconButton, SxProps, Theme, Toolbar, Tooltip, Typography } from 
 import { Add, ArrowBack, ArrowForward, Delete, Edit } from '@mui/icons-material';
 import React from 'react';
 import { addDays, format } from 'date-fns';
-import { SelectedType } from './ScheduleTable';
+import { SelectedItemType } from './ScheduleTable';
 
 interface ScheduleTableToolbarProps {
     currentWeek: Date,
-    selected: SelectedType,
+    selected: SelectedItemType,
     actions: {
         prev: VoidFunction,
         next: VoidFunction,

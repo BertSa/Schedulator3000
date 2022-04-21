@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { isBetween } from '../utilities';
 import { addDays, addWeeks, startOfWeek, subWeeks } from 'date-fns';
 
-interface useCurrentWeekProps {
+export interface ICurrentWeek {
     value: Date,
     next: VoidFunction,
     previous: VoidFunction,
@@ -12,11 +12,11 @@ interface useCurrentWeekProps {
     isDuringWeek: (date: Date) => boolean
 }
 
-export default function useCurrentWeek(defaultValue?: Date): useCurrentWeekProps {
+export default function useCurrentWeek(defaultValue?: Date): ICurrentWeek {
     const [value, setCurrentWeek] = useState<Date>(startOfWeek(defaultValue ?? new Date()));
 
-    const previous = useCallback(() => setCurrentWeek(curentWeek => getPreviousWeek(curentWeek)), [value]);
-    const next = useCallback(() => setCurrentWeek(curentWeek => getNextWeek(curentWeek)), [value]);
+    const previous = useCallback(() => setCurrentWeek(currentWeek => getPreviousWeek(currentWeek)), [value]);
+    const next = useCallback(() => setCurrentWeek(currentWeek => getNextWeek(currentWeek)), [value]);
 
     function getDayOfWeek(val: number): Date {
         return addDays(value, val);

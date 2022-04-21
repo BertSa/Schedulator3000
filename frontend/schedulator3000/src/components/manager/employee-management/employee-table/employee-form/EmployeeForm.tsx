@@ -123,7 +123,7 @@ export function EmployeeForm({submit, emailDisabled, onCancel, employee}: Employ
                 type="button"
                 variant="text"
                 color="primary"
-                onClick={ onCancel }
+                onClick={ () => onCancel() }
             >
                 Cancel
             </Button>

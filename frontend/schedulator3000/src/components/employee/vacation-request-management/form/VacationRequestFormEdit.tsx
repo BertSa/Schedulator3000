@@ -6,15 +6,15 @@ import { IVacationRequestService } from '../../../../hooks/use-services/use-prov
 
 
 interface VacationRequestFormEditProps {
-    setVacations: React.Dispatch<React.SetStateAction<VacationRequest[]>>;
-    closeMainDialog: VoidFunction;
+    callback: (vacationRequest: VacationRequest) => void;
+    onCancel: VoidFunction;
     vacationRequestService: IVacationRequestService;
     vacationRequest: VacationRequest;
 }
 
 export function VacationRequestFormEdit({
-                                        setVacations,
-                                        closeMainDialog,
+                                        callback,
+                                        onCancel,
                                         vacationRequestService,
                                         vacationRequest
                                     }: VacationRequestFormEditProps) {
@@ -29,14 +29,11 @@ export function VacationRequestFormEdit({
             reason: data.reason,
         };
 
-        vacationRequestService.update(body).then(response => {
-            closeMainDialog();
-            setVacations(prevState => [...prevState.filter(value => value.id !== response.id), response]);
-        });
+        vacationRequestService.update(body).then(callback);
     };
 
     return <VacationRequestForm submit={ submit }
-                                onCancel={ closeMainDialog }
+                                onCancel={ onCancel }
                                 vacationRequest={ vacationRequest }
     />;
 }

@@ -4,33 +4,36 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { TimePicker } from '@mui/lab';
 import React from 'react';
 import { Employee } from '../../../../models/User';
-import { ShiftFormFieldValue } from '../table/ScheduleTable';
 
-
-export interface ShiftFormType {
-    id?: number,
-    employeeId?: number;
-    startTime: Date;
-    endTime: Date;
+export interface ShiftFormFieldValue {
+    shiftId?: number;
+    employeeId: number;
+    start: Date;
+    end: Date;
 }
-
 
 interface ScheduleTableShiftFormProps {
     submit: SubmitHandler<ShiftFormFieldValue>,
     onClose: VoidFunction,
     employees: Employee[],
-    selected: ShiftFormType,
+    selected: ShiftFormFieldValue,
 }
+
+ShiftForm.defaultProps = {
+    selected: {
+        employeeId: -1,
+    },
+};
 
 export function ShiftForm({submit, employees, onClose, selected}: ScheduleTableShiftFormProps) {
     const {getValues, register, handleSubmit, formState: {errors}, control} = useForm<ShiftFormFieldValue>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
         defaultValues: {
-            start: selected.startTime,
-            end: selected.endTime,
-            employeeId: selected.employeeId ?? -1,
-            shiftId: selected.id ?? -1,
+            shiftId: selected.shiftId ?? -1,
+            employeeId: selected.employeeId,
+            start: selected.start,
+            end: selected.end,
         }
     });
 
@@ -44,7 +47,7 @@ export function ShiftForm({submit, employees, onClose, selected}: ScheduleTableS
                 label="Select"
                 fullWidth
                 defaultValue={ getValues().employeeId ?? '-1' }
-                disabled={ selected.id !== undefined }
+                disabled={ selected.shiftId !== undefined }
                 SelectProps={ {
                     startAdornment: (
                         <InputAdornment position="start">
@@ -110,7 +113,7 @@ export function ShiftForm({submit, employees, onClose, selected}: ScheduleTableS
             <Stack spacing={ 2 } direction="row">
                 <Button type="submit" color="primary"
                         variant="contained">Submit</Button>
-                { selected.id &&
+                { selected.shiftId &&
                     <Button value="delete" type="submit" color="error"
                             variant="contained">Delete</Button> }
                 <Button value="cancel" type="button" color="primary" variant="text" onClick={ onClose }>Cancel</Button>
