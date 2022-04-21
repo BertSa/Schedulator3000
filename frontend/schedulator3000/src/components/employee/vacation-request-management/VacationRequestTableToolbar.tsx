@@ -1,4 +1,4 @@
-import { alpha, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
+import { alpha, IconButton, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import { Add, CancelRounded, Edit } from '@mui/icons-material';
 import React from 'react';
 import { VacationRequest, VacationRequestStatus } from '../../../models/VacationRequest';
@@ -15,21 +15,23 @@ interface VacationRequestTableToolbarProps {
 
 export function VacationRequestTableToolbar({
                                                 selected,
-                                                actions: { create, edit, cancel },
+                                                actions: {create, edit, cancel},
                                             }: VacationRequestTableToolbarProps) {
+    const toolbarSx: SxProps<Theme> = {
+        pl: {sm: 2},
+        pr: {xs: 1, sm: 1},
+        justifyContent: 'space-between',
+        ...(selected && {
+            bgcolor: (theme) =>
+                alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+        }),
+    };
+
     return (
         <Toolbar
-            sx={ {
-                pl: {sm: 2},
-                pr: {xs: 1, sm: 1},
-                justifyContent: 'space-between',
-                ...(selected !== null && {
-                    bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                }),
-            } }
+            sx={ toolbarSx }
         >
-            { selected !== null ? (
+            { selected ? (
                 <Typography
                     color="inherit"
                     variant="subtitle1"
@@ -47,7 +49,7 @@ export function VacationRequestTableToolbar({
                 </Typography>
             ) }
 
-            { selected !== null ? (
+            { selected ? (
                 <div>
                     <Tooltip title="Cancel request">
                         <span>

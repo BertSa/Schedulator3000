@@ -5,8 +5,8 @@ import { useDialog } from '../../../../hooks/use-dialog';
 import { useServices } from '../../../../hooks/use-services/use-services';
 import { useAuth } from '../../../../hooks/use-auth';
 import { EmployeeTableToolbar } from './EmployeeTableToolbar';
-import { RegisterEmployee } from './employee-form/RegisterEmployee';
-import { EditEmployee } from './employee-form/EditEmployee';
+import { EmployeeFormRegister } from './employee-form/EmployeeFormRegister';
+import { EmployeeFormEdit } from './employee-form/EmployeeFormEdit';
 import { Nullable } from '../../../../models/Nullable';
 
 
@@ -26,17 +26,17 @@ export function EmployeeTable() {
     const handleClick = (event: React.MouseEvent<unknown>, employee: Employee) => setSelected(selected => selected?.id === employee.id ? null : employee);
 
     function createAction() {
-        openDialog(<RegisterEmployee user={ user }
-                                            setEmployees={ setEmployees }
-                                            managerService={ managerService }
-                                            closeMainDialog={ closeDialog } />);
+        openDialog(<EmployeeFormRegister user={ user }
+                                         setEmployees={ setEmployees }
+                                         managerService={ managerService }
+                                         closeMainDialog={ closeDialog } />);
     }
 
     function editAction() {
-        openDialog(<EditEmployee employee={ selected as Employee }
-                                        setEmployees={ setEmployees }
-                                        employeeService={ employeeService }
-                                        closeMainDialog={ closeDialog } />);
+        openDialog(<EmployeeFormEdit employee={ selected as Employee }
+                                     setEmployees={ setEmployees }
+                                     employeeService={ employeeService }
+                                     closeMainDialog={ closeDialog } />);
     }
 
 

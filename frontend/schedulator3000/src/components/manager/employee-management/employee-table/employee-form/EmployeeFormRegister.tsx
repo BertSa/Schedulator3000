@@ -5,20 +5,20 @@ import { Employee, EmployeeFormType, Manager } from '../../../../../models/User'
 import { EmployeeForm } from './EmployeeForm';
 import { IManagerService } from '../../../../../hooks/use-services/use-provide-manager-service';
 
-interface IRegisterEmployeeProps {
+interface EmployeeFormRegisterProps {
     user: Manager,
     managerService: IManagerService,
     setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>,
     closeMainDialog: VoidFunction,
 }
 
-export function RegisterEmployee({
+export function EmployeeFormRegister({
                                      user,
                                      managerService,
                                      setEmployees,
                                      closeMainDialog
-                                 }: IRegisterEmployeeProps): React.ReactElement {
-    const [createDialog, closeDialog] = useDialog();
+                                 }: EmployeeFormRegisterProps): React.ReactElement {
+    const [createDialog, closeDialog] = useDialog(); // TODO: replace by backend
 
 
     const submit: SubmitHandler<FieldValues> = (data, event) => {

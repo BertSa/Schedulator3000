@@ -1,21 +1,21 @@
 import { Button, Container, Grid } from '@mui/material';
 import { FieldInput } from '../shared/form/FormFields';
 import React from 'react';
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useAuth } from '../../hooks/use-auth';
 import { PasswordChangeDto, PasswordChangeWithPwdConfirmation } from '../../models/PasswordChangeDto';
 import { useHistory } from 'react-router-dom';
 
 export function NewEmployeePage() {
-    const {register, handleSubmit, formState: {errors}} = useForm({
+    const {getValues, register, handleSubmit, formState: {errors}} = useForm<PasswordChangeWithPwdConfirmation>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
     });
     const {updatePassword} = useAuth();
     const history = useHistory();
 
-    const submit: SubmitHandler<FieldValues> = data => {
-        const {currentPassword, newPassword, confirmationPassword} = data as PasswordChangeWithPwdConfirmation;
+    const submit: SubmitHandler<PasswordChangeWithPwdConfirmation> = data => {
+        const {currentPassword, newPassword, confirmationPassword} = data;
         if (newPassword !== confirmationPassword) {
             return;
         }
@@ -71,7 +71,8 @@ export function NewEmployeePage() {
                                 autoComplete="current-password"
                                 type="password"
                                 validation={ {
-                                    required: 'This Field is required!'
+                                    required: 'This Field is required!',
+                                    validate: value => value === getValues().newPassword || 'Passwords do not match!'
                                 } } />
                 </Grid>
                 <Grid item xs={ 12 } justifyContent={ 'center' }>

@@ -36,7 +36,7 @@ export function VacationRequestFormCreate({
         });
     };
 
-    return <VacationRequestForm onSubmit={ submit }
+    return <VacationRequestForm submit={ submit }
                                 onCancel={ closeMainDialog }
     />;
 }

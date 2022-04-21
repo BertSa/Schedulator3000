@@ -26,7 +26,7 @@ export function ScheduleTableColumnWeek({
                                                 }: EmployeeWeekColumnProps) {
     const vacationRequest: VacationRequest | undefined = vacations.find(vacation => isBetween(currentWeek.getDayOfWeek(index), vacation.startDate, vacation.endDate));
 
-    function getColor(vacation: VacationRequest | undefined, theme: Theme): string {
+    function getColor(theme: Theme, vacation?: VacationRequest): string {
         let color: string;
         switch (vacation?.status) {
             case VacationRequestStatus.Pending:
@@ -66,14 +66,14 @@ export function ScheduleTableColumnWeek({
         }),
         '&:hover': {
             bgcolor: (theme) => {
-                let color = getColor(vacationRequest, theme);
+                let color = getColor(theme, vacationRequest);
 
                 return alpha(color, theme.palette.action.hoverOpacity);
             }
         },
         '&:active': {
             bgcolor: (theme) => {
-                let color = getColor(vacationRequest, theme);
+                let color = getColor(theme, vacationRequest);
 
                 return alpha(color, theme.palette.action.activatedOpacity);
             }

@@ -1,4 +1,4 @@
-import { alpha, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
+import { alpha, IconButton, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import { CheckCircle, FlagCircle } from '@mui/icons-material';
 import React from 'react';
 import { VacationRequest, VacationRequestStatus } from '../../../models/VacationRequest';
@@ -19,19 +19,19 @@ export function VacationRequestManagementTableToolbar({
                                                               reject,
                                                           }
                                                       }: VacationRequestManagementTableToolbarProps) {
+    const toolbarSx: SxProps<Theme> = {
+        pl: {sm: 2},
+        pr: {xs: 1, sm: 1},
+        justifyContent: 'space-between',
+        ...(selected && {
+            bgcolor: (theme) =>
+                alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+        }),
+    };
+
     return (
-        <Toolbar
-            sx={ {
-                pl: {sm: 2},
-                pr: {xs: 1, sm: 1},
-                justifyContent: 'space-between',
-                ...(selected !== null && {
-                    bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                }),
-            } }
-        >
-            { selected !== null ? (
+        <Toolbar sx={ toolbarSx }>
+            { selected ? (
                 <Typography
                     color="inherit"
                     variant="subtitle1"
@@ -49,7 +49,7 @@ export function VacationRequestManagementTableToolbar({
                 </Typography>
             ) }
 
-            { selected !== null && <div>
+            { selected && <div>
                 <Tooltip
                     title={ selected.status.toUpperCase() === VacationRequestStatus.Cancelled ? 'Request cancelled by the employee' : selected.status.toUpperCase() === VacationRequestStatus.Rejected ? 'Already rejected' : 'Reject' }>
                         <span>

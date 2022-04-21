@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { VacationRequest, VacationRequestStatus, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
+import { VacationRequest, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
 import { useServices } from '../../../hooks/use-services/use-services';
 import { useAuth } from '../../../hooks/use-auth';
 import { Employee, Manager } from '../../../models/User';
-import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
-import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
+import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VacationRequestManagementTableToolbar } from './VacationRequestManagementTableToolbar';
 import { Nullable } from '../../../models/Nullable';
+import { VacationRequestManagementTableRow } from './VacationRequestManagementTableRow';
 
 
 export function VacationRequestManagementTable() {
@@ -23,55 +23,6 @@ export function VacationRequestManagementTable() {
             response => setVacations(response));
     }, [managerService, vacationRequestService, manager.email]);
 
-
-    function Row({request, employee}: { request: VacationRequest, employee: Employee }) {
-
-        let status: any = null;
-        switch (request.status.toUpperCase()) {
-            case VacationRequestStatus.Rejected:
-                status = <Tooltip title="Rejected"><FlagCircle color="error" /></Tooltip>;
-                break;
-            case VacationRequestStatus.Approved:
-                status = <Tooltip title="Approved"><CheckCircle color="success" /></Tooltip>;
-                break;
-            case VacationRequestStatus.Cancelled:
-                status = <Tooltip title="Cancelled"><Cancel color="warning" /></Tooltip>;
-                break;
-            case VacationRequestStatus.Pending:
-                status = <Tooltip title="Pending"><Timer color="info" /></Tooltip>;
-                break;
-        }
-
-
-        return <>
-            <TableRow selected={ selectedVacation?.id === request.id }
-                      hover
-                      sx={ {
-                          cursor: 'pointer',
-                          '&:last-child td, &:last-child th': {border: 0},
-                      } }
-                      onClick={ () => setSelectedVacation(selected => selected?.id === request.id ? null : request) }>
-                <TableCell component="th" scope="row">
-                    { request.id }
-                </TableCell>
-                <TableCell>
-                    { employee?.firstName + ' ' + employee?.lastName }
-                </TableCell>
-                <TableCell>
-                    { request.startDate }
-                </TableCell>
-                <TableCell>
-                    { request.endDate }
-                </TableCell>
-                <TableCell>
-                    { request.reason }
-                </TableCell>
-                <TableCell align="center">
-                    { status }
-                </TableCell>
-            </TableRow>
-        </>;
-    }
 
     function updateRequest(status: VacationRequestUpdateStatus): void {
         if (!selectedVacation) {
@@ -121,7 +72,11 @@ export function VacationRequestManagementTable() {
                             const employee: Employee | undefined = employees.find(value => value.email === request.employeeEmail);
 
                             if (employee) {
-                                return <Row key={ request.id } request={ request } employee={ employee } />;
+                                return <VacationRequestManagementTableRow key={ request.id }
+                                                                          request={ request }
+                                                                          employee={ employee }
+                                                                          isSelected={ selectedVacation?.id === request.id }
+                                                                          onClick={ () => setSelectedVacation(selected => selected?.id === request.id ? null : request) } />;
                             }
 
                             return null;
@@ -132,3 +87,5 @@ export function VacationRequestManagementTable() {
         </Container>
     </>;
 }
+
+

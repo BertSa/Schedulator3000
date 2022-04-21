@@ -1,4 +1,4 @@
-import { alpha, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
+import { alpha, IconButton, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import { Add, Edit, LocalFireDepartment } from '@mui/icons-material';
 import React from 'react';
 import { Employee } from '../../../../models/User';
@@ -15,18 +15,20 @@ interface EnhancedTableToolbarProps {
 }
 
 export function EmployeeTableToolbar({selected, actions: {create, edit, fire}}: EnhancedTableToolbarProps) {
+    const toolbarSx: SxProps<Theme> = {
+        pl: {sm: 2},
+        pr: {xs: 1, sm: 1},
+        ...(selected && {
+            bgcolor: (theme) =>
+                alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+        }),
+    };
+
     return (
         <Toolbar
-            sx={ {
-                pl: {sm: 2},
-                pr: {xs: 1, sm: 1},
-                ...(selected !== null && {
-                    bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                }),
-            } }
+            sx={ toolbarSx }
         >
-            { selected !== null ? (
+            { selected ? (
                 <Typography
                     sx={ {flex: '1 1 100%'} }
                     color="inherit"
@@ -45,7 +47,7 @@ export function EmployeeTableToolbar({selected, actions: {create, edit, fire}}: 
                     Employees
                 </Typography>
             ) }
-            { selected !== null ? (
+            { selected ? (
                 <>
                     <Tooltip title="Edit">
                         <IconButton onClick={ edit }>

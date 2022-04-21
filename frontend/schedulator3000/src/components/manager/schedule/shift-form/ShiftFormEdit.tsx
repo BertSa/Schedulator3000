@@ -18,14 +18,14 @@ interface ScheduleUpdateShiftProps {
 }
 
 export function ShiftFormEdit({
-                                        shiftService,
-                                        employees,
-                                        manager,
-                                        selected,
-                                        callbackUpdate,
-                                        callbackDelete,
-                                        closeDialog
-                                    }: ScheduleUpdateShiftProps) {
+                                  shiftService,
+                                  employees,
+                                  manager,
+                                  selected,
+                                  callbackUpdate,
+                                  callbackDelete,
+                                  closeDialog
+                              }: ScheduleUpdateShiftProps) {
     function submit(data: UnpackNestedValue<ShiftFormFieldValue>, event?: any) {
         event?.preventDefault();
         const submitter = event?.nativeEvent.submitter.value;
@@ -39,13 +39,17 @@ export function ShiftFormEdit({
             shiftService.deleteShift(shiftId).then(callbackDelete);
             return;
         }
-        let employee = employees.find(employee => employee.id === employeeId);
+
+        const employee = employees.find(employee => employee.id === employeeId);
+        if (!employee) {
+            return;
+        }
 
         const newShift: Shift = {
             id: shiftId,
             startTime: start,
             endTime: end,
-            emailEmployee: employee?.email ?? '',
+            emailEmployee: employee.email,
             emailManager: manager.email,
         };
 

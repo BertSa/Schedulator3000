@@ -91,11 +91,7 @@ export function ShiftForm({submit, employees, onClose, selected}: ScheduleTableS
                 control={ control }
                 rules={ {
                     required: true,
-                    validate: (value) => {
-                        if (value < getValues().start) {
-                            return 'End time must be after start time';
-                        }
-                    }
+                    validate: (value) => value > getValues().start || 'End time must be after start time'
                 } }
                 render={ ({fieldState, formState, field}) => (
                     <TimePicker

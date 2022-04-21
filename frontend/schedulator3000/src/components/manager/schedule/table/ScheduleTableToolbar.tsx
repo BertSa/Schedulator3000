@@ -1,4 +1,4 @@
-import { alpha, IconButton, Toolbar, Tooltip, Typography } from '@mui/material';
+import { alpha, IconButton, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import { Add, ArrowBack, ArrowForward, Delete, Edit } from '@mui/icons-material';
 import React from 'react';
 import { addDays, format } from 'date-fns';
@@ -23,17 +23,18 @@ export function ScheduleTableToolbar({
                                      }: ScheduleTableToolbarProps) {
     const getDateOfDay = (day: number) => format(addDays(new Date(currentWeek), day), 'yyyy-MM-dd');
 
+    const toolbarSx: SxProps<Theme> = {
+        pl: {sm: 2},
+        pr: {xs: 1, sm: 1},
+        justifyContent: 'space-between',
+        ...(selected && {
+            bgcolor: (theme) =>
+                alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+        }),
+    };
     return (
         <Toolbar
-            sx={ {
-                pl: {sm: 2},
-                pr: {xs: 1, sm: 1},
-                justifyContent: 'space-between',
-                ...(selected !== null && {
-                    bgcolor: (theme) =>
-                        alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-                }),
-            } }
+            sx={ toolbarSx }
         >
             <Typography
                 variant="h5"

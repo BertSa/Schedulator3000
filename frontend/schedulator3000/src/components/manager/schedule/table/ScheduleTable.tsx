@@ -45,22 +45,18 @@ export function ScheduleTable() {
             from: toLocalDateString(currentWeek.getPreviousWeek()),
             to: toLocalDateString(currentWeek.getNextWeek())
         };
-        managerService.getEmployees(manager.email ?? '').then(
+        managerService.getEmployees(manager.email).then(
             list => {
                 setEmployees(list);
                 shiftService.getShiftsManager(body).then(
-                    shifts => {
-                        if (shifts.length === 0) {
-                            setShifts([]);
-                            return;
-                        }
-
-                        setShifts(shifts.map(shift => ({
-                            ...shift,
-                            startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
-                            endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
-                        })));
-                    });
+                    shifts =>
+                        setShifts(shifts.length === 0 ?
+                            [] :
+                            shifts.map(shift => ({
+                                ...shift,
+                                startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
+                                endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
+                            }))));
             });
 
         vacationRequestService.getAllByManagerEmail(manager.email).then(response => setVacations(response));

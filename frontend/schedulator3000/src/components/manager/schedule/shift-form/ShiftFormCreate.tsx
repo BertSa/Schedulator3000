@@ -17,26 +17,27 @@ interface ScheduleCreateShiftProps {
 }
 
 export function ShiftFormCreate({
-                                        shiftService,
-                                        employees,
-                                        manager,
-                                        selected,
-                                        callback,
-                                        closeDialog
-                                    }: ScheduleCreateShiftProps) {
-    function submit({
-                        start,
-                        end,
-                        employeeId
-                    }: UnpackNestedValue<ShiftFormFieldValue>, event?: React.BaseSyntheticEvent) {
+                                    shiftService,
+                                    employees,
+                                    manager,
+                                    selected,
+                                    callback,
+                                    closeDialog
+                                }: ScheduleCreateShiftProps) {
+    function submit(data: UnpackNestedValue<ShiftFormFieldValue>, event?: React.BaseSyntheticEvent) {
         event?.preventDefault();
+        const {start, end, employeeId} = data;
         const employee = employees.find(employee => employee.id === employeeId);
+
+        if (!employee){
+            return;
+        }
 
         const newShift: ShiftWithoutId = {
             startTime: start,
             endTime: end,
-            emailEmployee: employee?.email ?? '',
-            emailManager: manager.email ?? '',
+            emailEmployee: employee.email,
+            emailManager: manager.email,
         };
 
         shiftService.create(newShift).then(callback);

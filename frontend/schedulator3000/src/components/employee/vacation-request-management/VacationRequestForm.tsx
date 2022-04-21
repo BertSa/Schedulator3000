@@ -1,6 +1,6 @@
 import { DateRangePicker } from '@mui/lab';
 import { Box, Button, Grid, TextField } from '@mui/material';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import React from 'react';
 import { DateRange, VacationRequest } from '../../../models/VacationRequest';
 import { startOfToday } from 'date-fns';
@@ -11,12 +11,12 @@ export interface VacationRequestFormFieldValue {
 }
 
 interface VacationRequestFormProps {
-    onSubmit: any;
-    onCancel: any;
+    submit: SubmitHandler<VacationRequestFormFieldValue>;
+    onCancel: VoidFunction;
     vacationRequest?: VacationRequest;
 }
 
-export function VacationRequestForm({onSubmit, onCancel, vacationRequest}: VacationRequestFormProps) {
+export function VacationRequestForm({submit, onCancel, vacationRequest}: VacationRequestFormProps) {
     const {register, handleSubmit, formState: {errors}, control} = useForm<VacationRequestFormFieldValue>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
@@ -32,14 +32,14 @@ export function VacationRequestForm({onSubmit, onCancel, vacationRequest}: Vacat
               component="form"
               spacing={ 2 }
               padding={ 2 }
-              onSubmit={ handleSubmit(onSubmit) }
+              onSubmit={ handleSubmit(submit) }
               noValidate>
             <Grid item xs={ 12 }>
                 <Controller
                     name="startEnd"
                     control={ control }
                     rules={ {
-                        required: true,
+                        required: 'Start and end date are required'
                     } }
                     render={ ({fieldState, formState, field}) => (
                         <DateRangePicker
@@ -63,7 +63,9 @@ export function VacationRequestForm({onSubmit, onCancel, vacationRequest}: Vacat
                     multiline
                     label="Reason"
                     autoComplete=""
-                    { ...register('reason', {}) }
+                    { ...register('reason', {
+                        required: 'Reason is required',
+                    }) }
                     fullWidth
                     error={ !!errors.reason }
                     helperText={ errors.reason?.message ?? ' ' }
