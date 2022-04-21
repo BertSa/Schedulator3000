@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { isBetween } from '../utilities';
 import { addDays, addWeeks, startOfWeek, subWeeks } from 'date-fns';
 
-type useCurrentWeekProps = {
+interface useCurrentWeekProps {
     value: Date,
     next: VoidFunction,
     previous: VoidFunction,

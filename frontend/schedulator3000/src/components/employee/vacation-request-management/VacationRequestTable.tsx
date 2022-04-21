@@ -6,8 +6,8 @@ import { Employee } from '../../../models/User';
 import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VacationRequestTableToolbar } from './VacationRequestTableToolbar';
 import { useDialog } from '../../../hooks/use-dialog';
-import { VacationRequestFormCreate } from './VacationRequestFormCreate';
-import { VacationRequestFormEdit } from './VacationRequestFormEdit';
+import { VacationRequestFormCreate } from './form/VacationRequestFormCreate';
+import { VacationRequestFormEdit } from './form/VacationRequestFormEdit';
 import { Nullable } from '../../../models/Nullable';
 import { VacationRequestTableRow } from './VacationRequestTableRow';
 

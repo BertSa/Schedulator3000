@@ -1,9 +1,9 @@
 import { useSnackbar } from 'notistack';
-import { VacationRequest, VacationRequestSubmit, VacationRequestUpdate, VacationRequestUpdateStatus } from '../../models/VacationRequest';
+import { VacationRequest, VacationRequestCreate, VacationRequestUpdate, VacationRequestUpdateStatus } from '../../models/VacationRequest';
 import { http } from './use-services';
 
-export type IVacationRequestService = {
-    create: (body: VacationRequestSubmit) => Promise<VacationRequest>,
+export interface IVacationRequestService {
+    create: (body: VacationRequestCreate) => Promise<VacationRequest>,
     updateStatus: (id: number, status: VacationRequestUpdateStatus) => Promise<VacationRequest>,
     getAllByEmployeeEmail: (email: string) => Promise<VacationRequest[]>,
     getAllByManagerEmail: (email: string) => Promise<VacationRequest[]>,
@@ -13,7 +13,7 @@ export type IVacationRequestService = {
 export function useProvideVacationRequestService(): IVacationRequestService {
     const {enqueueSnackbar} = useSnackbar();
 
-    async function create(data: VacationRequestSubmit): Promise<VacationRequest> {
+    async function create(data: VacationRequestCreate): Promise<VacationRequest> {
         const {response, body} = await http.post('/vacation-requests', data);
 
         if (response.ok) {

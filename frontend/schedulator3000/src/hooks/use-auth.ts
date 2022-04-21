@@ -196,7 +196,7 @@ function useProvideAuth(): ProviderAuth {
     };
 }
 
-type ProviderAuth = {
+interface ProviderAuth {
     updatePassword: (passwordChange: PasswordChangeDto) => Promise<void>;
     signInManager: (email: string, password: string) => Promise<void>;
     signInEmployee: (email: string, password: string) => Promise<void>;

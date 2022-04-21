@@ -4,12 +4,12 @@ import { IVacationRequestService, useProvideVacationRequestService } from './use
 import { IShiftService, useProvideShiftService } from './use-provide-shift-service';
 import { IEmployeeService, useProvideEmployeeService } from './use-provide-employee-service';
 
-export type IProviderServices = {
+export interface IProviderServices {
     managerService: IManagerService,
     employeeService: IEmployeeService,
     shiftService: IShiftService,
     vacationRequestService: IVacationRequestService
-};
+}
 
 function useProvideServices(): IProviderServices {
     return {
@@ -115,4 +115,7 @@ export const http: {
     del
 };
 
-type ResponseBody = { response: Response, body: any }
+interface ResponseBody {
+    response: Response,
+    body: any
+}

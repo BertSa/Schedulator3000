@@ -1,35 +1,36 @@
 import { SubmitHandler } from 'react-hook-form';
 import { VacationRequestForm, VacationRequestFormFieldValue } from './VacationRequestForm';
-import { VacationRequest, VacationRequestUpdate } from '../../../models/VacationRequest';
+import { VacationRequest, VacationRequestCreate } from '../../../../models/VacationRequest';
 import React from 'react';
-import { IVacationRequestService } from '../../../hooks/use-services/use-provide-vacation-request-service';
+import { Employee } from '../../../../models/User';
+import { IVacationRequestService } from '../../../../hooks/use-services/use-provide-vacation-request-service';
 
 
-interface VacationRequestFormEditProps {
+interface VacationRequestFormCreateProps {
     setVacations: React.Dispatch<React.SetStateAction<VacationRequest[]>>;
     closeMainDialog: VoidFunction;
+    employee: Employee;
     vacationRequestService: IVacationRequestService;
-    vacationRequest: VacationRequest;
 }
 
-export function VacationRequestFormEdit({
-                                        setVacations,
-                                        closeMainDialog,
-                                        vacationRequestService,
-                                        vacationRequest
-                                    }: VacationRequestFormEditProps) {
+export function VacationRequestFormCreate({
+                                          setVacations,
+                                          employee,
+                                          closeMainDialog,
+                                          vacationRequestService
+                                      }: VacationRequestFormCreateProps) {
 
 
     const submit: SubmitHandler<VacationRequestFormFieldValue> = (data, event): void => {
         event?.preventDefault();
-        let body: VacationRequestUpdate = {
-            id: vacationRequest.id,
+        let body: VacationRequestCreate = {
+            employeeEmail: employee.email,
             startDate: data.startEnd[0],
             endDate: data.startEnd[1],
             reason: data.reason,
         };
 
-        vacationRequestService.update(body).then(response => {
+        vacationRequestService.create(body).then(response => {
             closeMainDialog();
             setVacations(prevState => [...prevState.filter(value => value.id !== response.id), response]);
         });
@@ -37,6 +38,5 @@ export function VacationRequestFormEdit({
 
     return <VacationRequestForm submit={ submit }
                                 onCancel={ closeMainDialog }
-                                vacationRequest={ vacationRequest }
     />;
 }

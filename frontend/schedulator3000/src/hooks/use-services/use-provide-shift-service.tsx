@@ -8,7 +8,7 @@ import { http } from './use-services';
 
 const PATH = '/shifts';
 
-export type IShiftService = {
+export interface IShiftService {
     getShiftsManager: (body: ShiftsFromToDto) => Promise<Shift[]>,
     getShiftsEmployee: (body: ShiftsFromToDto) => Promise<Shift[]>,
     create: (body: ShiftWithoutId) => Promise<Shift>,
