@@ -19,12 +19,6 @@ interface ScheduleTableShiftFormProps {
     selected: ShiftFormFieldValue,
 }
 
-ShiftForm.defaultProps = {
-    selected: {
-        employeeId: -1,
-    },
-};
-
 export function ShiftForm({submit, employees, onClose, selected}: ScheduleTableShiftFormProps) {
     const {getValues, register, handleSubmit, formState: {errors}, control} = useForm<ShiftFormFieldValue>({
         mode: 'onSubmit',

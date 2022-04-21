@@ -13,20 +13,20 @@ import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
 
 
 interface EmployeeWeekRowProps {
-    selected: SelectedItemType,
+    selectedItem: SelectedItemType,
     employee: Employee,
     shifts: Nullable<Shift>[],
-    vacations: VacationRequest[],
+    vacationRequests: VacationRequest[],
     currentWeek: ICurrentWeek,
     setSelected: React.Dispatch<React.SetStateAction<SelectedItemType>>,
 }
 
 
 export function ScheduleTableRow({
-                                                 selected,
+                                                 selectedItem,
                                                  employee,
                                                  shifts,
-                                                 vacations,
+                                                 vacationRequests,
                                                  currentWeek,
                                                  setSelected,
                                              }: EmployeeWeekRowProps) {
@@ -55,9 +55,9 @@ export function ScheduleTableRow({
                 { shifts.map((shift, key) =>
                     <ScheduleTableColumnWeek key={ key }
                                              index={ key }
-                                             isSelected={ selected?.day === key && selected?.employee.id === employee.id }
+                                             isSelected={ selectedItem?.day === key && selectedItem?.employee.id === employee.id }
                                              shift={ shift }
-                                             vacations={ vacations }
+                                             vacations={ vacationRequests }
                                              currentWeek={ currentWeek }
                                              onClick={ () => {
                                                          setSelected(current => current?.day === key && current?.employee.id === employee.id ?
@@ -85,7 +85,7 @@ export function ScheduleTableRow({
                         <Box sx={ {margin: 1} }>
                             <Table>
                                 <TableBody>
-                                    { vacations.map((value, key) =>
+                                    { vacationRequests.map((value, key) =>
                                         <TableRow key={ key }>
                                             <TableCell component="th" scope="row">
                                                 { value.reason }

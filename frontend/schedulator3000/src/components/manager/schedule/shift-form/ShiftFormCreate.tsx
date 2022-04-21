@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 import { ShiftForm, ShiftFormFieldValue } from './ShiftForm';
 import { IShiftService } from '../../../../hooks/use-services/use-provide-shift-service';
 import { Employee, Manager } from '../../../../models/User';
+import { zonedTimeToUtc } from 'date-fns-tz';
 
 interface ScheduleCreateShiftProps {
     shiftService: IShiftService,
@@ -39,7 +40,14 @@ export function ShiftFormCreate({
             emailManager: manager.email,
         };
 
-        shiftService.create(newShift).then(callback);
+        shiftService.create(newShift).then(shift =>{
+            const newShift: Shift = {
+                ...shift,
+                startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
+                endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
+            };
+            callback(newShift)
+        });
     }
 
 

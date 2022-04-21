@@ -6,14 +6,14 @@ import React from 'react';
 
 
 interface VacationRequestManagementTableRowProps {
-    request: VacationRequest,
+    vacationRequest: VacationRequest,
     employee: Employee,
     isSelected: boolean,
     onClick: VoidFunction
 }
 
 export function VacationRequestManagementTableRow({
-                                                      request,
+                                                      vacationRequest,
                                                       employee,
                                                       isSelected,
                                                       onClick
@@ -28,22 +28,22 @@ export function VacationRequestManagementTableRow({
                       '&:last-child td, &:last-child th': {border: 0},
                   } }>
             <TableCell component="th" scope="row">
-                { request.id }
+                { vacationRequest.id }
             </TableCell>
             <TableCell>
                 { employee?.firstName + ' ' + employee?.lastName }
             </TableCell>
             <TableCell>
-                { request.startDate }
+                { vacationRequest.startDate }
             </TableCell>
             <TableCell>
-                { request.endDate }
+                { vacationRequest.endDate }
             </TableCell>
             <TableCell>
-                { request.reason }
+                { vacationRequest.reason }
             </TableCell>
             <TableCell align="center">
-                <VacationRequestStatusIcon status={ request.status } />
+                <VacationRequestStatusIcon status={ vacationRequest.status } />
             </TableCell>
         </TableRow>
     </>;

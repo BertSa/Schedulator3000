@@ -55,26 +55,21 @@ export function ScheduleTable() {
     }, [managerService, vacationRequestService, manager.email, shiftService]);
 
     function createAction() {
-        if (selectedItem === null) {
+        if (!selectedItem) {
             return;
         }
 
         const dayOfWeek: Date = currentWeek.getDayOfWeek(selectedItem.day);
         const selectedValue: ShiftFormFieldValue = {
             employeeId: selectedItem.employee.id,
-            start: selectedItem.shift?.startTime ?? dayOfWeek,
-            end: selectedItem.shift?.endTime ?? dayOfWeek
+            start: dayOfWeek,
+            end: dayOfWeek
         };
 
         function callback(shift: Shift) {
-            const newShift: Shift = {
-                ...shift,
-                startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
-                endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
-            };
             closeDialog();
-            setShifts((currentShifts: Shift[]) => [...currentShifts, newShift]);
-            setSelectedItem(current => current && ({...current, shift: newShift}));
+            setShifts((currentShifts: Shift[]) => [...currentShifts, shift]);
+            setSelectedItem(current => current && ({...current, shift: shift}));
         }
 
         openDialog(<ShiftFormCreate shiftService={ shiftService }
@@ -106,12 +101,7 @@ export function ScheduleTable() {
 
         function callbackUpdate(shift: Shift) {
             closeDialog();
-            setShifts((currentShifts: Shift[]) => [...currentShifts.filter(v => v.id !== shift.id),
-                {
-                    ...shift,
-                    startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
-                    endTime: zonedTimeToUtc(shift.startTime, 'UTC'),
-                }]);
+            setShifts((currentShifts: Shift[]) => [...currentShifts.filter(v => v.id !== shift.id), shift]);
         }
 
 
@@ -142,7 +132,7 @@ export function ScheduleTable() {
             <TableContainer component={ Paper }>
                 <ScheduleTableToolbar
                     currentWeek={ currentWeek.value }
-                    selected={ selectedItem }
+                    selectedItem={ selectedItem }
                     actions={ {
                         prev: currentWeek.previous,
                         next: currentWeek.next,
@@ -200,8 +190,8 @@ export function ScheduleTable() {
                             return <ScheduleTableRow key={ employee.id }
                                                      employee={ employee }
                                                      shifts={ weekShift }
-                                                     vacations={ requests }
-                                                     selected={ selectedItem }
+                                                     vacationRequests={ requests }
+                                                     selectedItem={ selectedItem }
                                                      currentWeek={ currentWeek }
                                                      setSelected={ setSelectedItem }
                             />;

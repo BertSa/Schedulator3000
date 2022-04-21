@@ -22,28 +22,16 @@ export function ScheduleEmployee() {
             to: toLocalDateString(currentWeek.getNextWeek())
         };
         shiftService.getShiftsEmployee(body).then(
-            shifts => {
-                if (shifts.length === 0) {
-                    setEvents([]);
-                    return;
-                }
-                let shiftEvents: ShiftEvent[] = shifts.map(shift => {
-                    if (!shift?.id) {
-                        return {} as ShiftEvent;
-                    }
-
-                    let event: ShiftEvent = {
+            shifts =>
+                setEvents(shifts.length === 0 ?
+                    [] :
+                    shifts.map(shift => ({
                         resourceId: shift.id,
                         title: 'Title',
                         start: zonedTimeToUtc(shift.startTime, 'UTC'),
                         end: zonedTimeToUtc(shift.endTime, 'UTC'),
                         resource: {}
-                    };
-
-                    return event;
-                });
-                setEvents(shiftEvents);
-            });
+                    }))));
     }, [user.email, shiftService]);
 
     return (
