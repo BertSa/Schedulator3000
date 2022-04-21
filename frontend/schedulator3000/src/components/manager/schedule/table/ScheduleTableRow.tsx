@@ -1,14 +1,14 @@
-import { Employee } from '../../../models/User';
-import { Shift } from '../../../models/Shift';
-import { VacationRequest } from '../../../models/VacationRequest';
-import useToggle from '../../../hooks/use-toggle';
+import { Employee } from '../../../../models/User';
+import { Shift } from '../../../../models/Shift';
+import { VacationRequest } from '../../../../models/VacationRequest';
+import useToggle from '../../../../hooks/use-toggle';
 import { differenceInMinutes, hoursToMinutes, minutesToHours } from 'date-fns';
 import { Box, Collapse, IconButton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import React from 'react';
 import { SelectedType } from './ScheduleTable';
-import { EmployeeWeekColumn } from './EmployeeWeekColumn';
-import { Nullable } from '../../../models/Nullable';
+import { ScheduleTableColumnWeek } from './ScheduleTableColumnWeek';
+import { Nullable } from '../../../../models/Nullable';
 
 
 interface EmployeeWeekRowProps {
@@ -21,14 +21,14 @@ interface EmployeeWeekRowProps {
 }
 
 
-export function EmployeeWeekRow({
-                                    selected,
-                                    employee,
-                                    shifts,
-                                    vacations,
-                                    currentWeek,
-                                    setSelected,
-                                }: EmployeeWeekRowProps) {
+export function ScheduleTableRow({
+                                                 selected,
+                                                 employee,
+                                                 shifts,
+                                                 vacations,
+                                                 currentWeek,
+                                                 setSelected,
+                                             }: EmployeeWeekRowProps) {
     const [open, toggle] = useToggle();
 
 
@@ -52,18 +52,20 @@ export function EmployeeWeekRow({
                 </TableCell>
                 <TableCell component="th" scope="row">{ employee.firstName } { employee.lastName }</TableCell>
                 { shifts.map((shift, key) =>
-                    <EmployeeWeekColumn key={ key }
-                                        index={ key }
-                                        isSelected={ selected?.day === key && selected?.employee.id === employee.id }
-                                        shift={ shift }
-                                        vacations={ vacations }
-                                        currentWeek={ currentWeek }
-                                        onClick={ () => setSelected(current => current?.day === key && current?.employee.id === employee.id ?
-                                            null : {
-                                                employee: employee,
-                                                day: key,
-                                                shift: shift
-                                            }) }
+                    <ScheduleTableColumnWeek key={ key }
+                                             index={ key }
+                                             isSelected={ selected?.day === key && selected?.employee.id === employee.id }
+                                             shift={ shift }
+                                             vacations={ vacations }
+                                             currentWeek={ currentWeek }
+                                             onClick={ () => {
+                                                         setSelected(current => current?.day === key && current?.employee.id === employee.id ?
+                                                             null : {
+                                                                 employee: employee,
+                                                                 day: key,
+                                                                 shift: shift
+                                                             });
+                                                     } }
                     />) }
                 <TableCell align="right"><TotalTime /></TableCell>
             </TableRow>

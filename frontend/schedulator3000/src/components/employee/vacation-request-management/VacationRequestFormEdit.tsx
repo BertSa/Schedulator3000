@@ -5,19 +5,19 @@ import React from 'react';
 import { IVacationRequestService } from '../../../hooks/use-services/use-provide-vacation-request-service';
 
 
-interface CreateVacationRequestProps {
+interface VacationRequestFormEditProps {
     setVacations: React.Dispatch<React.SetStateAction<VacationRequest[]>>;
     closeMainDialog: VoidFunction;
     vacationRequestService: IVacationRequestService;
     vacationRequest: VacationRequest;
 }
 
-export function EditVacationRequest({
+export function VacationRequestFormEdit({
                                         setVacations,
                                         closeMainDialog,
                                         vacationRequestService,
                                         vacationRequest
-                                    }: CreateVacationRequestProps) {
+                                    }: VacationRequestFormEditProps) {
 
 
     const submit: SubmitHandler<VacationRequestFormFieldValue> = (data, event): void => {

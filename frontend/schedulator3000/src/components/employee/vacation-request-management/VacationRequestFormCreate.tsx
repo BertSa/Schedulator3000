@@ -6,19 +6,19 @@ import { Employee } from '../../../models/User';
 import { IVacationRequestService } from '../../../hooks/use-services/use-provide-vacation-request-service';
 
 
-interface CreateVacationRequestProps {
+interface VacationRequestFormCreateProps {
     setVacations: React.Dispatch<React.SetStateAction<VacationRequest[]>>;
     closeMainDialog: VoidFunction;
     employee: Employee;
     vacationRequestService: IVacationRequestService;
 }
 
-export function CreateVacationRequest({
+export function VacationRequestFormCreate({
                                           setVacations,
                                           employee,
                                           closeMainDialog,
                                           vacationRequestService
-                                      }: CreateVacationRequestProps) {
+                                      }: VacationRequestFormCreateProps) {
 
 
     const submit: SubmitHandler<VacationRequestFormFieldValue> = (data, event): void => {

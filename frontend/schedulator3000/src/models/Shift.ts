@@ -7,3 +7,10 @@ export interface Shift {
 }
 
 export type ShiftWithoutId = Omit<Shift, 'id'>;
+
+export interface ShiftFormUpdate {
+    id: number;
+    startTime: Date;
+    endTime: Date;
+    employeeId: number;
+}

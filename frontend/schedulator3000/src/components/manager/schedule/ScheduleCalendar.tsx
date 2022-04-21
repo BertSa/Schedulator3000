@@ -42,7 +42,7 @@ type FormFieldValue = {
     shiftId?: number,
 }
 
-export const Schedule = () => {
+export const ScheduleCalendar = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [events, setEvents] = useState<ShiftEvent[]>([]);
     const [curentWeek, setCurrentWeek] = useState<Date>(startOfWeek(getCurrentTimezoneDate(new Date())));

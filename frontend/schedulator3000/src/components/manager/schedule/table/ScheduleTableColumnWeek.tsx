@@ -1,9 +1,10 @@
-import { VacationRequest, VacationRequestStatus } from '../../../models/VacationRequest';
-import { isBetween } from '../../../utilities';
+import { VacationRequest, VacationRequestStatus } from '../../../../models/VacationRequest';
+import { isBetween } from '../../../../utilities';
 import { alpha, SxProps, TableCell, Theme } from '@mui/material';
 import { format } from 'date-fns';
 import React from 'react';
-import { Shift } from '../../../models/Shift';
+import { Shift } from '../../../../models/Shift';
+import { Nullable } from '../../../../models/Nullable';
 
 
 interface EmployeeWeekColumnProps {
@@ -11,18 +12,18 @@ interface EmployeeWeekColumnProps {
     onClick: VoidFunction,
     isSelected: boolean,
     vacations: VacationRequest[],
-    shift: Shift | undefined,
+    shift: Nullable<Shift>,
     currentWeek: any,
 }
 
-export function EmployeeWeekColumn({
-                                       index,
-                                       isSelected,
-                                       onClick,
-                                       vacations,
-                                       shift,
-                                       currentWeek
-                                   }: EmployeeWeekColumnProps) {
+export function ScheduleTableColumnWeek({
+                                                    index,
+                                                    isSelected,
+                                                    onClick,
+                                                    vacations,
+                                                    shift,
+                                                    currentWeek
+                                                }: EmployeeWeekColumnProps) {
     const vacationRequest: VacationRequest | undefined = vacations.find(vacation => isBetween(currentWeek.getDayOfWeek(index), vacation.startDate, vacation.endDate));
 
     function getColor(vacation: VacationRequest | undefined, theme: Theme): string {

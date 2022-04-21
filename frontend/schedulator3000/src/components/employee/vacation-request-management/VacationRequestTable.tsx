@@ -7,8 +7,8 @@ import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHea
 import { VacationRequestTableToolbar } from './VacationRequestTableToolbar';
 import { Cancel, CheckCircle, FlagCircle, Timer } from '@mui/icons-material';
 import { useDialog } from '../../../hooks/use-dialog';
-import { CreateVacationRequest } from './CreateVacationRequest';
-import { EditVacationRequest } from './EditVacationRequest';
+import { VacationRequestFormCreate } from './VacationRequestFormCreate';
+import { VacationRequestFormEdit } from './VacationRequestFormEdit';
 import { Nullable } from '../../../models/Nullable';
 
 
@@ -23,17 +23,19 @@ export function VacationRequestTable() {
         vacationRequestService.getAllByEmployeeEmail(employee.email).then(response => setVacations(response));
     }, [employee.email]);
 
-    const createAction = () =>
-        openDialog(<CreateVacationRequest setVacations={ setVacations }
-                                             employee={ employee }
-                                             closeMainDialog={ closeDialog }
-                                             vacationRequestService={ vacationRequestService } />);
+    function createAction() {
+        return openDialog(<VacationRequestFormCreate setVacations={ setVacations }
+                                                     employee={ employee }
+                                                     closeMainDialog={ closeDialog }
+                                                     vacationRequestService={ vacationRequestService } />);
+    }
 
-    const editAction = () =>
-        openDialog(<EditVacationRequest setVacations={ setVacations }
-                                           closeMainDialog={ closeDialog }
-                                           vacationRequestService={ vacationRequestService }
-                                           vacationRequest={ selectedVacation as VacationRequest } />);
+    function editAction() {
+        return openDialog(<VacationRequestFormEdit setVacations={ setVacations }
+                                                   closeMainDialog={ closeDialog }
+                                                   vacationRequestService={ vacationRequestService }
+                                                   vacationRequest={ selectedVacation as VacationRequest } />);
+    }
 
 
     function Row({request}: { request: VacationRequest }) {

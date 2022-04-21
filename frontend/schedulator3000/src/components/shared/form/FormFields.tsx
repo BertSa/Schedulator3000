@@ -15,7 +15,8 @@ FieldInput.propTypes = {
     errors: PropTypes.object.isRequired,
     validation: PropTypes.object.isRequired,
 };
-type FieldInputProps = {
+
+interface FieldInputProps {
     label: string,
     name: string,
     type: React.InputHTMLAttributes<unknown>['type'],
@@ -25,7 +26,7 @@ type FieldInputProps = {
     errors: FieldErrors,
     validation: RegisterOptions,
     disabled?: boolean
-};
+}
 
 export function FieldInput(props: FieldInputProps) {
     const {register, errors, label, name, type, validation, autoComplete, defaultValue, disabled} = props;
