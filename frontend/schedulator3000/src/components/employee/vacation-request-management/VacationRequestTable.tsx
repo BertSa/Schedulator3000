@@ -3,14 +3,14 @@ import { VacationRequest, VacationRequestUpdateStatus } from '../../../models/Va
 import { useServices } from '../../../hooks/use-services/use-services';
 import { useAuth } from '../../../hooks/use-auth';
 import { Employee } from '../../../models/User';
-import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Container, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VacationRequestTableToolbar } from './VacationRequestTableToolbar';
 import { useDialog } from '../../../hooks/use-dialog';
 import { VacationRequestFormCreate } from './form/VacationRequestFormCreate';
 import { VacationRequestFormEdit } from './form/VacationRequestFormEdit';
 import { Nullable } from '../../../models/Nullable';
 import { VacationRequestTableRow } from './VacationRequestTableRow';
-import useDebounce from '../../../hooks/use-debounce';
+import useAsync from '../../../hooks/use-async';
 
 
 export function VacationRequestTable() {
@@ -20,9 +20,13 @@ export function VacationRequestTable() {
     const [openDialog, closeDialog] = useDialog();
     const employee: Employee = useAuth().getEmployee();
 
-    useDebounce(() => {
-        vacationRequestService.getAllByEmployeeEmail(employee.email).then(response => setVacationRequests(response));
-    }, 1000, [employee.email]);
+    const {loading} = useAsync(() => {
+        return new Promise<void>(async (resolve, reject) => {
+            await vacationRequestService.getAllByEmployeeEmail(employee.email)
+                .then(setVacationRequests, reject);
+            resolve();
+        });
+    }, [employee.email]);
 
 
     function callback(vacationRequest: VacationRequest): void {
@@ -38,22 +42,51 @@ export function VacationRequestTable() {
     }
 
     function editAction(): void {
+        if (!selectedVacationRequest) {
+            return;
+        }
+
         return openDialog(<VacationRequestFormEdit vacationRequestService={ vacationRequestService }
                                                    callback={ callback }
                                                    onCancel={ closeDialog }
-                                                   vacationRequest={ selectedVacationRequest as VacationRequest } />);
+                                                   vacationRequest={ selectedVacationRequest } />);
     }
 
     function cancelAction(): void {
         if (!selectedVacationRequest) {
             return;
         }
+
         vacationRequestService.updateStatus(selectedVacationRequest.id, VacationRequestUpdateStatus.Cancel)
             .then(response => {
                 setVacationRequests(current => [...current.filter(v => v.id !== selectedVacationRequest.id), response]);
                 setSelectedVacationRequest(response);
             });
     }
+
+
+    function VacationRequestTableBody() {
+        if (loading) {
+            return <TableBody><VacationRequestTableRowSkeleton /></TableBody>;
+        }
+
+        if (vacationRequests.length === 0) {
+            return <TableBody><VacationRequestTableRowEmpty /></TableBody>;
+        }
+
+        function handleRowClick(vacationRequest: VacationRequest): void {
+            setSelectedVacationRequest(selected => selected?.id === vacationRequest.id ? null : vacationRequest);
+        }
+
+        return <TableBody>
+            { vacationRequests.map(request =>
+                <VacationRequestTableRow key={ request.id }
+                                         request={ request }
+                                         isSelected={ selectedVacationRequest?.id === request.id }
+                                         onClick={ () => handleRowClick(request) } />) }
+        </TableBody>;
+    }
+
 
     return <>
         <Container maxWidth="lg">
@@ -67,30 +100,46 @@ export function VacationRequestTable() {
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>#</TableCell>
-                            <TableCell>
+                            <TableCell width="5%">#</TableCell>
+                            <TableCell width="10%">
                                 Start Date
                             </TableCell>
-                            <TableCell>
+                            <TableCell width="10%">
                                 End Date
                             </TableCell>
                             <TableCell>
                                 Reason
                             </TableCell>
-                            <TableCell align="center">
+                            <TableCell align="center" width="10%">
                                 Status
                             </TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        { vacationRequests.map(request => <VacationRequestTableRow key={ request.id }
-                                                                                   request={ request }
-                                                                                   isSelected={ selectedVacationRequest?.id === request.id }
-                                                                                   onClick={ () => setSelectedVacationRequest(selected => selected?.id === request.id ? null : request) }
-                        />) }
-                    </TableBody>
+                    <VacationRequestTableBody />
                 </Table>
             </TableContainer>
         </Container>
     </>;
+}
+
+function VacationRequestTableRowEmpty() {
+    return <TableRow sx={ {
+        '&:last-child td, &:last-child th': {border: 0},
+    } }>
+        <TableCell colSpan={ 5 } align="center">
+            No vacation requests
+        </TableCell>
+    </TableRow>;
+}
+
+function VacationRequestTableRowSkeleton() {
+    return <TableRow sx={ {
+        '&:last-child td, &:last-child th': {border: 0},
+    } }>
+        <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
+        <TableCell width="10%"><Skeleton /></TableCell>
+        <TableCell width="10%"><Skeleton /></TableCell>
+        <TableCell><Skeleton /></TableCell>
+        <TableCell align="center" width="10%"><Icon><Skeleton variant="circular" /></Icon></TableCell>
+    </TableRow>;
 }
