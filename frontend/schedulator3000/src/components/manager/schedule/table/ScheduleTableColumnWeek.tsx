@@ -18,13 +18,13 @@ interface EmployeeWeekColumnProps {
 }
 
 export function ScheduleTableColumnWeek({
-                                                    index,
-                                                    isSelected,
-                                                    onClick,
-                                                    vacations,
-                                                    shift,
-                                                    currentWeek
-                                                }: EmployeeWeekColumnProps) {
+                                            index,
+                                            isSelected,
+                                            onClick,
+                                            vacations,
+                                            shift,
+                                            currentWeek
+                                        }: EmployeeWeekColumnProps) {
     const vacationRequest: VacationRequest | undefined = vacations.find(vacation => isBetween(currentWeek.getDayOfWeek(index), vacation.startDate, vacation.endDate));
 
     function getColor(theme: Theme, vacation?: VacationRequest): string {
@@ -83,6 +83,14 @@ export function ScheduleTableColumnWeek({
 
     return (
         <TableCell align="center" onClick={ onClick } sx={ mySx }>
-            { shift ? `${ getTimeInHourMinutesAMPM(shift.startTime) } - ${ getTimeInHourMinutesAMPM(shift.endTime) }` : '-' }
+            { shift && <><small>{getTimeInHourMinutesAMPM(shift.startTime)}</small><br /></> }
+
+            <small>
+                -
+            </small>
+            <br />
+            <small>
+                { shift && getTimeInHourMinutesAMPM(shift.endTime) }
+            </small>
         </TableCell>);
 }

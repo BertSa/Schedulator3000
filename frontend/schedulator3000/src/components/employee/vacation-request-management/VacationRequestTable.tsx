@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { VacationRequest, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
 import { useServices } from '../../../hooks/use-services/use-services';
 import { useAuth } from '../../../hooks/use-auth';
@@ -10,6 +10,7 @@ import { VacationRequestFormCreate } from './form/VacationRequestFormCreate';
 import { VacationRequestFormEdit } from './form/VacationRequestFormEdit';
 import { Nullable } from '../../../models/Nullable';
 import { VacationRequestTableRow } from './VacationRequestTableRow';
+import useDebounce from '../../../hooks/use-debounce';
 
 
 export function VacationRequestTable() {
@@ -19,9 +20,10 @@ export function VacationRequestTable() {
     const [openDialog, closeDialog] = useDialog();
     const employee: Employee = useAuth().getEmployee();
 
-    useEffect(() => {
+    useDebounce(() => {
         vacationRequestService.getAllByEmployeeEmail(employee.email).then(response => setVacationRequests(response));
-    }, [employee.email]);
+    }, 1000, [employee.email]);
+
 
     function callback(vacationRequest: VacationRequest): void {
         closeDialog();

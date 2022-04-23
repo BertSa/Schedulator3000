@@ -24,7 +24,6 @@ function* idGenerator() {
     }
 }
 
-
 const generator: Generator<number, void> = idGenerator();
 
 const DialogContext = React.createContext<ProviderContext>({} as ProviderContext);

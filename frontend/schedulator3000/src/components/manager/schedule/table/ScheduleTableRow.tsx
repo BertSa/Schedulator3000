@@ -51,7 +51,7 @@ export function ScheduleTableRow({
                         { open ? <KeyboardArrowUp /> : <KeyboardArrowDown /> }
                     </IconButton>
                 </TableCell>
-                <TableCell component="th" scope="row">{ employee.firstName } { employee.lastName }</TableCell>
+                <TableCell component="th" scope="row" width="15%">{ employee.firstName } { employee.lastName }</TableCell>
                 { shifts.map((shift, key) =>
                     <ScheduleTableColumnWeek key={ key }
                                              index={ key }
@@ -68,7 +68,7 @@ export function ScheduleTableRow({
                                                              });
                                                      } }
                     />) }
-                <TableCell align="right"><TotalTime /></TableCell>
+                <TableCell align="right"  width="7%"><TotalTime /></TableCell>
             </TableRow>
             <TableRow className="myRow">
                 <TableCell style={ {paddingBottom: 0, paddingTop: 0} } colSpan={ 6 }>

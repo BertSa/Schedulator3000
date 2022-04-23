@@ -17,7 +17,7 @@ export function useProvideEmployeeService(): IEmployeeService {
                 variant: 'success',
                 autoHideDuration: 3000
             });
-            return Promise.resolve<Employee>(body);
+            return body;
         }
         enqueueSnackbar(body.message, {
             variant: 'error',

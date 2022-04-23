@@ -1,11 +1,11 @@
 import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Employee } from '../../../../models/User';
-import { toLocalDateString } from '../../../../utilities';
+import { isBetween, toLocalDateString } from '../../../../utilities';
 import { useAuth } from '../../../../hooks/use-auth';
 import { useServices } from '../../../../hooks/use-services/use-services';
 import { ShiftsFromToDto } from '../../../../models/ShiftsFromTo';
-import { format, getDay } from 'date-fns';
+import { addWeeks, format, getDay } from 'date-fns';
 import { Shift } from '../../../../models/Shift';
 import { useDialog } from '../../../../hooks/use-dialog';
 import { ScheduleTableToolbar } from './ScheduleTableToolbar';
@@ -17,8 +17,78 @@ import { Nullable } from '../../../../models/Nullable';
 import { ShiftFormFieldValue } from '../shift-form/ShiftForm';
 import { ShiftFormCreate } from '../shift-form/ShiftFormCreate';
 import { ShiftFormEdit } from '../shift-form/ShiftFormEdit';
+import useAsync from '../../../../hooks/use-async';
+import { ScheduleTableRowSkeleton } from './ScheduleTableRowSkeleton';
+import useDebounce from '../../../../hooks/use-debounce';
 
 export type SelectedItemType = Nullable<{ employee: Employee, day: number, shift: Nullable<Shift> }>;
+
+interface Elements {
+    employees: Employee[];
+    weekShifts: Shift[];
+    vacationRequests: VacationRequest[];
+    selectedItem: { employee: Employee; day: number; shift: Nullable<Shift> } | null;
+    currentWeek: ICurrentWeek;
+    setSelectedItem: (value: (((prevState: ({ employee: Employee; day: number; shift: Nullable<Shift> } | null)) => ({ employee: Employee; day: number; shift: Nullable<Shift> } | null)) | { employee: Employee; day: number; shift: Nullable<Shift> } | null)) => void;
+}
+
+function GetElements({
+                         employees,
+                         weekShifts,
+                         vacationRequests,
+                         selectedItem,
+                         currentWeek,
+                         setSelectedItem
+                     }: Elements): JSX.Element {
+    const [rowData, setRowData] = useState<{ employee: Employee; shifts: Nullable<Shift>[], requests: VacationRequest[] }[]>([]);
+    useEffect(() => {
+        console.log('rowData', rowData);
+        employees.forEach(employee => {
+            const weekShift: Nullable<Shift>[] = new Array(7);
+
+            console.log(weekShifts);
+
+            let shit: Shift[] = []
+
+            for (const value of weekShifts) {
+                const b: boolean = isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1));
+                console.log("pourquoiiiiiiiiiiiiii: " + b);
+                if (b && value.emailEmployee === employee.email){
+                    shit.push( value);
+                }
+            }
+
+            console.log(currentWeek.value, shit);
+            for (let i = 0; i < 7; i++) {
+                const shift = shit.find(shift => getDay(new Date(shift.startTime)) === i);
+                weekShift[i] = shift ?? null;
+            }
+
+            const requests: VacationRequest[] = vacationRequests.filter(value => value.employeeEmail === employee.email);
+
+
+            setRowData(prevState => [...prevState.filter(c => c.employee.id !== employee.id), {
+                employee,
+                shifts: weekShift,
+                requests
+            }]);
+        });
+    }, [currentWeek.value, employees, vacationRequests, weekShifts]);
+
+    return <>{ rowData.map((val) => {
+        const {employee, shifts, requests} = val;
+
+
+        return <ScheduleTableRow key={ employee.id }
+                                 employee={ employee }
+                                 shifts={ shifts }
+                                 vacationRequests={ requests }
+                                 selectedItem={ selectedItem }
+                                 currentWeek={ currentWeek }
+                                 setSelected={ setSelectedItem }
+        />;
+    }) }</>;
+}
 
 export function ScheduleTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -30,29 +100,48 @@ export function ScheduleTable() {
     const [openDialog, closeDialog] = useDialog();
     const manager = useAuth().getManager();
 
-
-    useEffect(() => {
+    useDebounce(() => {
         let body: ShiftsFromToDto = {
             userEmail: manager.email,
             from: toLocalDateString(currentWeek.getPreviousWeek()),
-            to: toLocalDateString(currentWeek.getNextWeek())
+            to: toLocalDateString(addWeeks(currentWeek.value, 2))
         };
-        managerService.getEmployees(manager.email).then(
-            list => {
-                setEmployees(list);
-                shiftService.getShiftsManager(body).then(
-                    shifts =>
-                        setShifts(shifts.length === 0 ?
-                            [] :
-                            shifts.map(shift => ({
-                                ...shift,
-                                startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
-                                endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
-                            }))));
-            });
 
-        vacationRequestService.getAllByManagerEmail(manager.email).then(response => setVacationRequests(response));
-    }, [managerService, vacationRequestService, manager.email, shiftService]);
+        shiftService.getShiftsManager(body).then(
+            shifts =>
+                setShifts(shifts.length === 0 ?
+                    [] :
+                    shifts.map(shift => ({
+                        ...shift,
+                        startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
+                        endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
+                    }))));
+    }, 1000, [currentWeek.value]);
+
+    const {loading} = useAsync(() => {
+        console.log('ScheduleTable.useAsync');
+        return new Promise<void>(async (resolve, reject) => {
+            let body: ShiftsFromToDto = {
+                userEmail: manager.email,
+                from: toLocalDateString(currentWeek.getPreviousWeek()),
+                to: toLocalDateString(addWeeks(currentWeek.value, 2))
+            };
+            console.log('fetchEmployees');
+            await managerService.getEmployees(manager.email).then(setEmployees, reject);
+            await shiftService.getShiftsManager(body).then(
+                shifts =>
+                    setShifts(shifts.length === 0 ?
+                        [] :
+                        shifts.map(shift => ({
+                            ...shift,
+                            startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
+                            endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
+                        }))), reject);
+            await vacationRequestService.getAllByManagerEmail(manager.email).then(setVacationRequests, reject);
+            resolve();
+        });
+    }, []);
+
 
     function createAction() {
         if (!selectedItem) {
@@ -141,11 +230,11 @@ export function ScheduleTable() {
                         remove: removeAction,
                     } }
                 />
-                <Table aria-label="collapsible table">
+                <Table aria-label="collapsible table" size="medium">
                     <TableHead>
                         <TableRow>
                             <TableCell />
-                            <TableCell>Employee</TableCell>
+                            <TableCell width="15%">Employee</TableCell>
                             <TableCell align="center">
                                 Sunday<br />
                                 <small>{ format(currentWeek.getDayOfWeek(0), 'yyyy-MM-dd') }</small>
@@ -174,32 +263,17 @@ export function ScheduleTable() {
                                 Saturday<br />
                                 <small>{ format(currentWeek.getDayOfWeek(6), 'yyyy-MM-dd') }</small>
                             </TableCell>
-                            <TableCell align="right">Total</TableCell>
+                            <TableCell align="right" width="7%">Total</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { employees.map((employee) => {
-                            const weekShift: Nullable<Shift>[] = new Array(7);
-                            const filter: Shift[] = shifts.filter(value => currentWeek.isDuringWeek(value.startTime) && value.emailEmployee === employee.email);
-                            for (let i = 0; i < 7; i++) {
-                                const shift = filter.find(shift => getDay(new Date(shift.startTime)) === i);
-                                weekShift[i] = shift ?? null;
-                            }
-                            const requests: VacationRequest[] = vacationRequests.filter(value => value.employeeEmail === employee.email);
-
-                            return <ScheduleTableRow key={ employee.id }
-                                                     employee={ employee }
-                                                     shifts={ weekShift }
-                                                     vacationRequests={ requests }
-                                                     selectedItem={ selectedItem }
-                                                     currentWeek={ currentWeek }
-                                                     setSelected={ setSelectedItem }
-                            />;
-                        }) }
+                        { loading ? <ScheduleTableRowSkeleton /> :
+                            <GetElements employees={ employees } weekShifts={ shifts }
+                                         vacationRequests={ vacationRequests } selectedItem={ selectedItem }
+                                         currentWeek={ currentWeek } setSelectedItem={ setSelectedItem } /> }
                     </TableBody>
                 </Table>
             </TableContainer>
         </Container>
     );
 }
-

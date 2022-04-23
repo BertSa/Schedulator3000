@@ -24,7 +24,7 @@ export function useProvideManagerService(): IManagerService {
                 variant: 'success',
                 autoHideDuration: 3000
             });
-            return Promise.resolve<Employee>(body);
+            return body;
         }
 
         enqueueSnackbar(body.message, {
@@ -53,7 +53,7 @@ export function useProvideManagerService(): IManagerService {
                 variant: 'success',
                 autoHideDuration: 3000
             });
-            return Promise.resolve<Employee>(body);
+            return body;
         }
         enqueueSnackbar(body.message, {
             variant: 'error',
@@ -67,7 +67,7 @@ export function useProvideManagerService(): IManagerService {
         const {response, body} = await http.get(`/manager/${ emailManager }/employees`);
 
         if (response.ok) {
-            return Promise.resolve<Employee[]>(body);
+            return body;
         }
 
         return Promise.reject(body.message);
