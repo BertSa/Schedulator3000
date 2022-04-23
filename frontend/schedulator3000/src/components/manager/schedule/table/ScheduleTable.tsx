@@ -1,5 +1,5 @@
 import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Employee } from '../../../../models/User';
 import { isBetween, toLocalDateString } from '../../../../utilities';
 import { useAuth } from '../../../../hooks/use-auth';
@@ -20,6 +20,7 @@ import { ShiftFormEdit } from '../shift-form/ShiftFormEdit';
 import useAsync from '../../../../hooks/use-async';
 import { ScheduleTableRowSkeleton } from './ScheduleTableRowSkeleton';
 import useAsyncDebounce from '../../../../hooks/use-async-debounce';
+import useDebounce from '../../../../hooks/use-debounce';
 
 export type SelectedItemType = Nullable<{ employee: Employee, day: number, shift: Nullable<Shift> }>;
 
@@ -30,6 +31,7 @@ interface Elements {
     selectedItem: SelectedItemType;
     currentWeek: ICurrentWeek;
     setSelectedItem: React.Dispatch<React.SetStateAction<SelectedItemType>>;
+    previousWeek: Date;
 }
 
 interface RowDataType {
@@ -44,7 +46,8 @@ function GetElements({
                          vacationRequests,
                          selectedItem,
                          currentWeek,
-                         setSelectedItem
+                         previousWeek,
+                         setSelectedItem,
                      }: Elements): JSX.Element {
     const [rowData, setRowData] = useState<RowDataType[]>([]);
 
@@ -76,6 +79,7 @@ function GetElements({
     return <>{ rowData.map(({employee, shifts, requests}) =>
         <ScheduleTableRow key={ employee.id }
                           employee={ employee }
+                          previousWeek={ previousWeek }
                           shifts={ shifts }
                           vacationRequests={ requests }
                           selectedItem={ selectedItem }
@@ -93,9 +97,13 @@ export function ScheduleTable() {
     const currentWeek: ICurrentWeek = useCurrentWeek();
     const [openDialog, closeDialog] = useDialog();
     const manager = useAuth().getManager();
+    const weekRef: React.MutableRefObject<Date> = useRef(currentWeek.value);
 
+    useDebounce(() => {
+        weekRef.current = currentWeek.value;
+    }, 1000, [currentWeek.value]);
 
-    const [loading1] = useAsyncDebounce(() => {
+    useAsyncDebounce(() => {
         return new Promise<void>(async (resolve, reject) => {
             let body: ShiftsFromToDto = {
                 userEmail: manager.email,
@@ -116,7 +124,7 @@ export function ScheduleTable() {
             resolve();
         });
 
-    }, [currentWeek.value]);
+    }, 1000, [currentWeek.value]);
 
     const {loading} = useAsync(() => {
         return new Promise<void>(async (resolve, reject) => {
@@ -127,14 +135,15 @@ export function ScheduleTable() {
             };
             await managerService.getEmployees(manager.email).then(setEmployees, reject);
             await shiftService.getShiftsManager(body).then(
-                shifts =>
+                shifts => {
                     setShifts(shifts.length === 0 ?
                         [] :
                         shifts.map(shift => ({
                             ...shift,
                             startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
                             endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
-                        }))), reject);
+                        })));
+                }, reject);
             await vacationRequestService.getAllByManagerEmail(manager.email).then(setVacationRequests, reject);
             resolve();
         });
@@ -216,7 +225,6 @@ export function ScheduleTable() {
 
     return (
         <Container maxWidth="lg">
-            <h4>Loading: { loading1 ? 'yup' : 'nop' }</h4>
             <TableContainer component={ Paper }>
                 <ScheduleTableToolbar
                     currentWeek={ currentWeek.value }
@@ -267,9 +275,13 @@ export function ScheduleTable() {
                     <TableBody>
                         { loading ?
                             <ScheduleTableRowSkeleton /> :
-                            <GetElements employees={ employees } weekShifts={ shifts }
-                                         vacationRequests={ vacationRequests } selectedItem={ selectedItem }
-                                         currentWeek={ currentWeek } setSelectedItem={ setSelectedItem } /> }
+                            <GetElements employees={ employees }
+                                         weekShifts={ shifts }
+                                         vacationRequests={ vacationRequests }
+                                         selectedItem={ selectedItem }
+                                         currentWeek={ currentWeek }
+                                         previousWeek={ weekRef.current }
+                                         setSelectedItem={ setSelectedItem } /> }
                     </TableBody>
                 </Table>
             </TableContainer>

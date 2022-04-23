@@ -2,8 +2,8 @@ import { Employee } from '../../../../models/User';
 import { Shift } from '../../../../models/Shift';
 import { VacationRequest } from '../../../../models/VacationRequest';
 import useToggle from '../../../../hooks/use-toggle';
-import { differenceInMinutes, hoursToMinutes, minutesToHours } from 'date-fns';
-import { Box, Collapse, IconButton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import { differenceInMinutes, hoursToMinutes, isSameDay, minutesToHours } from 'date-fns';
+import { Box, Collapse, IconButton, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import React from 'react';
 import { SelectedItemType } from './ScheduleTable';
@@ -19,6 +19,7 @@ interface EmployeeWeekRowProps {
     vacationRequests: VacationRequest[],
     currentWeek: ICurrentWeek,
     setSelected: React.Dispatch<React.SetStateAction<SelectedItemType>>,
+    previousWeek: Date;
 }
 
 
@@ -29,6 +30,7 @@ export function ScheduleTableRow({
                                      vacationRequests,
                                      currentWeek,
                                      setSelected,
+                                     previousWeek,
                                  }: EmployeeWeekRowProps) {
     const [open, toggle] = useToggle();
 
@@ -43,30 +45,40 @@ export function ScheduleTableRow({
         return <>{ total }</>;
     }
 
+    const isLoadingShifts = !isSameDay(previousWeek, currentWeek.getPreviousWeek()) &&
+        !isSameDay(previousWeek, currentWeek.value) &&
+        !isSameDay(previousWeek, currentWeek.getNextWeek());
+
     return (
         <>
             <TableRow className="myRow">
                 <TableCell>
-                    <IconButton aria-label="expand row" size="small" onClick={ toggle }>
+                    <IconButton aria-label="expand row" size="small" onClick={ toggle } disabled={ isLoadingShifts }>
                         { open ? <KeyboardArrowUp /> : <KeyboardArrowDown /> }
                     </IconButton>
                 </TableCell>
                 <TableCell component="th" scope="row"
                            width="15%">{ employee.firstName } { employee.lastName }</TableCell>
                 { shifts.map((shift, key) =>
-                    <ScheduleTableColumnWeek key={ key }
-                                             index={ key }
-                                             isSelected={ selectedItem?.day === key && selectedItem?.employee.id === employee.id }
-                                             shift={ shift }
-                                             vacations={ vacationRequests }
-                                             currentWeek={ currentWeek }
-                                             onClick={ () => setSelected(current => current?.day === key && current?.employee.id === employee.id ?
-                                                 null : {
-                                                     employee: employee,
-                                                     day: key,
-                                                     shift: shift
-                                                 }) }
-                    />) }
+                    isLoadingShifts ?
+                        <TableCell key={ key } align="center">
+                            <Skeleton />
+                            -
+                            <Skeleton />
+                        </TableCell> :
+                        <ScheduleTableColumnWeek key={ key }
+                                                 index={ key }
+                                                 isSelected={ selectedItem?.day === key && selectedItem?.employee.id === employee.id }
+                                                 shift={ shift }
+                                                 vacations={ vacationRequests }
+                                                 currentWeek={ currentWeek }
+                                                 onClick={ () => setSelected(current => current?.day === key && current?.employee.id === employee.id ?
+                                                     null : {
+                                                         employee: employee,
+                                                         day: key,
+                                                         shift: shift
+                                                     }) }
+                        />) }
                 <TableCell align="right" width="7%"><TotalTime /></TableCell>
             </TableRow>
             <TableRow className="myRow">

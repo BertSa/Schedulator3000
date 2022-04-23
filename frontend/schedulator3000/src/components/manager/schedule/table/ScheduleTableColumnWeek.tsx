@@ -83,14 +83,14 @@ export function ScheduleTableColumnWeek({
 
     return (
         <TableCell align="center" onClick={ onClick } sx={ mySx }>
-            { shift && <><small>{getTimeInHourMinutesAMPM(shift.startTime)}</small><br /></> }
+            <small>{shift ? getTimeInHourMinutesAMPM(shift.startTime): "--:--"}</small><br />
 
             <small>
                 -
             </small>
             <br />
             <small>
-                { shift && getTimeInHourMinutesAMPM(shift.endTime) }
+                { shift ? getTimeInHourMinutesAMPM(shift.endTime) : "--:--"}
             </small>
         </TableCell>);
 }

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useTimeout from './use-timeout';
 
-export default function useAsyncDebounce(callback: any, dependencies: any[] = []) {
+export default function useAsyncDebounce(callback: any, delay: number = 1000, dependencies: any[] = []) {
     const [loading1, setLoading] = useState(false);
+    const [firstLoad, setFirstLoad] = useState(true);
     const [error, setError] = useState();
     const [value, setValue] = useState();
 
@@ -23,8 +24,16 @@ export default function useAsyncDebounce(callback: any, dependencies: any[] = []
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [callbackRef, ...dependencies]);
 
-    const {reset, clear} = useTimeout(callbackMemoized, 1000);
-    useEffect(reset, [...dependencies, reset]);
+    const {reset, clear} = useTimeout(callbackMemoized, delay);
+    useEffect(() => {
+        console.log('clear');
+        reset();
+        if (firstLoad) {
+            setFirstLoad(false);
+            return;
+        }
+        setLoading(true);
+    }, [...dependencies, reset]);
     useEffect(clear, [clear]);
 
     return [loading1, error, value];

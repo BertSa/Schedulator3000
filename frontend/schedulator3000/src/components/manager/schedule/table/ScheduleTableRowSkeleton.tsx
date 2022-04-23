@@ -14,12 +14,12 @@ export function ScheduleTableRowSkeleton() {
                 </TableCell>
                 <TableCell component="th" scope="row" width="15%"><Skeleton /></TableCell>
                 <TableCell align="center" width=""><br /><Skeleton /><br /></TableCell>
-                <TableCell align="center"><br /><Skeleton /><br /></TableCell>
-                <TableCell align="center"><br /><Skeleton /><br /></TableCell>
-                <TableCell align="center"><br /><Skeleton /><br /></TableCell>
-                <TableCell align="center"><br /><Skeleton /><br /></TableCell>
-                <TableCell align="center"><br /><Skeleton /><br /></TableCell>
-                <TableCell align="center"><br /><Skeleton /><br /></TableCell>
+                <TableCell align="center"><Skeleton />-<Skeleton /></TableCell>
+                <TableCell align="center"><Skeleton />-<Skeleton /></TableCell>
+                <TableCell align="center"><Skeleton />-<Skeleton /></TableCell>
+                <TableCell align="center"><Skeleton />-<Skeleton /></TableCell>
+                <TableCell align="center"><Skeleton />-<Skeleton /></TableCell>
+                <TableCell align="center"><Skeleton />-<Skeleton /></TableCell>
                 <TableCell align="right" width="7%"><Skeleton /></TableCell>
             </TableRow>
             <TableRow className="myRow">
