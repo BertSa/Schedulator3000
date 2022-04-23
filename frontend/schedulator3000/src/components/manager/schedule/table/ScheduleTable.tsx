@@ -19,7 +19,7 @@ import { ShiftFormCreate } from '../shift-form/ShiftFormCreate';
 import { ShiftFormEdit } from '../shift-form/ShiftFormEdit';
 import useAsync from '../../../../hooks/use-async';
 import { ScheduleTableRowSkeleton } from './ScheduleTableRowSkeleton';
-import useDebounce from '../../../../hooks/use-debounce';
+import useAsyncDebounce from '../../../../hooks/use-async-debounce';
 
 export type SelectedItemType = Nullable<{ employee: Employee, day: number, shift: Nullable<Shift> }>;
 
@@ -94,24 +94,29 @@ export function ScheduleTable() {
     const [openDialog, closeDialog] = useDialog();
     const manager = useAuth().getManager();
 
-    useDebounce(() => {
-        let body: ShiftsFromToDto = {
-            userEmail: manager.email,
-            from: toLocalDateString(currentWeek.getPreviousWeek()),
-            to: toLocalDateString(addWeeks(currentWeek.value, 2))
-        };
 
-        shiftService.getShiftsManager(body).then(
-            shifts => {
-                setShifts(shifts.length === 0 ?
-                    [] :
-                    shifts.map(shift => ({
-                        ...shift,
-                        startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
-                        endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
-                    })));
-            });
-    }, 1000, [currentWeek.value]);
+    const [loading1] = useAsyncDebounce(() => {
+        return new Promise<void>(async (resolve, reject) => {
+            let body: ShiftsFromToDto = {
+                userEmail: manager.email,
+                from: toLocalDateString(currentWeek.getPreviousWeek()),
+                to: toLocalDateString(addWeeks(currentWeek.value, 2))
+            };
+
+            await shiftService.getShiftsManager(body).then(
+                shifts => {
+                    setShifts(shifts.length === 0 ?
+                        [] :
+                        shifts.map(shift => ({
+                            ...shift,
+                            startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
+                            endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
+                        })));
+                }, reject);
+            resolve();
+        });
+
+    }, [currentWeek.value]);
 
     const {loading} = useAsync(() => {
         return new Promise<void>(async (resolve, reject) => {
@@ -211,6 +216,7 @@ export function ScheduleTable() {
 
     return (
         <Container maxWidth="lg">
+            <h4>Loading: { loading1 ? 'yup' : 'nop' }</h4>
             <TableContainer component={ Paper }>
                 <ScheduleTableToolbar
                     currentWeek={ currentWeek.value }
