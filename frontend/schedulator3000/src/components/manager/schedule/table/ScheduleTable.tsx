@@ -27,9 +27,9 @@ interface Elements {
     employees: Employee[];
     weekShifts: Shift[];
     vacationRequests: VacationRequest[];
-    selectedItem: { employee: Employee; day: number; shift: Nullable<Shift> } | null;
+    selectedItem: SelectedItemType;
     currentWeek: ICurrentWeek;
-    setSelectedItem: (value: (((prevState: ({ employee: Employee; day: number; shift: Nullable<Shift> } | null)) => ({ employee: Employee; day: number; shift: Nullable<Shift> } | null)) | { employee: Employee; day: number; shift: Nullable<Shift> } | null)) => void;
+    setSelectedItem: React.Dispatch<React.SetStateAction<SelectedItemType>>;
 }
 
 interface RowDataType {
@@ -53,6 +53,7 @@ function GetElements({
             const requests: VacationRequest[] = vacationRequests.filter(value => value.employeeEmail === employee.email);
             const weekShift: Nullable<Shift>[] = new Array(7);
 
+            // TODO: optimize
             let tempShifts: Shift[] = [];
             for (const value of weekShifts) {
                 if (isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1)) && value.emailEmployee === employee.email) {
@@ -61,10 +62,8 @@ function GetElements({
             }
 
             for (let i = 0; i < 7; i++) {
-                const shift = tempShifts.find(shift => getDay(new Date(shift.startTime)) === i);
-                weekShift[i] = shift ?? null;
+                weekShift[i] = tempShifts.find(shift => getDay(new Date(shift.startTime)) === i) ?? null;
             }
-
 
             setRowData(prevState => [...prevState.filter(c => c.employee.id !== employee.id), {
                 employee,
@@ -74,19 +73,15 @@ function GetElements({
         });
     }, [currentWeek.value, employees, vacationRequests, weekShifts]);
 
-    return <>{ rowData.map((val) => {
-        const {employee, shifts, requests} = val;
-
-
-        return <ScheduleTableRow key={ employee.id }
-                                 employee={ employee }
-                                 shifts={ shifts }
-                                 vacationRequests={ requests }
-                                 selectedItem={ selectedItem }
-                                 currentWeek={ currentWeek }
-                                 setSelected={ setSelectedItem }
-        />;
-    }) }</>;
+    return <>{ rowData.map(({employee, shifts, requests}) =>
+        <ScheduleTableRow key={ employee.id }
+                          employee={ employee }
+                          shifts={ shifts }
+                          vacationRequests={ requests }
+                          selectedItem={ selectedItem }
+                          currentWeek={ currentWeek }
+                          setSelected={ setSelectedItem }
+        />) }</>;
 }
 
 export function ScheduleTable() {
@@ -107,25 +102,24 @@ export function ScheduleTable() {
         };
 
         shiftService.getShiftsManager(body).then(
-            shifts =>
+            shifts => {
                 setShifts(shifts.length === 0 ?
                     [] :
                     shifts.map(shift => ({
                         ...shift,
                         startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
                         endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
-                    }))));
+                    })));
+            });
     }, 1000, [currentWeek.value]);
 
     const {loading} = useAsync(() => {
-        console.log('ScheduleTable.useAsync');
         return new Promise<void>(async (resolve, reject) => {
             let body: ShiftsFromToDto = {
                 userEmail: manager.email,
                 from: toLocalDateString(currentWeek.getPreviousWeek()),
                 to: toLocalDateString(addWeeks(currentWeek.value, 2))
             };
-            console.log('fetchEmployees');
             await managerService.getEmployees(manager.email).then(setEmployees, reject);
             await shiftService.getShiftsManager(body).then(
                 shifts =>
@@ -227,8 +221,7 @@ export function ScheduleTable() {
                         create: createAction,
                         edit: editAction,
                         remove: removeAction,
-                    } }
-                />
+                    } } />
                 <Table aria-label="collapsible table" size="medium">
                     <TableHead>
                         <TableRow>

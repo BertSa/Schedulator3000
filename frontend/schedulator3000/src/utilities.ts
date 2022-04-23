@@ -77,6 +77,14 @@ export function toLocalDateString(date: Date) {
     });
 }
 
+
+/**
+ * isBetween returns true if the date is between the start and end dates
+ * @param  {[Date]} date the date to check
+ * @param  {[Date]} start the start date
+ * @param  {[Date]} end the end date
+ * @return {[boolean]} true if the date is between the start and end dates
+ */
 export function isBetween(date: Date, start: Date, end: Date): boolean {
     date = new Date(date);
     start = new Date(start);

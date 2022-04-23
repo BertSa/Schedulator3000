@@ -23,13 +23,13 @@ interface EmployeeWeekRowProps {
 
 
 export function ScheduleTableRow({
-                                                 selectedItem,
-                                                 employee,
-                                                 shifts,
-                                                 vacationRequests,
-                                                 currentWeek,
-                                                 setSelected,
-                                             }: EmployeeWeekRowProps) {
+                                     selectedItem,
+                                     employee,
+                                     shifts,
+                                     vacationRequests,
+                                     currentWeek,
+                                     setSelected,
+                                 }: EmployeeWeekRowProps) {
     const [open, toggle] = useToggle();
 
 
@@ -51,7 +51,8 @@ export function ScheduleTableRow({
                         { open ? <KeyboardArrowUp /> : <KeyboardArrowDown /> }
                     </IconButton>
                 </TableCell>
-                <TableCell component="th" scope="row" width="15%">{ employee.firstName } { employee.lastName }</TableCell>
+                <TableCell component="th" scope="row"
+                           width="15%">{ employee.firstName } { employee.lastName }</TableCell>
                 { shifts.map((shift, key) =>
                     <ScheduleTableColumnWeek key={ key }
                                              index={ key }
@@ -59,16 +60,14 @@ export function ScheduleTableRow({
                                              shift={ shift }
                                              vacations={ vacationRequests }
                                              currentWeek={ currentWeek }
-                                             onClick={ () => {
-                                                         setSelected(current => current?.day === key && current?.employee.id === employee.id ?
-                                                             null : {
-                                                                 employee: employee,
-                                                                 day: key,
-                                                                 shift: shift
-                                                             });
-                                                     } }
+                                             onClick={ () => setSelected(current => current?.day === key && current?.employee.id === employee.id ?
+                                                 null : {
+                                                     employee: employee,
+                                                     day: key,
+                                                     shift: shift
+                                                 }) }
                     />) }
-                <TableCell align="right"  width="7%"><TotalTime /></TableCell>
+                <TableCell align="right" width="7%"><TotalTime /></TableCell>
             </TableRow>
             <TableRow className="myRow">
                 <TableCell style={ {paddingBottom: 0, paddingTop: 0} } colSpan={ 6 }>

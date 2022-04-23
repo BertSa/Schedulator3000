@@ -4,8 +4,6 @@ import React from 'react';
 
 
 export function ScheduleTableRowSkeleton() {
-
-
     return (
         <>
             <TableRow className="myRow">
