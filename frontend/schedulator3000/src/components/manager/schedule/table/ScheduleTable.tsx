@@ -32,6 +32,12 @@ interface Elements {
     setSelectedItem: (value: (((prevState: ({ employee: Employee; day: number; shift: Nullable<Shift> } | null)) => ({ employee: Employee; day: number; shift: Nullable<Shift> } | null)) | { employee: Employee; day: number; shift: Nullable<Shift> } | null)) => void;
 }
 
+interface RowDataType {
+    employee: Employee;
+    shifts: Nullable<Shift>[];
+    requests: VacationRequest[];
+}
+
 function GetElements({
                          employees,
                          weekShifts,
@@ -40,31 +46,24 @@ function GetElements({
                          currentWeek,
                          setSelectedItem
                      }: Elements): JSX.Element {
-    const [rowData, setRowData] = useState<{ employee: Employee; shifts: Nullable<Shift>[], requests: VacationRequest[] }[]>([]);
+    const [rowData, setRowData] = useState<RowDataType[]>([]);
+
     useEffect(() => {
-        console.log('rowData', rowData);
         employees.forEach(employee => {
+            const requests: VacationRequest[] = vacationRequests.filter(value => value.employeeEmail === employee.email);
             const weekShift: Nullable<Shift>[] = new Array(7);
 
-            console.log(weekShifts);
-
-            let shit: Shift[] = []
-
+            let tempShifts: Shift[] = [];
             for (const value of weekShifts) {
-                const b: boolean = isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1));
-                console.log("pourquoiiiiiiiiiiiiii: " + b);
-                if (b && value.emailEmployee === employee.email){
-                    shit.push( value);
+                if (isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1)) && value.emailEmployee === employee.email) {
+                    tempShifts.push(value);
                 }
             }
 
-            console.log(currentWeek.value, shit);
             for (let i = 0; i < 7; i++) {
-                const shift = shit.find(shift => getDay(new Date(shift.startTime)) === i);
+                const shift = tempShifts.find(shift => getDay(new Date(shift.startTime)) === i);
                 weekShift[i] = shift ?? null;
             }
-
-            const requests: VacationRequest[] = vacationRequests.filter(value => value.employeeEmail === employee.email);
 
 
             setRowData(prevState => [...prevState.filter(c => c.employee.id !== employee.id), {
@@ -267,7 +266,8 @@ export function ScheduleTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        { loading ? <ScheduleTableRowSkeleton /> :
+                        { loading ?
+                            <ScheduleTableRowSkeleton /> :
                             <GetElements employees={ employees } weekShifts={ shifts }
                                          vacationRequests={ vacationRequests } selectedItem={ selectedItem }
                                          currentWeek={ currentWeek } setSelectedItem={ setSelectedItem } /> }

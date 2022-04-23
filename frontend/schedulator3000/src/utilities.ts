@@ -82,5 +82,5 @@ export function isBetween(date: Date, start: Date, end: Date): boolean {
     start = new Date(start);
     end = new Date(end);
 
-    return (isAfter(date, start) || isSameDay(date, start)) && (isBefore(date, end) || isSameDay(date, end));
+    return (isSameDay(date, start) || isAfter(date, start)) && (isBefore(date, end));
 }
