@@ -3,7 +3,7 @@ import React from 'react';
 import { ScheduleCalendar } from './schedule/ScheduleCalendar';
 import { EmployeeManagement } from './employee-management/EmployeeManagement';
 import { ScheduleTable } from './schedule/table/ScheduleTable';
-import { VacationRequestManagementTable } from './vacation-request-management/VacationRequestManagementTable';
+import VacationRequestManagementTable from './vacation-request-management/VacationRequestManagementTable';
 
 export function ManagerPages(): React.ReactElement {
     const {path} = useRouteMatch();

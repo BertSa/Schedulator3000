@@ -67,11 +67,11 @@ export function VacationRequestTable() {
 
     function VacationRequestTableBody() {
         if (loading) {
-            return <TableBody><VacationRequestTableRowSkeleton /></TableBody>;
+            return <VacationRequestTableRowSkeleton />;
         }
 
         if (vacationRequests.length === 0) {
-            return <TableBody><VacationRequestTableRowEmpty /></TableBody>;
+            return <VacationRequestTableRowEmpty />;
         }
 
         function handleRowClick(vacationRequest: VacationRequest): void {
@@ -123,23 +123,27 @@ export function VacationRequestTable() {
 }
 
 function VacationRequestTableRowEmpty() {
-    return <TableRow sx={ {
-        '&:last-child td, &:last-child th': {border: 0},
-    } }>
-        <TableCell colSpan={ 5 } align="center">
-            No vacation requests
-        </TableCell>
-    </TableRow>;
+    return <TableBody>
+        <TableRow sx={ {
+            '&:last-child td, &:last-child th': {border: 0},
+        } }>
+            <TableCell colSpan={ 5 } align="center">
+                No vacation requests
+            </TableCell>
+        </TableRow>
+    </TableBody>;
 }
 
 function VacationRequestTableRowSkeleton() {
-    return <TableRow sx={ {
-        '&:last-child td, &:last-child th': {border: 0},
-    } }>
-        <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
-        <TableCell width="10%"><Skeleton /></TableCell>
-        <TableCell width="10%"><Skeleton /></TableCell>
-        <TableCell><Skeleton /></TableCell>
-        <TableCell align="center" width="10%"><Icon><Skeleton variant="circular" /></Icon></TableCell>
-    </TableRow>;
+    return <TableBody>
+        <TableRow sx={ {
+            '&:last-child td, &:last-child th': {border: 0},
+        } }>
+            <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
+            <TableCell width="10%"><Skeleton /></TableCell>
+            <TableCell width="10%"><Skeleton /></TableCell>
+            <TableCell><Skeleton /></TableCell>
+            <TableCell align="center" width="10%"><Icon><Skeleton variant="circular" /></Icon></TableCell>
+        </TableRow>
+    </TableBody>;
 }

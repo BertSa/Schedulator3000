@@ -27,22 +27,22 @@ export function VacationRequestManagementTableRow({
                       cursor: 'pointer',
                       '&:last-child td, &:last-child th': {border: 0},
                   } }>
-            <TableCell component="th" scope="row">
+            <TableCell component="th" scope="row" width="5%">
                 { vacationRequest.id }
             </TableCell>
-            <TableCell>
+            <TableCell width="15%">
                 { employee?.firstName + ' ' + employee?.lastName }
             </TableCell>
-            <TableCell>
+            <TableCell width="10%">
                 { vacationRequest.startDate }
             </TableCell>
-            <TableCell>
+            <TableCell width="10%">
                 { vacationRequest.endDate }
             </TableCell>
             <TableCell>
                 { vacationRequest.reason }
             </TableCell>
-            <TableCell align="center">
+            <TableCell align="center" width="10%">
                 <VacationRequestStatusIcon status={ vacationRequest.status } />
             </TableCell>
         </TableRow>

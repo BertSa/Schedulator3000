@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { VacationRequest, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
 import { useServices } from '../../../hooks/use-services/use-services';
 import { useAuth } from '../../../hooks/use-auth';
 import { Employee, Manager } from '../../../models/User';
-import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Container, Hidden, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VacationRequestManagementTableToolbar } from './VacationRequestManagementTableToolbar';
 import { Nullable } from '../../../models/Nullable';
 import { VacationRequestManagementTableRow } from './VacationRequestManagementTableRow';
+import useAsync from '../../../hooks/use-async';
 
 
-export function VacationRequestManagementTable() {
+export default function VacationRequestManagementTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [vacationRequests, setVacationRequests] = useState<VacationRequest[]>([]);
     const {managerService, vacationRequestService} = useServices();
     const [selectedVacationRequest, setSelectedVacationRequest] = useState<Nullable<VacationRequest>>(null);
     const manager: Manager = useAuth().getManager();
 
-    useEffect(() => {
-        managerService.getEmployees(manager.email).then(
-            employees => setEmployees(employees));
-        vacationRequestService.getAllByManagerEmail(manager.email).then(
-            response => setVacationRequests(response));
-    }, [managerService, vacationRequestService, manager.email]);
+    const {loading} = useAsync(() => {
+        return new Promise<void>(async (resolve, reject) => {
+            await managerService.getEmployees(manager.email).then(setEmployees, reject);
+            await vacationRequestService.getAllByManagerEmail(manager.email).then(setVacationRequests, reject);
+            resolve();
+        });
+    }, [manager.email]);
 
 
     function updateRequest(status: VacationRequestUpdateStatus): void {
@@ -38,6 +40,34 @@ export function VacationRequestManagementTable() {
     const approveAction = (): void => updateRequest(VacationRequestUpdateStatus.Approve);
     const rejectAction = (): void => updateRequest(VacationRequestUpdateStatus.Reject);
 
+    function VacationRequestManagementTableBody() {
+        if (loading) {
+            return <VacationRequestManagementTableBodySkeleton />;
+        }
+
+        if (vacationRequests.length === 0) {
+            return <VacationRequestManagementTableBodyEmpty />;
+        }
+
+        function handleRowClick(vacationRequest: VacationRequest): void {
+            setSelectedVacationRequest(selected => selected?.id === vacationRequest.id ? null : vacationRequest);
+        }
+
+        return <TableBody>
+            { vacationRequests.map((vacationRequest, key) => {
+                const employee: Employee | undefined = employees.find(emp => emp.email === vacationRequest.employeeEmail);
+                if (employee) {
+                    return <VacationRequestManagementTableRow key={ key }
+                                                              vacationRequest={ vacationRequest }
+                                                              employee={ employee }
+                                                              isSelected={ selectedVacationRequest?.id === vacationRequest.id }
+                                                              onClick={ () => handleRowClick(vacationRequest) } />;
+                }
+                return <Hidden key={ key } />;
+            }) }
+        </TableBody>;
+    }
+
     return <>
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
@@ -49,40 +79,52 @@ export function VacationRequestManagementTable() {
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>#</TableCell>
-                            <TableCell>
+                            <TableCell width="5%">#</TableCell>
+                            <TableCell width="15%">
                                 Employee
                             </TableCell>
-                            <TableCell>
+                            <TableCell width="10%">
                                 Start Date
                             </TableCell>
-                            <TableCell>
+                            <TableCell width="10%">
                                 End Date
                             </TableCell>
                             <TableCell>
                                 Reason
                             </TableCell>
-                            <TableCell align="center">
+                            <TableCell align="center" width="10%">
                                 Status
                             </TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        { vacationRequests.map(vacationRequest => {
-                            const employee: Employee | undefined = employees.find(value => value.email === vacationRequest.employeeEmail);
-                            return employee ?
-                                <VacationRequestManagementTableRow key={ vacationRequest.id }
-                                                                   vacationRequest={ vacationRequest }
-                                                                   employee={ employee }
-                                                                   isSelected={ selectedVacationRequest?.id === vacationRequest.id }
-                                                                   onClick={ () => setSelectedVacationRequest(selected => selected?.id === vacationRequest.id ? null : vacationRequest) } /> :
-                                null;
-                        }) }
-                    </TableBody>
+                    <VacationRequestManagementTableBody />
                 </Table>
             </TableContainer>
         </Container>
     </>;
 }
 
+function VacationRequestManagementTableBodyEmpty() {
+    return <TableBody>
+        <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
+            <TableCell colSpan={ 6 } align="center">
+                No vacation requests
+            </TableCell>
+        </TableRow>
+    </TableBody>;
+}
 
+function VacationRequestManagementTableBodySkeleton() {
+    return <TableBody>
+        <TableRow sx={ {
+            '&:last-child td, &:last-child th': {border: 0},
+        } }>
+            <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
+            <TableCell width="15%"><Skeleton /></TableCell>
+            <TableCell width="10%"><Skeleton /></TableCell>
+            <TableCell width="10%"><Skeleton /></TableCell>
+            <TableCell><Skeleton /></TableCell>
+            <TableCell align="center" width="10%"><Icon><Skeleton variant="circular" /></Icon></TableCell>
+        </TableRow>
+    </TableBody>;
+}
