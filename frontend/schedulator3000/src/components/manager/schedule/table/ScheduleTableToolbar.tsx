@@ -7,6 +7,7 @@ import { SelectedItemType } from './ScheduleTable';
 interface ScheduleTableToolbarProps {
     currentWeek: Date,
     selectedItem: SelectedItemType,
+    actionsDisabled: boolean,
     actions: {
         prev: VoidFunction,
         next: VoidFunction,
@@ -19,6 +20,7 @@ interface ScheduleTableToolbarProps {
 export function ScheduleTableToolbar({
                                          currentWeek,
                                          selectedItem,
+                                         actionsDisabled,
                                          actions: {prev, next, create, edit, remove}
                                      }: ScheduleTableToolbarProps) {
     const getDateOfDay = (day: number) => format(addDays(new Date(currentWeek), day), 'yyyy-MM-dd');
@@ -54,24 +56,21 @@ export function ScheduleTableToolbar({
                     <div>
                         <Tooltip title="Delete">
                             <span>
-                            <IconButton onClick={ remove }
-                                        disabled={ !selectedItem?.shift }>
+                            <IconButton onClick={ remove } disabled={ !selectedItem.shift }>
                                 <Delete />
                             </IconButton>
                             </span>
                         </Tooltip>
                         <Tooltip title="Edit">
                             <span>
-                            <IconButton onClick={ edit }
-                                        disabled={ !selectedItem?.shift }>
+                            <IconButton onClick={ edit } disabled={ !selectedItem.shift }>
                                 <Edit />
                             </IconButton>
                             </span>
                         </Tooltip>
                         <Tooltip title="Add">
                             <span>
-                            <IconButton onClick={ create }
-                                        disabled={ !!selectedItem?.shift }>
+                            <IconButton onClick={ create } disabled={ selectedItem.shift !== null }>
                                 <Add />
                             </IconButton>
                             </span>
@@ -79,15 +78,19 @@ export function ScheduleTableToolbar({
                     </div>
                 ) :
                 <div>
-                    <Tooltip title="Previous Week">
-                        <IconButton onClick={ prev }>
+                    <Tooltip title={ actionsDisabled ? 'Add an employee first' : 'Previous Week' }>
+                        <span>
+                        <IconButton onClick={ prev } disabled={ actionsDisabled }>
                             <ArrowBack />
                         </IconButton>
+                        </span>
                     </Tooltip>
-                    <Tooltip title="Next Week">
-                        <IconButton onClick={ next }>
+                    <Tooltip title={ actionsDisabled ? 'Add an employee first' : 'Next Week' }>
+                        <span>
+                        <IconButton onClick={ next } disabled={ actionsDisabled }>
                             <ArrowForward />
                         </IconButton>
+                        </span>
                     </Tooltip>
                 </div> }
         </Toolbar>

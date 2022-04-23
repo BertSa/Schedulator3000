@@ -11,6 +11,7 @@ import { VacationRequestFormEdit } from './form/VacationRequestFormEdit';
 import { Nullable } from '../../../models/Nullable';
 import { VacationRequestTableRow } from './VacationRequestTableRow';
 import useAsync from '../../../hooks/use-async';
+import TableBodyEmpty from '../../shared/TableBodyEmpty';
 
 
 export function VacationRequestTable() {
@@ -22,8 +23,7 @@ export function VacationRequestTable() {
 
     const {loading} = useAsync(() => {
         return new Promise<void>(async (resolve, reject) => {
-            await vacationRequestService.getAllByEmployeeEmail(employee.email)
-                .then(setVacationRequests, reject);
+            await vacationRequestService.getAllByEmployeeEmail(employee.email).then(setVacationRequests, reject);
             resolve();
         });
     }, [employee.email]);
@@ -71,7 +71,7 @@ export function VacationRequestTable() {
         }
 
         if (vacationRequests.length === 0) {
-            return <VacationRequestTableRowEmpty />;
+            return <TableBodyEmpty colSpan={ 5 } message="No vacation requests" />;
         }
 
         function handleRowClick(vacationRequest: VacationRequest): void {
@@ -122,23 +122,9 @@ export function VacationRequestTable() {
     </>;
 }
 
-function VacationRequestTableRowEmpty() {
-    return <TableBody>
-        <TableRow sx={ {
-            '&:last-child td, &:last-child th': {border: 0},
-        } }>
-            <TableCell colSpan={ 5 } align="center">
-                No vacation requests
-            </TableCell>
-        </TableRow>
-    </TableBody>;
-}
-
 function VacationRequestTableRowSkeleton() {
     return <TableBody>
-        <TableRow sx={ {
-            '&:last-child td, &:last-child th': {border: 0},
-        } }>
+        <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
             <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
             <TableCell width="10%"><Skeleton /></TableCell>
             <TableCell width="10%"><Skeleton /></TableCell>

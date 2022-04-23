@@ -7,7 +7,7 @@ export function ScheduleTableRowSkeleton() {
     return (
         <>
             <TableRow className="myRow">
-                <TableCell>
+                <TableCell width="6.5%">
                     <IconButton aria-label="expand row" size="small">
                         <KeyboardArrowDown />
                     </IconButton>

@@ -21,71 +21,14 @@ import useAsync from '../../../../hooks/use-async';
 import { ScheduleTableRowSkeleton } from './ScheduleTableRowSkeleton';
 import useAsyncDebounce from '../../../../hooks/use-async-debounce';
 import useDebounce from '../../../../hooks/use-debounce';
+import TableBodyEmpty from '../../../shared/TableBodyEmpty';
 
 export type SelectedItemType = Nullable<{ employee: Employee, day: number, shift: Nullable<Shift> }>;
-
-interface Elements {
-    employees: Employee[];
-    weekShifts: Shift[];
-    vacationRequests: VacationRequest[];
-    selectedItem: SelectedItemType;
-    currentWeek: ICurrentWeek;
-    setSelectedItem: React.Dispatch<React.SetStateAction<SelectedItemType>>;
-    previousWeek: Date;
-}
 
 interface RowDataType {
     employee: Employee;
     shifts: Nullable<Shift>[];
     requests: VacationRequest[];
-}
-
-function GetElements({
-                         employees,
-                         weekShifts,
-                         vacationRequests,
-                         selectedItem,
-                         currentWeek,
-                         previousWeek,
-                         setSelectedItem,
-                     }: Elements): JSX.Element {
-    const [rowData, setRowData] = useState<RowDataType[]>([]);
-
-    useEffect(() => {
-        employees.forEach(employee => {
-            const requests: VacationRequest[] = vacationRequests.filter(value => value.employeeEmail === employee.email);
-            const weekShift: Nullable<Shift>[] = new Array(7);
-
-            // TODO: optimize
-            let tempShifts: Shift[] = [];
-            for (const value of weekShifts) {
-                if (isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1)) && value.emailEmployee === employee.email) {
-                    tempShifts.push(value);
-                }
-            }
-
-            for (let i = 0; i < 7; i++) {
-                weekShift[i] = tempShifts.find(shift => getDay(new Date(shift.startTime)) === i) ?? null;
-            }
-
-            setRowData(prevState => [...prevState.filter(c => c.employee.id !== employee.id), {
-                employee,
-                shifts: weekShift,
-                requests
-            }]);
-        });
-    }, [currentWeek.value, employees, vacationRequests, weekShifts]);
-
-    return <>{ rowData.map(({employee, shifts, requests}) =>
-        <ScheduleTableRow key={ employee.id }
-                          employee={ employee }
-                          previousWeek={ previousWeek }
-                          shifts={ shifts }
-                          vacationRequests={ requests }
-                          selectedItem={ selectedItem }
-                          currentWeek={ currentWeek }
-                          setSelected={ setSelectedItem }
-        />) }</>;
 }
 
 export function ScheduleTable() {
@@ -223,12 +166,64 @@ export function ScheduleTable() {
     }
 
 
+    function ScheduleTableBody() {
+        const [rowData, setRowData] = useState<RowDataType[]>([]);
+
+        useEffect(() => {
+            if (loading || employees.length === 0) {
+                return;
+            }
+            employees.forEach(employee => {
+                const requests: VacationRequest[] = vacationRequests.filter(value => value.employeeEmail === employee.email);
+                const weekShift: Nullable<Shift>[] = new Array(7);
+
+                // TODO: optimize
+                let tempShifts: Shift[] = [];
+                for (const value of shifts) {
+                    if (isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1)) && value.emailEmployee === employee.email) {
+                        tempShifts.push(value);
+                    }
+                }
+
+                for (let i = 0; i < 7; i++) {
+                    weekShift[i] = tempShifts.find(shift => getDay(new Date(shift.startTime)) === i) ?? null;
+                }
+
+                setRowData(prevState => [...prevState.filter(c => c.employee.id !== employee.id), {
+                    employee,
+                    shifts: weekShift,
+                    requests
+                }]);
+            });
+        }, [currentWeek.value, employees, vacationRequests, shifts]);
+
+        if (loading) {
+            return <ScheduleTableRowSkeleton />;
+        }
+
+        if (employees.length === 0) {
+            return <TableBodyEmpty colSpan={ 10 } message="No employees" />;
+        }
+
+        return <TableBody>{ rowData.map(({employee, shifts, requests}) =>
+            <ScheduleTableRow key={ employee.id }
+                              employee={ employee }
+                              previousWeek={ weekRef.current }
+                              shifts={ shifts }
+                              vacationRequests={ requests }
+                              selectedItem={ selectedItem }
+                              currentWeek={ currentWeek }
+                              setSelected={ setSelectedItem }
+            />) }</TableBody>;
+    }
+
     return (
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
                 <ScheduleTableToolbar
                     currentWeek={ currentWeek.value }
                     selectedItem={ selectedItem }
+                    actionsDisabled={ loading || employees.length === 0 }
                     actions={ {
                         prev: currentWeek.previous,
                         next: currentWeek.next,
@@ -239,7 +234,7 @@ export function ScheduleTable() {
                 <Table aria-label="collapsible table" size="medium">
                     <TableHead>
                         <TableRow>
-                            <TableCell />
+                            <TableCell width="6.5%" />
                             <TableCell width="15%">Employee</TableCell>
                             <TableCell align="center">
                                 Sunday<br />
@@ -272,19 +267,10 @@ export function ScheduleTable() {
                             <TableCell align="right" width="7%">Total</TableCell>
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        { loading ?
-                            <ScheduleTableRowSkeleton /> :
-                            <GetElements employees={ employees }
-                                         weekShifts={ shifts }
-                                         vacationRequests={ vacationRequests }
-                                         selectedItem={ selectedItem }
-                                         currentWeek={ currentWeek }
-                                         previousWeek={ weekRef.current }
-                                         setSelectedItem={ setSelectedItem } /> }
-                    </TableBody>
+                    <ScheduleTableBody />
                 </Table>
             </TableContainer>
         </Container>
     );
 }
+

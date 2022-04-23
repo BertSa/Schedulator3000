@@ -9,6 +9,7 @@ import { EmployeeFormRegister } from './employee-form/EmployeeFormRegister';
 import { EmployeeFormEdit } from './employee-form/EmployeeFormEdit';
 import { Nullable } from '../../../../models/Nullable';
 import useAsync from '../../../../hooks/use-async';
+import TableBodyEmpty from '../../../shared/TableBodyEmpty';
 
 
 export function EmployeeTable() {
@@ -76,7 +77,7 @@ export function EmployeeTable() {
         }
 
         if (employees.length === 0) {
-            return <EmployeeTableBodyEmpty />;
+            return <TableBodyEmpty colSpan={ 6 } message="No employees" />;
         }
 
         return <TableBody>
@@ -137,14 +138,6 @@ function EmployeeTableBodySkeleton() {
             <TableCell><Skeleton /></TableCell>
             <TableCell width="15%"><Skeleton /></TableCell>
             <TableCell width="10%"><Skeleton /></TableCell>
-        </TableRow>
-    </TableBody>;
-}
-
-function EmployeeTableBodyEmpty() {
-    return <TableBody>
-        <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
-            <TableCell colSpan={ 6 } align="center">No employees</TableCell>
         </TableRow>
     </TableBody>;
 }

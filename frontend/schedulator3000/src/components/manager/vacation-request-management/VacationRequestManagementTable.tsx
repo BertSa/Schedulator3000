@@ -8,6 +8,7 @@ import { VacationRequestManagementTableToolbar } from './VacationRequestManageme
 import { Nullable } from '../../../models/Nullable';
 import { VacationRequestManagementTableRow } from './VacationRequestManagementTableRow';
 import useAsync from '../../../hooks/use-async';
+import TableBodyEmpty from '../../shared/TableBodyEmpty';
 
 
 export default function VacationRequestManagementTable() {
@@ -46,7 +47,7 @@ export default function VacationRequestManagementTable() {
         }
 
         if (vacationRequests.length === 0) {
-            return <VacationRequestManagementTableBodyEmpty />;
+            return <TableBodyEmpty colSpan={ 6 } message="No vacation requests" />;
         }
 
         function handleRowClick(vacationRequest: VacationRequest): void {
@@ -104,21 +105,9 @@ export default function VacationRequestManagementTable() {
     </>;
 }
 
-function VacationRequestManagementTableBodyEmpty() {
-    return <TableBody>
-        <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
-            <TableCell colSpan={ 6 } align="center">
-                No vacation requests
-            </TableCell>
-        </TableRow>
-    </TableBody>;
-}
-
 function VacationRequestManagementTableBodySkeleton() {
     return <TableBody>
-        <TableRow sx={ {
-            '&:last-child td, &:last-child th': {border: 0},
-        } }>
+        <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
             <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
             <TableCell width="15%"><Skeleton /></TableCell>
             <TableCell width="10%"><Skeleton /></TableCell>

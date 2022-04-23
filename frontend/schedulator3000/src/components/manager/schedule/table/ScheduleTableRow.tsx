@@ -52,7 +52,7 @@ export function ScheduleTableRow({
     return (
         <>
             <TableRow className="myRow">
-                <TableCell>
+                <TableCell width="6.5%">
                     <IconButton aria-label="expand row" size="small" onClick={ toggle } disabled={ isLoadingShifts }>
                         { open ? <KeyboardArrowUp /> : <KeyboardArrowDown /> }
                     </IconButton>
