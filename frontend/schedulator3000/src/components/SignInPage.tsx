@@ -3,10 +3,10 @@ import React, { BaseSyntheticEvent, useState } from 'react';
 import { useAuth } from '../hooks/use-auth';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { FieldInput } from './shared/form/FormFields';
-import { regex } from '../utilities';
+import { regex } from '../utilities/utilities';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
-export function SignInPage() {
+export default function SignInPage() {
     const [tab, setTab] = useState<number>(0);
     const auth = useAuth();
     const history = useHistory();

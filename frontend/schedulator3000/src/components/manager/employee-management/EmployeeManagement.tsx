@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container } from '@mui/material';
-import { EmployeeTable } from './employee-table/EmployeeTable';
+import EmployeeTable from './employee-table/EmployeeTable';
 
-export function EmployeeManagement(): React.ReactElement {
+export default function EmployeeManagement(): React.ReactElement {
     return <>
         <Container maxWidth="lg"
                    sx={ {

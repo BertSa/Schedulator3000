@@ -14,7 +14,7 @@ interface EnhancedTableToolbarProps {
     };
 }
 
-export function EmployeeTableToolbar({selected, actions: {create, edit, fire}}: EnhancedTableToolbarProps) {
+export default function EmployeeTableToolbar({selected, actions: {create, edit, fire}}: EnhancedTableToolbarProps) {
     const toolbarSx: SxProps<Theme> = {
         pl: {sm: 2},
         pr: {xs: 1, sm: 1},

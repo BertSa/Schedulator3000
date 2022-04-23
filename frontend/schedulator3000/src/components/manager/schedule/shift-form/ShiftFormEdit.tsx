@@ -2,7 +2,7 @@ import { UnpackNestedValue } from 'react-hook-form';
 import React from 'react';
 import { Shift } from '../../../../models/Shift';
 import { Typography } from '@mui/material';
-import { ShiftForm, ShiftFormFieldValue } from './ShiftForm';
+import ShiftForm, { ShiftFormFieldValue } from './ShiftForm';
 import { IShiftService } from '../../../../hooks/use-services/use-provide-shift-service';
 import { Employee, Manager } from '../../../../models/User';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -17,7 +17,7 @@ interface ScheduleUpdateShiftProps {
     closeDialog: VoidFunction,
 }
 
-export function ShiftFormEdit({
+export default function ShiftFormEdit({
                                   shiftService,
                                   employees,
                                   manager,

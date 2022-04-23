@@ -1,25 +1,25 @@
 import { useServices } from '../../hooks/use-services/use-services';
 import React, { useEffect, useState } from 'react';
-import { ShiftsFromToDto } from '../../models/ShiftsFromTo';
-import { localizer, preferences, toLocalDateString } from '../../utilities';
-import { startOfWeek } from 'date-fns';
+import { RequestDtoShiftsFromTo } from '../../models/ShiftsFromTo';
+import { localizer, preferences } from '../../utilities/DateUtilities';
+import { format, startOfWeek } from 'date-fns';
 import { ShiftEvent } from '../../models/ShiftEvent';
 import { Calendar, Event, Views } from 'react-big-calendar';
 import { useAuth } from '../../hooks/use-auth';
 import useCurrentWeek from '../../hooks/use-currentWeek';
 import { zonedTimeToUtc } from 'date-fns-tz';
 
-export function ScheduleEmployee() {
+export default function ScheduleEmployee() {
     const {shiftService} = useServices();
     const user = useAuth().getEmployee();
     const currentWeek = useCurrentWeek();
     const [events, setEvents] = useState<ShiftEvent[]>([]);
 
     useEffect(() => {
-        let body: ShiftsFromToDto = {
+        let body: RequestDtoShiftsFromTo = {
             userEmail: user.email,
-            from: toLocalDateString(currentWeek.getPreviousWeek()),
-            to: toLocalDateString(currentWeek.getNextWeek())
+            from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
+            to: format(currentWeek.getNextWeek(), 'yyyy-MM-dd')
         };
         shiftService.getShiftsEmployee(body).then(
             shifts =>

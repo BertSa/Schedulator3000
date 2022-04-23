@@ -4,15 +4,15 @@ import { Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead
 import { useDialog } from '../../../../hooks/use-dialog';
 import { useServices } from '../../../../hooks/use-services/use-services';
 import { useAuth } from '../../../../hooks/use-auth';
-import { EmployeeTableToolbar } from './EmployeeTableToolbar';
-import { EmployeeFormRegister } from './employee-form/EmployeeFormRegister';
-import { EmployeeFormEdit } from './employee-form/EmployeeFormEdit';
+import EmployeeTableToolbar from './EmployeeTableToolbar';
+import EmployeeFormRegister from './employee-form/EmployeeFormRegister';
+import EmployeeFormEdit from './employee-form/EmployeeFormEdit';
 import { Nullable } from '../../../../models/Nullable';
 import useAsync from '../../../../hooks/use-async';
 import TableBodyEmpty from '../../../shared/TableBodyEmpty';
 
 
-export function EmployeeTable() {
+export default function EmployeeTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [selectedEmployee, setSelectedEmployee] = useState<Nullable<Employee>>(null);
     const {managerService, employeeService} = useServices();

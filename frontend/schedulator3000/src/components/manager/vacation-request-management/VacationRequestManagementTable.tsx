@@ -4,9 +4,9 @@ import { useServices } from '../../../hooks/use-services/use-services';
 import { useAuth } from '../../../hooks/use-auth';
 import { Employee, Manager } from '../../../models/User';
 import { Container, Hidden, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { VacationRequestManagementTableToolbar } from './VacationRequestManagementTableToolbar';
+import VacationRequestManagementTableToolbar from './VacationRequestManagementTableToolbar';
 import { Nullable } from '../../../models/Nullable';
-import { VacationRequestManagementTableRow } from './VacationRequestManagementTableRow';
+import VacationRequestManagementTableRow from './VacationRequestManagementTableRow';
 import useAsync from '../../../hooks/use-async';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
 

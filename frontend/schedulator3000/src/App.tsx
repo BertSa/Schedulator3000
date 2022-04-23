@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Navbar } from './components/Navbar';
-import { SignInPage } from './components/SignInPage';
-import { ManagerPages } from './components/manager/ManagerPages';
+import Navbar from './components/Navbar';
+import SignInPage from './components/SignInPage';
+import ManagerPages from './components/manager/ManagerPages';
 import { RequireAdmin, RequireEmployee, RequireNoAuth } from './hooks/use-auth';
-import { EmployeePages } from './components/employee/EmployeePages';
+import EmployeePages from './components/employee/EmployeePages';
 
 
 export default function App() {

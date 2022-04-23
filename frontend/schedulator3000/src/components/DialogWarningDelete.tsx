@@ -8,7 +8,7 @@ interface DialogWarningDeleteProps {
     text: string
 }
 
-export function DialogWarningDelete({resolve, closeDialog, title, text}: DialogWarningDeleteProps) {
+export default function DialogWarningDelete({resolve, closeDialog, title, text}: DialogWarningDeleteProps) {
     return <>
         <DialogTitle id="alert-dialog-title">
             { title }

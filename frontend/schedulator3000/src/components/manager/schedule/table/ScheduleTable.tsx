@@ -1,24 +1,24 @@
 import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import { Employee } from '../../../../models/User';
-import { isBetween, toLocalDateString } from '../../../../utilities';
+import { isBetween } from '../../../../utilities/DateUtilities';
 import { useAuth } from '../../../../hooks/use-auth';
 import { useServices } from '../../../../hooks/use-services/use-services';
-import { ShiftsFromToDto } from '../../../../models/ShiftsFromTo';
+import { RequestDtoShiftsFromTo } from '../../../../models/ShiftsFromTo';
 import { addWeeks, format, getDay } from 'date-fns';
 import { Shift } from '../../../../models/Shift';
 import { useDialog } from '../../../../hooks/use-dialog';
-import { ScheduleTableToolbar } from './ScheduleTableToolbar';
+import ScheduleTableToolbar from './ScheduleTableToolbar';
 import { VacationRequest } from '../../../../models/VacationRequest';
 import useCurrentWeek, { ICurrentWeek } from '../../../../hooks/use-currentWeek';
 import { zonedTimeToUtc } from 'date-fns-tz';
-import { ScheduleTableRow } from './ScheduleTableRow';
+import ScheduleTableRow from './ScheduleTableRow';
 import { Nullable } from '../../../../models/Nullable';
 import { ShiftFormFieldValue } from '../shift-form/ShiftForm';
-import { ShiftFormCreate } from '../shift-form/ShiftFormCreate';
-import { ShiftFormEdit } from '../shift-form/ShiftFormEdit';
+import ShiftFormCreate from '../shift-form/ShiftFormCreate';
+import ShiftFormEdit from '../shift-form/ShiftFormEdit';
 import useAsync from '../../../../hooks/use-async';
-import { ScheduleTableRowSkeleton } from './ScheduleTableRowSkeleton';
+import ScheduleTableRowSkeleton from './ScheduleTableRowSkeleton';
 import useAsyncDebounce from '../../../../hooks/use-async-debounce';
 import useDebounce from '../../../../hooks/use-debounce';
 import TableBodyEmpty from '../../../shared/TableBodyEmpty';
@@ -31,7 +31,7 @@ interface RowDataType {
     requests: VacationRequest[];
 }
 
-export function ScheduleTable() {
+export default function ScheduleTable() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [shifts, setShifts] = useState<Shift[]>([]);
     const [vacationRequests, setVacationRequests] = useState<VacationRequest[]>([]);
@@ -48,10 +48,10 @@ export function ScheduleTable() {
 
     useAsyncDebounce(() => {
         return new Promise<void>(async (resolve, reject) => {
-            let body: ShiftsFromToDto = {
+            let body: RequestDtoShiftsFromTo = {
                 userEmail: manager.email,
-                from: toLocalDateString(currentWeek.getPreviousWeek()),
-                to: toLocalDateString(addWeeks(currentWeek.value, 2))
+                from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
+                to: format(addWeeks(currentWeek.value, 2), 'yyyy-MM-dd')
             };
 
             await shiftService.getShiftsManager(body).then(
@@ -71,10 +71,10 @@ export function ScheduleTable() {
 
     const {loading} = useAsync(() => {
         return new Promise<void>(async (resolve, reject) => {
-            let body: ShiftsFromToDto = {
+            let body: RequestDtoShiftsFromTo = {
                 userEmail: manager.email,
-                from: toLocalDateString(currentWeek.getPreviousWeek()),
-                to: toLocalDateString(addWeeks(currentWeek.value, 2))
+                from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
+                to: format(addWeeks(currentWeek.value, 2), 'yyyy-MM-dd')
             };
             await managerService.getEmployees(manager.email).then(setEmployees, reject);
             await shiftService.getShiftsManager(body).then(

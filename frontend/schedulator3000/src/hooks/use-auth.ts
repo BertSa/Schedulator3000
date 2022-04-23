@@ -2,8 +2,8 @@ import React, { createContext, PropsWithChildren, useCallback, useContext, useEf
 import { Employee, Manager } from '../models/User';
 import { useSnackbar } from 'notistack';
 import { http } from './use-services/use-services';
-import { PasswordChangeDto } from '../models/PasswordChangeDto';
-import { NewEmployeePage } from '../components/employee/NewEmployeePage';
+import { PasswordChangeDto } from '../models/PasswordChange';
+import NewEmployeePage from '../components/employee/NewEmployeePage';
 
 const authContext: React.Context<ProviderAuth> = createContext({} as ProviderAuth);
 

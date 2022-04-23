@@ -1,7 +1,7 @@
 import { VacationRequest } from '../../../models/VacationRequest';
 import { Employee } from '../../../models/User';
 import { TableCell, TableRow } from '@mui/material';
-import { VacationRequestStatusIcon } from '../../employee/vacation-request-management/VacationRequestStatusIcon';
+import VacationRequestStatusIcon from '../../employee/vacation-request-management/VacationRequestStatusIcon';
 import React from 'react';
 
 
@@ -12,7 +12,7 @@ interface VacationRequestManagementTableRowProps {
     onClick: VoidFunction
 }
 
-export function VacationRequestManagementTableRow({
+export default function VacationRequestManagementTableRow({
                                                       vacationRequest,
                                                       employee,
                                                       isSelected,

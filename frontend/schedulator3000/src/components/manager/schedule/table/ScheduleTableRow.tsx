@@ -7,7 +7,7 @@ import { Box, Collapse, IconButton, Skeleton, Table, TableBody, TableCell, Table
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import React from 'react';
 import { SelectedItemType } from './ScheduleTable';
-import { ScheduleTableColumnWeek } from './ScheduleTableColumnWeek';
+import ScheduleTableColumnWeek from './ScheduleTableColumnWeek';
 import { Nullable } from '../../../../models/Nullable';
 import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
 
@@ -23,7 +23,7 @@ interface EmployeeWeekRowProps {
 }
 
 
-export function ScheduleTableRow({
+export default function ScheduleTableRow({
                                      selectedItem,
                                      employee,
                                      shifts,

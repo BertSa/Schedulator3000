@@ -7,6 +7,6 @@ export interface PasswordChangeDto extends PasswordChange {
     email?: string;
 }
 
-export interface PasswordChangeWithPwdConfirmation extends PasswordChange {
+export interface PasswordChangeFieldValues extends PasswordChange {
     confirmationPassword: string;
 }

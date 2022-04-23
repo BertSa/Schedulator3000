@@ -17,7 +17,7 @@ interface ScheduleTableToolbarProps {
     }
 }
 
-export function ScheduleTableToolbar({
+export default function ScheduleTableToolbar({
                                          currentWeek,
                                          selectedItem,
                                          actionsDisabled,

@@ -1,20 +1,21 @@
 import React, { ComponentType, useEffect, useState } from 'react';
 import { Calendar, CalendarProps, Event, Navigate, SlotInfo, stringOrDate, View, Views } from 'react-big-calendar';
 import withDragAndDrop, { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
-import { addDays, startOfWeek } from 'date-fns';
+import { addDays, format, startOfWeek } from 'date-fns';
 import { Controller, UnpackNestedValue, useForm } from 'react-hook-form';
 import { Avatar, Button, Container, Grid, InputAdornment, Menu, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import { AccountCircle, ArrowBack, ArrowForward, ContentCopy, Delete, Edit } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/lab';
 import { Employee } from '../../../models/User';
 import { useAuth } from '../../../hooks/use-auth';
-import { getCurrentTimezoneDate, localizer, preferences, stringAvatar, stringToColor, toLocalDateString } from '../../../utilities';
+import { stringAvatar, stringToColor } from '../../../utilities/utilities';
+import { getCurrentTimezoneDate, localizer, preferences } from '../../../utilities/DateUtilities';
 import { useDialog } from '../../../hooks/use-dialog';
 import { Shift, ShiftWithoutId } from '../../../models/Shift';
 import { useServices } from '../../../hooks/use-services/use-services';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import { ShiftsFromToDto } from '../../../models/ShiftsFromTo';
+import { RequestDtoShiftsFromTo } from '../../../models/ShiftsFromTo';
 import { ShiftEvent } from '../../../models/ShiftEvent';
 import { zonedTimeToUtc } from 'date-fns-tz';
 
@@ -29,20 +30,20 @@ type Ress = {
 
 const DnDCalendar = withDragAndDrop<ShiftEvent, Ress>(Calendar as ComponentType<CalendarProps<ShiftEvent, Ress>>);
 
-type ContextMenuStates = {
+interface ContextMenuStates {
     mouseX: number;
     mouseY: number;
     shiftEvent: ShiftEvent | null;
 }
 
-type FormFieldValue = {
+interface FormFieldValue {
     start: Date,
     end: Date,
     employeeId: number,
     shiftId?: number,
 }
 
-export const ScheduleCalendar = () => {
+export default function ScheduleCalendar() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [events, setEvents] = useState<ShiftEvent[]>([]);
     const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(getCurrentTimezoneDate(new Date())));
@@ -61,10 +62,10 @@ export const ScheduleCalendar = () => {
     const {managerService, shiftService} = useServices();
 
     useEffect(() => {
-        let body: ShiftsFromToDto = {
+        let body: RequestDtoShiftsFromTo = {
             userEmail: user.email,
-            from: toLocalDateString(addDays(currentWeek, -7)),
-            to: toLocalDateString(addDays(currentWeek, 14))
+            from: format(addDays(currentWeek, -7), 'yyyy-MM-dd'),
+            to: format(addDays(currentWeek, 14), 'yyyy-MM-dd')
         };
         managerService.getEmployees(user.email ?? '').then(
             list => {
@@ -479,6 +480,6 @@ export const ScheduleCalendar = () => {
             </Menu>
         </>
     );
-};
+}
 
 

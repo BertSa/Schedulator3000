@@ -1,7 +1,7 @@
 import React from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { Employee, EmployeeFormType } from '../../../../../models/User';
-import { EmployeeForm } from './EmployeeForm';
+import EmployeeForm from './EmployeeForm';
 import { IEmployeeService } from '../../../../../hooks/use-services/use-provide-employee-service';
 
 interface EmployeeFormEditProps {
@@ -11,7 +11,7 @@ interface EmployeeFormEditProps {
     employee: Employee,
 }
 
-export function EmployeeFormEdit({
+export default function EmployeeFormEdit({
                                  employeeService,
                                  callback,
                                  onCancel,

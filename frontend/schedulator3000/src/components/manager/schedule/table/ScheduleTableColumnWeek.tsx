@@ -1,11 +1,11 @@
 import { VacationRequest, VacationRequestStatus } from '../../../../models/VacationRequest';
-import { isBetween } from '../../../../utilities';
 import { alpha, SxProps, TableCell, Theme } from '@mui/material';
 import { format } from 'date-fns';
 import React from 'react';
 import { Shift } from '../../../../models/Shift';
 import { Nullable } from '../../../../models/Nullable';
 import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
+import { isBetween } from '../../../../utilities/DateUtilities';
 
 
 interface EmployeeWeekColumnProps {
@@ -17,7 +17,7 @@ interface EmployeeWeekColumnProps {
     currentWeek: ICurrentWeek,
 }
 
-export function ScheduleTableColumnWeek({
+export default function ScheduleTableColumnWeek({
                                             index,
                                             isSelected,
                                             onClick,

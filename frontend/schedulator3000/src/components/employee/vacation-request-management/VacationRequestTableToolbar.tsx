@@ -13,7 +13,7 @@ interface VacationRequestTableToolbarProps {
     },
 }
 
-export function VacationRequestTableToolbar({
+export default function VacationRequestTableToolbar({
                                                 selected,
                                                 actions: {create, edit, cancel},
                                             }: VacationRequestTableToolbarProps) {

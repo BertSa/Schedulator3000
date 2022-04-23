@@ -3,18 +3,18 @@ import { FieldInput } from '../shared/form/FormFields';
 import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useAuth } from '../../hooks/use-auth';
-import { PasswordChangeDto, PasswordChangeWithPwdConfirmation } from '../../models/PasswordChangeDto';
+import { PasswordChangeDto, PasswordChangeFieldValues } from '../../models/PasswordChange';
 import { useHistory } from 'react-router-dom';
 
-export function NewEmployeePage() {
-    const {getValues, register, handleSubmit, formState: {errors}} = useForm<PasswordChangeWithPwdConfirmation>({
+export default function NewEmployeePage() {
+    const {getValues, register, handleSubmit, formState: {errors}} = useForm<PasswordChangeFieldValues>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit'
     });
     const {updatePassword} = useAuth();
     const history = useHistory();
 
-    const submit: SubmitHandler<PasswordChangeWithPwdConfirmation> = data => {
+    const submit: SubmitHandler<PasswordChangeFieldValues> = data => {
         const {currentPassword, newPassword, confirmationPassword} = data;
         if (newPassword !== confirmationPassword) {
             return;

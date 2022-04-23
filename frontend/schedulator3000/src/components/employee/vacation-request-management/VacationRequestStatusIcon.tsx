@@ -8,7 +8,7 @@ interface VacationRequestStatusIconProps {
     status: VacationRequestStatus;
 }
 
-export function VacationRequestStatusIcon({status}: VacationRequestStatusIconProps): JSX.Element {
+export default function VacationRequestStatusIcon({status}: VacationRequestStatusIconProps): JSX.Element {
     switch (status.toUpperCase()) {
         case VacationRequestStatus.Rejected:
             return <Tooltip title="Rejected"><FlagCircle color="error" /></Tooltip>;

@@ -16,7 +16,7 @@ interface VacationRequestFormProps {
     vacationRequest?: VacationRequest;
 }
 
-export function VacationRequestForm({submit, onCancel, vacationRequest}: VacationRequestFormProps) {
+export default function VacationRequestForm({submit, onCancel, vacationRequest}: VacationRequestFormProps) {
     const {register, handleSubmit, formState: {errors}, control} = useForm<VacationRequestFormFieldValue>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',

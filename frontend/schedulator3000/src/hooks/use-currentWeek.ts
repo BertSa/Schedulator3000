@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { isBetween } from '../utilities';
 import { addDays, addWeeks, startOfWeek, subWeeks } from 'date-fns';
+import { isBetween } from '../utilities/DateUtilities';
 
 export interface ICurrentWeek {
     value: Date,

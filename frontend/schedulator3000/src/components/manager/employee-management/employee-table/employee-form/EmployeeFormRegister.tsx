@@ -1,7 +1,7 @@
 import React from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { Employee, EmployeeFormType, Manager } from '../../../../../models/User';
-import { EmployeeForm } from './EmployeeForm';
+import EmployeeForm from './EmployeeForm';
 import { IManagerService } from '../../../../../hooks/use-services/use-provide-manager-service';
 
 interface EmployeeFormRegisterProps {
@@ -11,7 +11,7 @@ interface EmployeeFormRegisterProps {
     onCancel: VoidFunction;
 }
 
-export function EmployeeFormRegister({
+export default function EmployeeFormRegister({
                                          user,
                                          managerService,
                                          callback,

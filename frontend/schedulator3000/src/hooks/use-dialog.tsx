@@ -28,7 +28,7 @@ const generator: Generator<number, void> = idGenerator();
 
 const DialogContext = React.createContext<ProviderContext>({} as ProviderContext);
 
-export const useDialog = (): [(container: ReactNode, onExited?: VoidFunction) => void, VoidFunction] => {
+export function useDialog(): [(container: ReactNode, onExited?: VoidFunction) => void, VoidFunction] {
     const [createDialog, closeDialog] = React.useContext(DialogContext);
     let idDialog: number = -1;
 
@@ -47,7 +47,7 @@ export const useDialog = (): [(container: ReactNode, onExited?: VoidFunction) =>
 
 
     return [handleOpen, handleClose];
-};
+}
 
 function DialogContainer({children, open, onClose, onEnded}: DialogContainerProps) {
     return (

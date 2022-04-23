@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/use-auth';
 import { useHistory } from 'react-router-dom';
 import { Nullable } from '../models/Nullable';
 
-export function Navbar() {
+export default function Navbar() {
     const [anchorElNav, setAnchorElNav] = React.useState<Nullable<HTMLElement>>(null);
     const history = useHistory();
     const auth = useAuth();

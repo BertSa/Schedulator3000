@@ -1,5 +1,5 @@
 import { SubmitHandler } from 'react-hook-form';
-import { VacationRequestForm, VacationRequestFormFieldValue } from './VacationRequestForm';
+import VacationRequestForm, { VacationRequestFormFieldValue } from './VacationRequestForm';
 import { VacationRequest, VacationRequestCreate } from '../../../../models/VacationRequest';
 import React from 'react';
 import { Employee } from '../../../../models/User';
@@ -13,7 +13,7 @@ interface VacationRequestFormCreateProps {
     employee: Employee;
 }
 
-export function VacationRequestFormCreate({
+export default function VacationRequestFormCreate({
                                               vacationRequestService,
                                               onCancel,
                                               callback,
@@ -34,6 +34,5 @@ export function VacationRequestFormCreate({
     };
 
     return <VacationRequestForm submit={ submit }
-                                onCancel={ onCancel }
-    />;
+                                onCancel={ onCancel } />;
 }

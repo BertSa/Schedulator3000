@@ -4,17 +4,17 @@ import { useServices } from '../../../hooks/use-services/use-services';
 import { useAuth } from '../../../hooks/use-auth';
 import { Employee } from '../../../models/User';
 import { Container, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { VacationRequestTableToolbar } from './VacationRequestTableToolbar';
+import VacationRequestTableToolbar from './VacationRequestTableToolbar';
 import { useDialog } from '../../../hooks/use-dialog';
-import { VacationRequestFormCreate } from './form/VacationRequestFormCreate';
-import { VacationRequestFormEdit } from './form/VacationRequestFormEdit';
+import VacationRequestFormCreate from './form/VacationRequestFormCreate';
+import VacationRequestFormEdit from './form/VacationRequestFormEdit';
 import { Nullable } from '../../../models/Nullable';
-import { VacationRequestTableRow } from './VacationRequestTableRow';
+import VacationRequestTableRow from './VacationRequestTableRow';
 import useAsync from '../../../hooks/use-async';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
 
 
-export function VacationRequestTable() {
+export default function VacationRequestTable() {
     const [vacationRequests, setVacationRequests] = useState<VacationRequest[]>([]);
     const [selectedVacationRequest, setSelectedVacationRequest] = useState<Nullable<VacationRequest>>(null);
     const {vacationRequestService} = useServices();

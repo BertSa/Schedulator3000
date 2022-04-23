@@ -12,7 +12,7 @@ interface VacationRequestManagementTableToolbarProps {
     },
 }
 
-export function VacationRequestManagementTableToolbar({
+export default function VacationRequestManagementTableToolbar({
                                                           selectedVacationRequest,
                                                           actions: {
                                                               approve,

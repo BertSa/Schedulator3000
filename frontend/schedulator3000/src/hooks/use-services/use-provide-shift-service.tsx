@@ -1,16 +1,16 @@
 import { useSnackbar } from 'notistack';
 import { useDialog } from '../use-dialog';
-import { ShiftsFromToDto } from '../../models/ShiftsFromTo';
+import { RequestDtoShiftsFromTo } from '../../models/ShiftsFromTo';
 import { Shift, ShiftWithoutId } from '../../models/Shift';
-import { DialogWarningDelete } from '../../components/DialogWarningDelete';
+import DialogWarningDelete from '../../components/DialogWarningDelete';
 import React from 'react';
 import { http } from './use-services';
 
 const PATH = '/shifts';
 
 export interface IShiftService {
-    getShiftsManager: (body: ShiftsFromToDto) => Promise<Shift[]>,
-    getShiftsEmployee: (body: ShiftsFromToDto) => Promise<Shift[]>,
+    getShiftsManager: (body: RequestDtoShiftsFromTo) => Promise<Shift[]>,
+    getShiftsEmployee: (body: RequestDtoShiftsFromTo) => Promise<Shift[]>,
     create: (body: ShiftWithoutId) => Promise<Shift>,
     updateShift: (body: Shift) => Promise<Shift>,
     deleteShift: (id: number) => Promise<void>
@@ -20,7 +20,7 @@ export function useProvideShiftService(): IShiftService {
     const {enqueueSnackbar} = useSnackbar();
     let [openDialog, closeDialog] = useDialog();
 
-    async function getShifts(userType: string, data: ShiftsFromToDto): Promise<Shift[]> {
+    async function getShifts(userType: string, data: RequestDtoShiftsFromTo): Promise<Shift[]> {
         const {response, body} = await http.post(`${ PATH }/${ userType }`, data);
 
         if (response.ok) {
@@ -33,8 +33,8 @@ export function useProvideShiftService(): IShiftService {
         return Promise.reject(body.message);
     }
 
-    const getShiftsManager = async (body: ShiftsFromToDto): Promise<Shift[]> => getShifts('manager', body);
-    const getShiftsEmployee = async (body: ShiftsFromToDto): Promise<Shift[]> => getShifts('employee', body);
+    const getShiftsManager = async (body: RequestDtoShiftsFromTo): Promise<Shift[]> => getShifts('manager', body);
+    const getShiftsEmployee = async (body: RequestDtoShiftsFromTo): Promise<Shift[]> => getShifts('employee', body);
 
     async function create(data: ShiftWithoutId): Promise<Shift> {
         const {response, body} = await http.post(`${ PATH }/manager/create`, data);

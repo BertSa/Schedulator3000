@@ -1,7 +1,7 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Grid } from '@mui/material';
 import { FieldInput } from '../../../../shared/form/FormFields';
-import { regex } from '../../../../../utilities';
+import { regex } from '../../../../../utilities/utilities';
 import React from 'react';
 import { Employee, EmployeeFormType } from '../../../../../models/User';
 
@@ -16,7 +16,7 @@ EmployeeForm.defaultProps = {
     emailDisabled: false
 };
 
-export function EmployeeForm({submit, emailDisabled, onCancel, employee}: EmployeeFormProps): JSX.Element {
+export default function EmployeeForm({submit, emailDisabled, onCancel, employee}: EmployeeFormProps): JSX.Element {
     const {register, handleSubmit, formState: {errors}} = useForm<EmployeeFormType>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
