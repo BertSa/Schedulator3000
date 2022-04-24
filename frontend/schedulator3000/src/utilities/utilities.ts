@@ -5,14 +5,13 @@ export const regex = Object.freeze({
     name: /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
 });
 
-//https://github.com/erming/stringcolor/blob/gh-pages/stringcolor.js
+// Credits: https://github.com/erming/stringcolor/blob/gh-pages/stringcolor.js
 export function stringToColor(string: string) {
     let hash = 0;
 
     for (let i = 0; i < string.length; i++) {
         hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
-
 
     let color = ((hash >> 24) & 0xFF).toString(16) +
         ((hash >> 16) & 0xFF).toString(16) +

@@ -17,13 +17,13 @@ interface ScheduleCreateShiftProps {
 }
 
 export default function ShiftFormCreate({
-                                    shiftService,
-                                    employees,
-                                    manager,
-                                    selected,
-                                    callback,
-                                    closeDialog
-                                }: ScheduleCreateShiftProps) {
+                                            shiftService,
+                                            employees,
+                                            manager,
+                                            selected,
+                                            callback,
+                                            closeDialog
+                                        }: ScheduleCreateShiftProps) {
     function submit(data: UnpackNestedValue<ShiftFormFieldValue>, event?: React.BaseSyntheticEvent) {
         event?.preventDefault();
         const {start, end, employeeId} = data;
@@ -40,22 +40,26 @@ export default function ShiftFormCreate({
             emailManager: manager.email,
         };
 
-        shiftService.create(newShift).then(shift =>{
+        shiftService.create(newShift).then(shift => {
             const newShift: Shift = {
                 ...shift,
                 startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
                 endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
             };
-            callback(newShift)
+            callback(newShift);
         });
     }
 
 
-    return <>
-        <Typography variant="h5" component="h5">Create Shift</Typography>
-        <ShiftForm selected={ selected }
-                   submit={ submit }
-                   onClose={ closeDialog }
-                   employees={ employees } />
-    </>;
+    return (
+        <>
+            <Typography variant="h5" component="h5">Create Shift</Typography>
+            <ShiftForm
+                selected={ selected }
+                submit={ submit }
+                onClose={ closeDialog }
+                employees={ employees }
+            />
+        </>
+    );
 }

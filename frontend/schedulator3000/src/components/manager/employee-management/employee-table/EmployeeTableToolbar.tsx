@@ -25,9 +25,7 @@ export default function EmployeeTableToolbar({selected, actions: {create, edit, 
     };
 
     return (
-        <Toolbar
-            sx={ toolbarSx }
-        >
+        <Toolbar sx={ toolbarSx }>
             { selected ? (
                 <Typography
                     sx={ {flex: '1 1 100%'} }
@@ -60,7 +58,8 @@ export default function EmployeeTableToolbar({selected, actions: {create, edit, 
                         </IconButton>
                     </Tooltip>
                 </>
-            ) : (<>
+            ) : (
+                <>
                     <Tooltip title="Add new employee">
                         <IconButton onClick={ create }>
                             <Add />

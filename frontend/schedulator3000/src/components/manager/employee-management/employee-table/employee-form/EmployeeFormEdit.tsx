@@ -12,19 +12,21 @@ interface EmployeeFormEditProps {
 }
 
 export default function EmployeeFormEdit({
-                                 employeeService,
-                                 callback,
-                                 onCancel,
-                                 employee
-                             }: EmployeeFormEditProps): React.ReactElement {
+                                             employeeService,
+                                             callback,
+                                             onCancel,
+                                             employee
+                                         }: EmployeeFormEditProps): React.ReactElement {
 
     const submit: SubmitHandler<EmployeeFormType> = (data, event) => {
         event?.preventDefault();
         employeeService.updateEmployee(data).then(callback);
     };
 
-    return <>
+    return (
+        <>
             <h3>Modify Employee</h3>
             <EmployeeForm submit={ submit } emailDisabled onCancel={ onCancel } employee={ employee } />
-        </>;
+        </>
+    );
 }

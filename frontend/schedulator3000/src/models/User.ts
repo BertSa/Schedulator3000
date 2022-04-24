@@ -1,3 +1,5 @@
+import { Nullable } from './Nullable';
+
 export class User {
     private readonly _id: number;
     private readonly _email: string;
@@ -33,7 +35,7 @@ export class Employee extends User {
     private readonly _firstName: string;
     private readonly _lastName: string;
     private readonly _role: string;
-    private _active: boolean | null = null;
+    private _active: Nullable<boolean> = null;
 
     constructor(id: number, email: string, phone: string, firstName: string, lastName: string, role: string, password: string = '', active: boolean | null = null) {
         super(id, email, phone, password);
@@ -56,11 +58,11 @@ export class Employee extends User {
         return this._role;
     }
 
-    set active(value: boolean | null) {
+    set active(value: Nullable<boolean>) {
         this._active = value;
     }
 
-    get active(): boolean | null {
+    get active(): Nullable<boolean> {
         return this._active;
     }
 }

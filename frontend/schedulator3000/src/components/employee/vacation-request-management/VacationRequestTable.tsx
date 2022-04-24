@@ -35,10 +35,14 @@ export default function VacationRequestTable() {
     }
 
     function createAction(): void {
-        return openDialog(<VacationRequestFormCreate vacationRequestService={ vacationRequestService }
-                                                     callback={ callback }
-                                                     onCancel={ closeDialog }
-                                                     employee={ employee } />);
+        return openDialog(
+            <VacationRequestFormCreate
+                vacationRequestService={ vacationRequestService }
+                callback={ callback }
+                onCancel={ closeDialog }
+                employee={ employee }
+            />
+        );
     }
 
     function editAction(): void {
@@ -46,10 +50,14 @@ export default function VacationRequestTable() {
             return;
         }
 
-        return openDialog(<VacationRequestFormEdit vacationRequestService={ vacationRequestService }
-                                                   callback={ callback }
-                                                   onCancel={ closeDialog }
-                                                   vacationRequest={ selectedVacationRequest } />);
+        return openDialog(
+            <VacationRequestFormEdit
+                vacationRequestService={ vacationRequestService }
+                callback={ callback }
+                onCancel={ closeDialog }
+                vacationRequest={ selectedVacationRequest }
+            />
+        );
     }
 
     function cancelAction(): void {
@@ -79,11 +87,14 @@ export default function VacationRequestTable() {
         }
 
         return <TableBody>
-            { vacationRequests.map(request =>
-                <VacationRequestTableRow key={ request.id }
-                                         request={ request }
-                                         isSelected={ selectedVacationRequest?.id === request.id }
-                                         onClick={ () => handleRowClick(request) } />) }
+            { vacationRequests.map(request => (
+                <VacationRequestTableRow
+                    key={ request.id }
+                    request={ request }
+                    isSelected={ selectedVacationRequest?.id === request.id }
+                    onClick={ () => handleRowClick(request) }
+                />
+            )) }
         </TableBody>;
     }
 
@@ -91,12 +102,14 @@ export default function VacationRequestTable() {
     return <>
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
-                <VacationRequestTableToolbar selected={ selectedVacationRequest }
-                                             actions={ {
-                                                 create: createAction,
-                                                 edit: editAction,
-                                                 cancel: cancelAction,
-                                             } } />
+                <VacationRequestTableToolbar
+                    selected={ selectedVacationRequest }
+                    actions={ {
+                        create: createAction,
+                        edit: editAction,
+                        cancel: cancelAction,
+                    } }
+                />
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
@@ -123,13 +136,15 @@ export default function VacationRequestTable() {
 }
 
 function VacationRequestTableRowSkeleton() {
-    return <TableBody>
-        <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
-            <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
-            <TableCell width="10%"><Skeleton /></TableCell>
-            <TableCell width="10%"><Skeleton /></TableCell>
-            <TableCell><Skeleton /></TableCell>
-            <TableCell align="center" width="10%"><Icon><Skeleton variant="circular" /></Icon></TableCell>
-        </TableRow>
-    </TableBody>;
+    return (
+        <TableBody>
+            <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
+                <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
+                <TableCell width="10%"><Skeleton /></TableCell>
+                <TableCell width="10%"><Skeleton /></TableCell>
+                <TableCell><Skeleton /></TableCell>
+                <TableCell align="center" width="10%"><Icon><Skeleton variant="circular" /></Icon></TableCell>
+            </TableRow>
+        </TableBody>
+    );
 }

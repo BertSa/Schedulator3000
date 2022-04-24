@@ -4,7 +4,7 @@ import enCA from 'date-fns/locale/en-CA';
 
 
 /**
- * isBetween returns true if the date is between the start and end dates
+ * @description isBetween returns true if the date is between the start and end dates
  * @param  {[Date]} date the date to check
  * @param  {[Date]} start the start date (inclusive)
  * @param  {[Date]} end the end date (exclusive)

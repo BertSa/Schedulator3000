@@ -13,12 +13,12 @@ interface VacationRequestManagementTableToolbarProps {
 }
 
 export default function VacationRequestManagementTableToolbar({
-                                                          selectedVacationRequest,
-                                                          actions: {
-                                                              approve,
-                                                              reject,
-                                                          }
-                                                      }: VacationRequestManagementTableToolbarProps) {
+                                                                  selectedVacationRequest,
+                                                                  actions: {
+                                                                      approve,
+                                                                      reject,
+                                                                  }
+                                                              }: VacationRequestManagementTableToolbarProps) {
     const toolbarSx: SxProps<Theme> = {
         pl: {sm: 2},
         pr: {xs: 1, sm: 1},
@@ -49,26 +49,52 @@ export default function VacationRequestManagementTableToolbar({
                 </Typography>
             ) }
 
-            { selectedVacationRequest && <div>
-                <Tooltip
-                    title={ selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Cancelled ? 'Request cancelled by the employee' : selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Rejected ? 'Already rejected' : 'Reject' }>
+            { selectedVacationRequest && (
+                <div>
+                    <Tooltip
+                        title={
+                            selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Cancelled ?
+                                'Request cancelled by the employee' :
+                                selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Rejected ?
+                                    'Already rejected' :
+                                    'Reject'
+                        }
+                    >
                         <span>
-                        <IconButton onClick={ reject }
-                                    disabled={ selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Cancelled || selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Rejected }>
+                        <IconButton
+                            onClick={ reject }
+                            disabled={
+                                selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Cancelled ||
+                                selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Rejected
+                            }
+                        >
                             <FlagCircle />
                         </IconButton>
                         </span>
-                </Tooltip>
-                <Tooltip
-                    title={ selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Cancelled ? 'Request cancelled by the employee' : selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Approved ? 'Already approved' : 'Approve' }>
+                    </Tooltip>
+                    <Tooltip
+                        title={
+                            selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Cancelled ?
+                                'Request cancelled by the employee' :
+                                selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Approved ?
+                                    'Already approved' :
+                                    'Approve'
+                        }
+                    >
                         <span>
-                        <IconButton onClick={ approve }
-                                    disabled={ selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Cancelled || selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Approved }>
+                        <IconButton
+                            onClick={ approve }
+                            disabled={
+                                selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Cancelled ||
+                                selectedVacationRequest.status.toUpperCase() === VacationRequestStatus.Approved
+                            }
+                        >
                             <CheckCircle />
                         </IconButton>
                         </span>
-                </Tooltip>
-            </div> }
+                    </Tooltip>
+                </div>
+            ) }
         </Toolbar>
     );
 }

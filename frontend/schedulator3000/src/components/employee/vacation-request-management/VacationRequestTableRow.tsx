@@ -12,16 +12,17 @@ interface VacationRequestTableRowProps {
 
 export default function VacationRequestTableRow({request, isSelected, onClick}: VacationRequestTableRowProps) {
 
-    return <>
+    return (
         <TableRow
             selected={ isSelected }
             hover
+            onClick={ onClick }
             sx={ {
                 cursor: 'pointer',
                 '&:last-child td, &:last-child th': {border: 0},
             } }
-            onClick={ onClick }>
-            <TableCell component="th" scope="row"  width="5%">
+        >
+            <TableCell component="th" scope="row" width="5%">
                 { request.id }
             </TableCell>
             <TableCell width="10%">
@@ -37,5 +38,5 @@ export default function VacationRequestTableRow({request, isSelected, onClick}: 
                 <VacationRequestStatusIcon status={ request.status } />
             </TableCell>
         </TableRow>
-    </>;
+    );
 }

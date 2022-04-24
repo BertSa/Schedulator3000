@@ -24,14 +24,14 @@ interface EmployeeWeekRowProps {
 
 
 export default function ScheduleTableRow({
-                                     selectedItem,
-                                     employee,
-                                     shifts,
-                                     vacationRequests,
-                                     currentWeek,
-                                     setSelected,
-                                     previousWeek,
-                                 }: EmployeeWeekRowProps) {
+                                             selectedItem,
+                                             employee,
+                                             shifts,
+                                             vacationRequests,
+                                             currentWeek,
+                                             setSelected,
+                                             previousWeek,
+                                         }: EmployeeWeekRowProps) {
     const [open, toggle] = useToggle();
 
 
@@ -57,28 +57,34 @@ export default function ScheduleTableRow({
                         { open ? <KeyboardArrowUp /> : <KeyboardArrowDown /> }
                     </IconButton>
                 </TableCell>
-                <TableCell component="th" scope="row"
-                           width="15%">{ employee.firstName } { employee.lastName }</TableCell>
+                <TableCell component="th" scope="row" width="15%">
+                    { employee.firstName } { employee.lastName }
+                </TableCell>
                 { shifts.map((shift, key) =>
                     isLoadingShifts ?
-                        <TableCell key={ key } align="center">
-                            <Skeleton />
-                            -
-                            <Skeleton />
-                        </TableCell> :
-                        <ScheduleTableColumnWeek key={ key }
-                                                 index={ key }
-                                                 isSelected={ selectedItem?.day === key && selectedItem?.employee.id === employee.id }
-                                                 shift={ shift }
-                                                 vacations={ vacationRequests }
-                                                 currentWeek={ currentWeek }
-                                                 onClick={ () => setSelected(current => current?.day === key && current?.employee.id === employee.id ?
-                                                     null : {
-                                                         employee: employee,
-                                                         day: key,
-                                                         shift: shift
-                                                     }) }
-                        />) }
+                        (
+                            <TableCell key={ key } align="center">
+                                <Skeleton />
+                                -
+                                <Skeleton />
+                            </TableCell>
+                        ) : (
+                            <ScheduleTableColumnWeek
+                                key={ key }
+                                index={ key }
+                                isSelected={ selectedItem?.day === key && selectedItem?.employee.id === employee.id }
+                                shift={ shift }
+                                vacations={ vacationRequests }
+                                currentWeek={ currentWeek }
+                                onClick={ () => setSelected(current => current?.day === key && current?.employee.id === employee.id ?
+                                    null : {
+                                        employee: employee,
+                                        day: key,
+                                        shift: shift
+                                    }) }
+                            />
+                        )
+                ) }
                 <TableCell align="right" width="7%"><TotalTime /></TableCell>
             </TableRow>
             <TableRow className="myRow">
@@ -96,13 +102,16 @@ export default function ScheduleTableRow({
                         <Box sx={ {margin: 1} }>
                             <Table>
                                 <TableBody>
-                                    { vacationRequests.map((value, key) =>
+                                    { vacationRequests.map((value, key) => (
                                         <TableRow key={ key }>
                                             <TableCell component="th" scope="row">
                                                 { value.reason }
                                             </TableCell>
-                                            <TableCell align="right">{ value.status }</TableCell>
-                                        </TableRow>) }
+                                            <TableCell align="right">
+                                                { value.status }
+                                            </TableCell>
+                                        </TableRow>
+                                    )) }
                                 </TableBody>
                             </Table>
                         </Box>

@@ -58,25 +58,31 @@ export default function VacationRequestManagementTable() {
             { vacationRequests.map((vacationRequest, key) => {
                 const employee: Employee | undefined = employees.find(emp => emp.email === vacationRequest.employeeEmail);
                 if (employee) {
-                    return <VacationRequestManagementTableRow key={ key }
-                                                              vacationRequest={ vacationRequest }
-                                                              employee={ employee }
-                                                              isSelected={ selectedVacationRequest?.id === vacationRequest.id }
-                                                              onClick={ () => handleRowClick(vacationRequest) } />;
+                    return (
+                        <VacationRequestManagementTableRow
+                            key={ key }
+                            vacationRequest={ vacationRequest }
+                            employee={ employee }
+                            isSelected={ selectedVacationRequest?.id === vacationRequest.id }
+                            onClick={ () => handleRowClick(vacationRequest) }
+                        />
+                    );
                 }
                 return <Hidden key={ key } />;
             }) }
         </TableBody>;
     }
 
-    return <>
+    return (
         <Container maxWidth="lg">
             <TableContainer component={ Paper }>
-                <VacationRequestManagementTableToolbar selectedVacationRequest={ selectedVacationRequest }
-                                                       actions={ {
-                                                           approve: approveAction,
-                                                           reject: rejectAction,
-                                                       } } />
+                <VacationRequestManagementTableToolbar
+                    selectedVacationRequest={ selectedVacationRequest }
+                    actions={ {
+                        approve: approveAction,
+                        reject: rejectAction,
+                    } }
+                />
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
@@ -102,18 +108,20 @@ export default function VacationRequestManagementTable() {
                 </Table>
             </TableContainer>
         </Container>
-    </>;
+    );
 }
 
 function VacationRequestManagementTableBodySkeleton() {
-    return <TableBody>
-        <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
-            <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
-            <TableCell width="15%"><Skeleton /></TableCell>
-            <TableCell width="10%"><Skeleton /></TableCell>
-            <TableCell width="10%"><Skeleton /></TableCell>
-            <TableCell><Skeleton /></TableCell>
-            <TableCell align="center" width="10%"><Icon><Skeleton variant="circular" /></Icon></TableCell>
-        </TableRow>
-    </TableBody>;
+    return (
+        <TableBody>
+            <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
+                <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
+                <TableCell width="15%"><Skeleton /></TableCell>
+                <TableCell width="10%"><Skeleton /></TableCell>
+                <TableCell width="10%"><Skeleton /></TableCell>
+                <TableCell><Skeleton /></TableCell>
+                <TableCell align="center" width="10%"><Icon><Skeleton variant="circular" /></Icon></TableCell>
+            </TableRow>
+        </TableBody>
+    );
 }

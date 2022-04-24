@@ -12,11 +12,11 @@ interface EmployeeFormRegisterProps {
 }
 
 export default function EmployeeFormRegister({
-                                         user,
-                                         managerService,
-                                         callback,
-                                         onCancel
-                                     }: EmployeeFormRegisterProps): React.ReactElement {
+                                                 user,
+                                                 managerService,
+                                                 callback,
+                                                 onCancel
+                                             }: EmployeeFormRegisterProps): React.ReactElement {
 
 
     const submit: SubmitHandler<EmployeeFormType> = (data, event) => {
@@ -25,7 +25,8 @@ export default function EmployeeFormRegister({
     };
 
 
-    return (<>
+    return (
+        <>
             <h3>Register New Employee</h3>
             <EmployeeForm submit={ submit } onCancel={ onCancel } />
         </>

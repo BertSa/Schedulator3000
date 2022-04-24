@@ -13,20 +13,22 @@ interface VacationRequestManagementTableRowProps {
 }
 
 export default function VacationRequestManagementTableRow({
-                                                      vacationRequest,
-                                                      employee,
-                                                      isSelected,
-                                                      onClick
-                                                  }: VacationRequestManagementTableRowProps) {
+                                                              vacationRequest,
+                                                              employee,
+                                                              isSelected,
+                                                              onClick
+                                                          }: VacationRequestManagementTableRowProps) {
 
-    return <>
-        <TableRow selected={ isSelected }
-                  hover
-                  onClick={ onClick }
-                  sx={ {
-                      cursor: 'pointer',
-                      '&:last-child td, &:last-child th': {border: 0},
-                  } }>
+    return (
+        <TableRow
+            selected={ isSelected }
+            hover
+            onClick={ onClick }
+            sx={ {
+                cursor: 'pointer',
+                '&:last-child td, &:last-child th': {border: 0},
+            } }
+        >
             <TableCell component="th" scope="row" width="5%">
                 { vacationRequest.id }
             </TableCell>
@@ -46,5 +48,5 @@ export default function VacationRequestManagementTableRow({
                 <VacationRequestStatusIcon status={ vacationRequest.status } />
             </TableCell>
         </TableRow>
-    </>;
+    );
 }

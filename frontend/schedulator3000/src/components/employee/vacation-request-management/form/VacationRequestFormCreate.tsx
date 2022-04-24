@@ -33,6 +33,5 @@ export default function VacationRequestFormCreate({
         vacationRequestService.create(body).then(callback);
     };
 
-    return <VacationRequestForm submit={ submit }
-                                onCancel={ onCancel } />;
+    return <VacationRequestForm submit={ submit } onCancel={ onCancel } />;
 }

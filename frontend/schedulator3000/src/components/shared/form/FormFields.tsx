@@ -30,16 +30,18 @@ interface FieldInputProps {
 
 export function FieldInput(props: FieldInputProps) {
     const {register, errors, label, name, type, validation, autoComplete, defaultValue, disabled} = props;
-    return <TextField
-        type={ type }
-        label={ label }
-        name={ name }
-        autoComplete={ autoComplete }
-        { ...register(name, validation) }
-        fullWidth
-        error={ !!errors[name] }
-        helperText={ errors[name]?.message ?? ' ' }
-        defaultValue={ defaultValue }
-        disabled={ disabled ?? false }
-    />;
+    return (
+        <TextField
+            type={ type }
+            label={ label }
+            name={ name }
+            autoComplete={ autoComplete }
+            { ...register(name, validation) }
+            fullWidth
+            error={ !!errors[name] }
+            helperText={ errors[name]?.message ?? ' ' }
+            defaultValue={ defaultValue }
+            disabled={ disabled ?? false }
+        />
+    );
 }

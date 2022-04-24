@@ -4,8 +4,10 @@ import ScheduleEmployee from './ScheduleEmployee';
 import VacationRequestTable from './vacation-request-management/VacationRequestTable';
 
 export default function EmployeePages(): React.ReactElement {
-    return <>
-        <Route path={ `/schedule` } component={ ScheduleEmployee } />
-        <Route path={ `/vacation-requests` } component={ VacationRequestTable } />
-    </>;
+    return (
+        <>
+            <Route path={ `/schedule` } component={ ScheduleEmployee } />
+            <Route path={ `/vacation-requests` } component={ VacationRequestTable } />
+        </>
+    );
 }

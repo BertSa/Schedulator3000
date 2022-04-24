@@ -13,11 +13,11 @@ interface VacationRequestFormEditProps {
 }
 
 export default function VacationRequestFormEdit({
-                                            callback,
-                                            onCancel,
-                                            vacationRequestService,
-                                            vacationRequest
-                                        }: VacationRequestFormEditProps) {
+                                                    callback,
+                                                    onCancel,
+                                                    vacationRequestService,
+                                                    vacationRequest
+                                                }: VacationRequestFormEditProps) {
 
 
     const submit: SubmitHandler<VacationRequestFormFieldValue> = (data, event): void => {
@@ -32,8 +32,5 @@ export default function VacationRequestFormEdit({
         vacationRequestService.update(body).then(callback);
     };
 
-    return <VacationRequestForm submit={ submit }
-                                onCancel={ onCancel }
-                                vacationRequest={ vacationRequest }
-    />;
+    return <VacationRequestForm submit={ submit } onCancel={ onCancel } vacationRequest={ vacationRequest } />;
 }

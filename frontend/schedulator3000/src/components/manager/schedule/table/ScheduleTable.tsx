@@ -111,12 +111,16 @@ export default function ScheduleTable() {
             setSelectedItem(current => current && ({...current, shift: shift}));
         }
 
-        openDialog(<ShiftFormCreate shiftService={ shiftService }
-                                    employees={ employees }
-                                    closeDialog={ closeDialog }
-                                    selected={ selectedValue }
-                                    manager={ manager }
-                                    callback={ callback } />);
+        openDialog(
+            <ShiftFormCreate
+                shiftService={ shiftService }
+                employees={ employees }
+                closeDialog={ closeDialog }
+                selected={ selectedValue }
+                manager={ manager }
+                callback={ callback }
+            />
+        );
 
     }
 
@@ -144,13 +148,17 @@ export default function ScheduleTable() {
         }
 
 
-        openDialog(<ShiftFormEdit shiftService={ shiftService }
-                                  employees={ employees }
-                                  closeDialog={ closeDialog }
-                                  selected={ selectedValue }
-                                  manager={ manager }
-                                  callbackDelete={ callbackDelete }
-                                  callbackUpdate={ callbackUpdate } />);
+        openDialog(
+            <ShiftFormEdit
+                shiftService={ shiftService }
+                employees={ employees }
+                closeDialog={ closeDialog }
+                selected={ selectedValue }
+                manager={ manager }
+                callbackDelete={ callbackDelete }
+                callbackUpdate={ callbackUpdate }
+            />
+        );
     }
 
     function removeAction() {
@@ -205,16 +213,22 @@ export default function ScheduleTable() {
             return <TableBodyEmpty colSpan={ 10 } message="No employees" />;
         }
 
-        return <TableBody>{ rowData.map(({employee, shifts, requests}) =>
-            <ScheduleTableRow key={ employee.id }
-                              employee={ employee }
-                              previousWeek={ weekRef.current }
-                              shifts={ shifts }
-                              vacationRequests={ requests }
-                              selectedItem={ selectedItem }
-                              currentWeek={ currentWeek }
-                              setSelected={ setSelectedItem }
-            />) }</TableBody>;
+        return (
+            <TableBody>
+                { rowData.map(({employee, shifts, requests}) => (
+                    <ScheduleTableRow
+                        key={ employee.id }
+                        employee={ employee }
+                        previousWeek={ weekRef.current }
+                        shifts={ shifts }
+                        vacationRequests={ requests }
+                        selectedItem={ selectedItem }
+                        currentWeek={ currentWeek }
+                        setSelected={ setSelectedItem }
+                    />
+                )) }
+            </TableBody>
+        );
     }
 
     return (
@@ -230,7 +244,8 @@ export default function ScheduleTable() {
                         create: createAction,
                         edit: editAction,
                         remove: removeAction,
-                    } } />
+                    } }
+                />
                 <Table aria-label="collapsible table" size="medium">
                     <TableHead>
                         <TableRow>

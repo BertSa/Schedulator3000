@@ -31,7 +31,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
     }
 
     async function update(data: VacationRequestUpdate): Promise<VacationRequest> {
-        const {response, body} = await http.put('/vacation-requests', data);
+        const {response, body} = await http.put(`/vacation-requests/${data.id}`, data);
 
         if (response.ok) {
             enqueueSnackbar('Vacation Request updated!', {

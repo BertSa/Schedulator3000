@@ -27,13 +27,15 @@ export default function VacationRequestForm({submit, onCancel, vacationRequest}:
     });
 
 
-    return <>
-        <Grid container
-              component="form"
-              spacing={ 2 }
-              padding={ 2 }
-              onSubmit={ handleSubmit(submit) }
-              noValidate>
+    return (
+        <Grid
+            container
+            component="form"
+            spacing={ 2 }
+            padding={ 2 }
+            onSubmit={ handleSubmit(submit) }
+            noValidate
+        >
             <Grid item xs={ 12 }>
                 <Controller
                     name="startEnd"
@@ -63,12 +65,12 @@ export default function VacationRequestForm({submit, onCancel, vacationRequest}:
                     multiline
                     label="Reason"
                     autoComplete=""
+                    fullWidth
+                    helperText={ errors.reason?.message ?? ' ' }
+                    error={ !!errors.reason }
                     { ...register('reason', {
                         required: 'Reason is required',
                     }) }
-                    fullWidth
-                    error={ !!errors.reason }
-                    helperText={ errors.reason?.message ?? ' ' }
                 />
             </Grid>
             <Grid item alignSelf={ 'center' } marginX={ 'auto' }>
@@ -83,5 +85,5 @@ export default function VacationRequestForm({submit, onCancel, vacationRequest}:
                 </Button>
             </Grid>
         </Grid>
-    </>;
+    );
 }

@@ -14,9 +14,9 @@ interface VacationRequestTableToolbarProps {
 }
 
 export default function VacationRequestTableToolbar({
-                                                selected,
-                                                actions: {create, edit, cancel},
-                                            }: VacationRequestTableToolbarProps) {
+                                                        selected,
+                                                        actions: {create, edit, cancel},
+                                                    }: VacationRequestTableToolbarProps) {
     const toolbarSx: SxProps<Theme> = {
         pl: {sm: 2},
         pr: {xs: 1, sm: 1},
@@ -28,9 +28,7 @@ export default function VacationRequestTableToolbar({
     };
 
     return (
-        <Toolbar
-            sx={ toolbarSx }
-        >
+        <Toolbar sx={ toolbarSx }>
             { selected ? (
                 <Typography
                     color="inherit"
@@ -53,22 +51,27 @@ export default function VacationRequestTableToolbar({
                 <div>
                     <Tooltip title="Cancel request">
                         <span>
-                        <IconButton onClick={ cancel }
-                                    disabled={ selected.status.toUpperCase() !== VacationRequestStatus.Pending }>
+                        <IconButton
+                            onClick={ cancel }
+                            disabled={ selected.status.toUpperCase() !== VacationRequestStatus.Pending }
+                        >
                             <CancelRounded />
                         </IconButton>
                         </span>
                     </Tooltip>
                     <Tooltip title="Edit">
                         <span>
-                        <IconButton onClick={ edit }
-                                    disabled={ selected.status.toUpperCase() !== VacationRequestStatus.Pending }>
+                        <IconButton
+                            onClick={ edit }
+                            disabled={ selected.status.toUpperCase() !== VacationRequestStatus.Pending }
+                        >
                             <Edit />
                         </IconButton>
                         </span>
                     </Tooltip>
                 </div>
-            ) : (<div>
+            ) : (
+                <div>
                     <Tooltip title="Request">
                         <IconButton onClick={ create }>
                             <Add />

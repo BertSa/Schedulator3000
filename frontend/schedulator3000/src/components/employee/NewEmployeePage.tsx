@@ -29,51 +29,61 @@ export default function NewEmployeePage() {
     };
 
     return <>
-        <Container maxWidth="sm"
-                   sx={ {
-                       marginTop: 12,
-                       display: 'flex',
-                       flexDirection: 'column',
-                       alignItems: 'center'
-                   } }>
-            <Grid container
-                  component="form"
-                  spacing={ 2 }
-                  onSubmit={ handleSubmit(submit) }
-                  noValidate>
+        <Container
+            maxWidth="sm"
+            sx={ {
+                marginTop: 12,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            } }
+        >
+            <Grid
+                container
+                component="form"
+                spacing={ 2 }
+                onSubmit={ handleSubmit(submit) }
+                noValidate
+            >
                 <Grid item xs={ 12 } sm={ 6 }>
-                    <FieldInput register={ register }
-                                errors={ errors }
-                                name="currentPassword"
-                                label="Current Password"
-                                autoComplete="current-password"
-                                type="password"
-                                validation={ {
-                                    required: 'This Field is required!'
-                                } } />
+                    <FieldInput
+                        register={ register }
+                        errors={ errors }
+                        name="currentPassword"
+                        label="Current Password"
+                        autoComplete="current-password"
+                        type="password"
+                        validation={ {
+                            required: 'This Field is required!'
+                        } }
+                    />
                 </Grid>
                 <Grid item xs={ 12 } sm={ 6 }>
-                    <FieldInput register={ register }
-                                errors={ errors }
-                                name="newPassword"
-                                label="New Password"
-                                autoComplete="new-password"
-                                type="password"
-                                validation={ {
-                                    required: 'This Field is required!'
-                                } } />
+                    <FieldInput
+                        register={ register }
+                        errors={ errors }
+                        name="newPassword"
+                        label="New Password"
+                        autoComplete="new-password"
+                        type="password"
+                        validation={ {
+                            required: 'This Field is required!'
+                        } }
+                    />
                 </Grid>
                 <Grid item xs={ 12 }>
-                    <FieldInput register={ register }
-                                errors={ errors }
-                                name="confirmationPassword"
-                                label="Confirm New Password"
-                                autoComplete="current-password"
-                                type="password"
-                                validation={ {
-                                    required: 'This Field is required!',
-                                    validate: value => value === getValues().newPassword || 'Passwords do not match!'
-                                } } />
+                    <FieldInput
+                        register={ register }
+                        errors={ errors }
+                        name="confirmationPassword"
+                        label="Confirm New Password"
+                        autoComplete="current-password"
+                        type="password"
+                        validation={ {
+                            required: 'This Field is required!',
+                            validate: value => value === getValues().newPassword || 'Passwords do not match!'
+                        } }
+                    />
                 </Grid>
                 <Grid item xs={ 12 } justifyContent={ 'center' }>
                     <Button

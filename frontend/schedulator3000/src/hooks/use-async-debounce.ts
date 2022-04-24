@@ -26,7 +26,6 @@ export default function useAsyncDebounce(callback: any, delay: number = 1000, de
 
     const {reset, clear} = useTimeout(callbackMemoized, delay);
     useEffect(() => {
-        console.log('clear');
         reset();
         if (firstLoad) {
             setFirstLoad(false);

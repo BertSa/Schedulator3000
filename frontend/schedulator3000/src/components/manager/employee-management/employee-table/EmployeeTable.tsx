@@ -37,10 +37,14 @@ export default function EmployeeTable() {
             closeDialog();
         }
 
-        openDialog(<EmployeeFormRegister user={ manager }
-                                         callback={ callback }
-                                         managerService={ managerService }
-                                         onCancel={ closeDialog } />);
+        openDialog(
+            <EmployeeFormRegister
+                user={ manager }
+                callback={ callback }
+                managerService={ managerService }
+                onCancel={ closeDialog }
+            />
+        );
     }
 
     function editAction() {
@@ -53,10 +57,14 @@ export default function EmployeeTable() {
             closeDialog();
         }
 
-        openDialog(<EmployeeFormEdit employee={ selectedEmployee }
-                                     callback={ callback }
-                                     employeeService={ employeeService }
-                                     onCancel={ closeDialog } />);
+        openDialog(
+            <EmployeeFormEdit
+                employee={ selectedEmployee }
+                callback={ callback }
+                employeeService={ employeeService }
+                onCancel={ closeDialog }
+            />
+        );
     }
 
 
@@ -90,7 +98,8 @@ export default function EmployeeTable() {
                     sx={ {
                         cursor: 'pointer',
                         '&:last-child td, &:last-child th': {border: 0},
-                    } }>
+                    } }
+                >
                     <TableCell component="th" scope="row" width="5%">
                         { employee.id }
                     </TableCell>
@@ -104,14 +113,16 @@ export default function EmployeeTable() {
         </TableBody>;
     }
 
-    return <>
+    return (
         <TableContainer component={ Paper }>
-            <EmployeeTableToolbar selected={ selectedEmployee }
-                                  actions={ {
-                                      create: createAction,
-                                      edit: editAction,
-                                      fire: fireAction
-                                  } } />
+            <EmployeeTableToolbar
+                selected={ selectedEmployee }
+                actions={ {
+                    create: createAction,
+                    edit: editAction,
+                    fire: fireAction
+                } }
+            />
             <Table sx={ {minWidth: 650} } aria-label="simple table">
                 <TableHead>
                     <TableRow>
@@ -126,18 +137,20 @@ export default function EmployeeTable() {
                 <EmployeeTableBody />
             </Table>
         </TableContainer>
-    </>;
+    );
 }
 
 function EmployeeTableBodySkeleton() {
-    return <TableBody>
-        <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
-            <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
-            <TableCell width="10%"><Skeleton /></TableCell>
-            <TableCell width="10%"><Skeleton /></TableCell>
-            <TableCell><Skeleton /></TableCell>
-            <TableCell width="15%"><Skeleton /></TableCell>
-            <TableCell width="10%"><Skeleton /></TableCell>
-        </TableRow>
-    </TableBody>;
+    return (
+        <TableBody>
+            <TableRow sx={ {'&:last-child td, &:last-child th': {border: 0}} }>
+                <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
+                <TableCell width="10%"><Skeleton /></TableCell>
+                <TableCell width="10%"><Skeleton /></TableCell>
+                <TableCell><Skeleton /></TableCell>
+                <TableCell width="15%"><Skeleton /></TableCell>
+                <TableCell width="10%"><Skeleton /></TableCell>
+            </TableRow>
+        </TableBody>
+    );
 }

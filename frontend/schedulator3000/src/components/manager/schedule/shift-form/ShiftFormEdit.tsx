@@ -18,14 +18,14 @@ interface ScheduleUpdateShiftProps {
 }
 
 export default function ShiftFormEdit({
-                                  shiftService,
-                                  employees,
-                                  manager,
-                                  selected,
-                                  callbackUpdate,
-                                  callbackDelete,
-                                  closeDialog
-                              }: ScheduleUpdateShiftProps) {
+                                          shiftService,
+                                          employees,
+                                          manager,
+                                          selected,
+                                          callbackUpdate,
+                                          callbackDelete,
+                                          closeDialog
+                                      }: ScheduleUpdateShiftProps) {
     function submit(data: UnpackNestedValue<ShiftFormFieldValue>, event?: any) {
         event?.preventDefault();
         const submitter = event?.nativeEvent.submitter.value;
@@ -62,11 +62,15 @@ export default function ShiftFormEdit({
     }
 
 
-    return <>
-        <Typography variant="h5" component="h5">Update Shift</Typography>
-        <ShiftForm selected={ selected }
-                   submit={ submit }
-                   onClose={ closeDialog }
-                   employees={ employees } />
-    </>;
+    return (
+        <>
+            <Typography variant="h5" component="h5">Update Shift</Typography>
+            <ShiftForm
+                selected={ selected }
+                submit={ submit }
+                onClose={ closeDialog }
+                employees={ employees }
+            />
+        </>
+    );
 }

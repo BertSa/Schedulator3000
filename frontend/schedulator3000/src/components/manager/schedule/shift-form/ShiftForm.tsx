@@ -32,86 +32,109 @@ export default function ShiftForm({submit, employees, onClose, selected}: Schedu
     });
 
 
-    return <Grid container columnSpacing={ 2 } rowSpacing={ 2 } padding={ 2 } component="form"
-                 onSubmit={ handleSubmit(submit) }
-                 noValidate>
-        <Grid item xs={ 12 }>
-            <TextField
-                select
-                label="Select"
-                fullWidth
-                defaultValue={ getValues().employeeId ?? '-1' }
-                disabled={ selected.shiftId !== undefined }
-                SelectProps={ {
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <AccountCircle />
-                        </InputAdornment>
-                    )
-                } }
-                { ...register('employeeId', {
-                    required: true,
-                    validate: (value: number) => value !== -1 ? undefined : 'Please select an employee',
-                }) }
-                helperText={ errors.employeeId ?? ' ' }
-                error={ !!errors.employeeId }
-            >
-                <MenuItem hidden aria-hidden value={ -1 } />
-                { employees.map(user => <MenuItem key={ user.id }
-                                                  value={ user.id }>{ user.firstName } { user.lastName }
-                </MenuItem>) }
-            </TextField>
+    return (
+        <Grid
+            container
+            columnSpacing={ 2 }
+            rowSpacing={ 2 }
+            padding={ 2 }
+            component="form"
+            onSubmit={ handleSubmit(submit) }
+            noValidate
+        >
+            <Grid item xs={ 12 }>
+                <TextField
+                    select
+                    label="Select"
+                    fullWidth
+                    defaultValue={ getValues().employeeId ?? '-1' }
+                    disabled={ selected.shiftId !== undefined }
+                    SelectProps={ {
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <AccountCircle />
+                            </InputAdornment>
+                        )
+                    } }
+                    { ...register('employeeId', {
+                        required: true,
+                        validate: (value: number) => value !== -1 ? undefined : 'Please select an employee',
+                    }) }
+                    helperText={ errors.employeeId ?? ' ' }
+                    error={ !!errors.employeeId }
+                >
+                    <MenuItem hidden aria-hidden value={ -1 } />
+                    { employees.map(user => (
+                        <MenuItem key={ user.id } value={ user.id }>
+                            { user.firstName } { user.lastName }
+                        </MenuItem>
+                    )) }
+                </TextField>
+            </Grid>
+            <Grid item xs={ 6 }>
+                <Controller
+                    name="start"
+                    control={ control }
+                    rules={ {
+                        required: true
+                    } }
+                    render={ ({fieldState, formState, field}) => (
+                        <TimePicker
+                            label="Start Time"
+                            renderInput={ (props) => <TextField { ...props }
+                                                                helperText={ errors.start ?? ' ' }
+                                                                error={ !!errors.start } /> }
+                            { ...field }
+                            { ...fieldState }
+                            { ...formState }
+                        />
+                    ) }
+                />
+            </Grid>
+            <Grid item xs={ 6 }>
+                <Controller
+                    name="end"
+                    control={ control }
+                    rules={ {
+                        required: true,
+                        validate: (value) => value > getValues().start || 'End time must be after start time'
+                    } }
+                    render={ ({fieldState, formState, field}) => (
+                        <TimePicker
+                            label="End Time"
+                            renderInput={ (props) => <TextField helperText={ errors.end?.message ?? ' ' }
+                                                                error={ !!errors.end }
+                                                                { ...props } /> }
+                            { ...field }
+                            { ...fieldState }
+                            { ...formState }
+                        />
+                    ) }
+                />
+            </Grid>
+            <Grid item alignSelf={ 'center' } marginX={ 'auto' }>
+                <Stack spacing={ 2 } direction="row">
+                    <Button type="submit" color="primary" variant="contained">Submit</Button>
+                    { selected.shiftId && (
+                        <Button value="delete"
+                                type="submit"
+                                color="error"
+                                variant="contained"
+                        >
+                            Delete
+                        </Button>
+                    ) }
+                    <Button
+                        value="cancel"
+                        type="button"
+                        color="primary"
+                        variant="text"
+                        onClick={ onClose }
+                    >
+                        Cancel
+                    </Button>
+                </Stack>
+            </Grid>
         </Grid>
-        <Grid item xs={ 6 }>
-            <Controller
-                name="start"
-                control={ control }
-                rules={ {
-                    required: true
-                } }
-                render={ ({fieldState, formState, field}) => (
-                    <TimePicker
-                        label="Start Time"
-                        renderInput={ (props) => <TextField { ...props }
-                                                            helperText={ errors.start ?? ' ' }
-                                                            error={ !!errors.start } /> }
-                        { ...field }
-                        { ...fieldState }
-                        { ...formState }
-                    />
-                ) }
-            />
-        </Grid>
-        <Grid item xs={ 6 }>
-            <Controller
-                name="end"
-                control={ control }
-                rules={ {
-                    required: true,
-                    validate: (value) => value > getValues().start || 'End time must be after start time'
-                } }
-                render={ ({fieldState, formState, field}) => (
-                    <TimePicker
-                        label="End Time"
-                        renderInput={ (props) => <TextField helperText={ errors.end?.message ?? ' ' }
-                                                            error={ !!errors.end }
-                                                            { ...props } /> }
-                        { ...field }
-                        { ...fieldState }
-                        { ...formState }
-                    />
-                ) }
-            />
-        </Grid>
-        <Grid item alignSelf={ 'center' } marginX={ 'auto' }>
-            <Stack spacing={ 2 } direction="row">
-                <Button type="submit" color="primary"
-                        variant="contained">Submit</Button>
-                { selected.shiftId &&
-                    <Button value="delete" type="submit" color="error"
-                            variant="contained">Delete</Button> }
-                <Button value="cancel" type="button" color="primary" variant="text" onClick={ onClose }>Cancel</Button>
-            </Stack>
-        </Grid>
-    </Grid>;
+    );
 }

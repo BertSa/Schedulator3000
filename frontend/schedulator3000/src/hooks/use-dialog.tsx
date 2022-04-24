@@ -51,9 +51,11 @@ export function useDialog(): [(container: ReactNode, onExited?: VoidFunction) =>
 
 function DialogContainer({children, open, onClose, onEnded}: DialogContainerProps) {
     return (
-        <Dialog open={ open }
-                onClose={ onClose }
-                onEnded={ onEnded }>
+        <Dialog
+            open={ open }
+            onClose={ onClose }
+            onEnded={ onEnded }
+        >
             { children }
         </Dialog>
     );
@@ -119,7 +121,8 @@ export default function DialogProvider({children}: PropsWithChildren<{}>) {
                         key={ index }
                         onClose={ () => closeDialog() }
                         onEnded={ handleOnEnded }
-                        open={ dialogParams.open ?? false }>
+                        open={ dialogParams.open ?? false }
+                    >
                         { dialogParams.children }
                     </DialogContainer>
                 );
