@@ -2,10 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 export default function useAsync(callback: any, dependencies: any[] = []) {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState();
-  const [value, setValue] = useState();
+  const [error, setError] = useState<any>(undefined);
+  const [value, setValue] = useState<any>(undefined);
 
-  const callbackRef = useRef(callback);
+  const callbackRef = useRef<any>(callback);
 
   useEffect(() => {
     callbackRef.current = callback;
@@ -19,11 +19,15 @@ export default function useAsync(callback: any, dependencies: any[] = []) {
       .current()
       .then(setValue)
       .catch(setError)
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+      });
   }, [callbackRef, ...dependencies]);
 
   useEffect(() => {
-    callbackMemoized();
+    if (typeof callbackMemoized === 'function') {
+      callbackMemoized();
+    }
   }, [callbackMemoized]);
 
   return { loading, error, value };

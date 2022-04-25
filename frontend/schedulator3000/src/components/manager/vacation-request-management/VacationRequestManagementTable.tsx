@@ -78,12 +78,12 @@ export default function VacationRequestManagementTable() {
 
     return (
       <TableBody>
-        {vacationRequests.map((vacationRequest, key) => {
+        {vacationRequests.map((vacationRequest) => {
           const employee: Employee | undefined = employees.find((emp) => emp.email === vacationRequest.employeeEmail);
           if (employee) {
             return (
               <VacationRequestManagementTableRow
-                key={employee.id}
+                key={vacationRequest.id}
                 vacationRequest={vacationRequest}
                 employee={employee}
                 isSelected={selectedVacationRequest?.id === vacationRequest.id}
@@ -91,7 +91,7 @@ export default function VacationRequestManagementTable() {
               />
             );
           }
-          return <Hidden key={key} />;
+          return <Hidden key={vacationRequest.id} />;
         })}
       </TableBody>
     );

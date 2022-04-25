@@ -13,15 +13,6 @@ import DialogProvider from './hooks/use-dialog';
 import { AuthProvider } from './hooks/use-auth';
 import { ServicesProvider } from './hooks/use-services/use-services';
 
-const backup = console.error;
-console.error = function filter(msg) {
-  const supressedWarnings = ['Warning: Using UNSAFE_component', 'Warning: %s is deprecated in StrictMode'];
-
-  if (!supressedWarnings.some((entry) => msg.includes(entry))) {
-    backup.apply(console, [msg]);
-  }
-};
-
 const themeOptions: ThemeOptions = createTheme({
   palette: {
     mode: 'dark',

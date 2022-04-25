@@ -12,16 +12,16 @@ import { useDialog } from '../../../../hooks/use-dialog';
 import ScheduleTableToolbar from './ScheduleTableToolbar';
 import { VacationRequest } from '../../../../models/VacationRequest';
 import useCurrentWeek, { ICurrentWeek } from '../../../../hooks/use-currentWeek';
-import ScheduleTableRow from './ScheduleTableRow';
 import { Nullable } from '../../../../models/Nullable';
 import { ShiftFormFieldValue } from '../shift-form/ShiftForm';
 import ShiftFormCreate from '../shift-form/ShiftFormCreate';
 import ShiftFormEdit from '../shift-form/ShiftFormEdit';
 import useAsync from '../../../../hooks/use-async';
-import ScheduleTableRowSkeleton from './ScheduleTableRowSkeleton';
+import ScheduleTableBodySkeleton from './ScheduleTableBodySkeleton';
 import useAsyncDebounce from '../../../../hooks/use-async-debounce';
 import useDebounce from '../../../../hooks/use-debounce';
 import TableBodyEmpty from '../../../shared/TableBodyEmpty';
+import ScheduleTableRow from './ScheduleTableRow';
 
 export type SelectedItemType = Nullable<{ employee: Employee; day: number; shift: Nullable<Shift> }>;
 
@@ -51,51 +51,56 @@ export default function ScheduleTable() {
   );
 
   useAsyncDebounce(
-    () => new Promise<void>(async (resolve, reject) => {
-      const body: RequestDtoShiftsFromTo = {
-        userEmail: manager.email,
-        from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
-        to: format(addWeeks(currentWeek.value, 2), 'yyyy-MM-dd'),
-      };
+    () =>
+      new Promise<void>(async (resolve, reject) => {
+        const body: RequestDtoShiftsFromTo = {
+          userEmail: manager.email,
+          from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
+          to: format(addWeeks(currentWeek.value, 2), 'yyyy-MM-dd'),
+        };
 
-      await shiftService.getShiftsManager(body).then((response) => {
-        setShifts(
-          response.length === 0
-            ? []
-            : response.map((shift) => ({
-              ...shift,
-              startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
-              endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
-            })),
-        );
-      }, reject);
-      resolve();
-    }),
+        await shiftService.getShiftsManager(body).then((response) => {
+          setShifts(
+            response.length === 0
+              ? []
+              : response.map((shift) => ({
+                ...shift,
+                startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
+                endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
+              })),
+          );
+        }, reject);
+        resolve();
+      }),
     1000,
     [currentWeek.value],
   );
 
-  const { loading } = useAsync(() => new Promise<void>(async (resolve, reject) => {
-    const body: RequestDtoShiftsFromTo = {
-      userEmail: manager.email,
-      from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
-      to: format(addWeeks(currentWeek.value, 2), 'yyyy-MM-dd'),
-    };
-    await managerService.getEmployees(manager.email).then(setEmployees, reject);
-    await shiftService.getShiftsManager(body).then((response) => {
-      setShifts(
-        response.length === 0
-          ? []
-          : response.map((shift) => ({
-            ...shift,
-            startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
-            endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
-          })),
-      );
-    }, reject);
-    await vacationRequestService.getAllByManagerEmail(manager.email).then(setVacationRequests, reject);
-    resolve();
-  }), []);
+  const { loading } = useAsync(
+    () =>
+      new Promise<void>(async (resolve, reject) => {
+        const body: RequestDtoShiftsFromTo = {
+          userEmail: manager.email,
+          from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
+          to: format(addWeeks(currentWeek.value, 2), 'yyyy-MM-dd'),
+        };
+        await managerService.getEmployees(manager.email).then(setEmployees, reject);
+        await shiftService.getShiftsManager(body).then((response) => {
+          setShifts(
+            response.length === 0
+              ? []
+              : response.map((shift) => ({
+                ...shift,
+                startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
+                endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
+              })),
+          );
+        }, reject);
+        await vacationRequestService.getAllByManagerEmail(manager.email).then(setVacationRequests, reject);
+        resolve();
+      }),
+    [],
+  );
 
   function createAction() {
     if (!selectedItem) {
@@ -181,28 +186,26 @@ export default function ScheduleTable() {
       if (loading || employees.length === 0) {
         return;
       }
+
       employees.forEach((employee) => {
         const requests: VacationRequest[] = vacationRequests.filter((value) => value.employeeEmail === employee.email);
-        const weekShift: Nullable<Shift>[] = new Array(7);
-
         // TODO: optimize
-        const tempShifts: Shift[] = [];
-        for (let i = 0; i < shifts.length; i++) {
-          const value = shifts[i];
-          if (isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1)) && value.emailEmployee === employee.email) {
-            tempShifts.push(value);
-          }
-        }
+        const tempShifts: Shift[] = shifts.filter(
+          (value) =>
+            isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1))
+            && value.emailEmployee === employee.email,
+        );
 
+        const weekShifts: Nullable<Shift>[] = [];
         for (let i = 0; i < 7; i++) {
-          weekShift[i] = tempShifts.find((shift) => getDay(new Date(shift.startTime)) === i) ?? null;
+          weekShifts[i] = tempShifts.find((shift) => getDay(new Date(shift.startTime)) === i) ?? null;
         }
 
         setRowData((prevState) => [
-          ...prevState.filter((c) => c.employee.id !== employee.id),
+          ...prevState.filter((data) => data.employee.id !== employee.id),
           {
             employee,
-            weekShifts: weekShift,
+            weekShifts,
             requests,
           },
         ]);
@@ -210,7 +213,7 @@ export default function ScheduleTable() {
     }, [currentWeek.value, employees, vacationRequests, shifts]);
 
     if (loading) {
-      return <ScheduleTableRowSkeleton />;
+      return <ScheduleTableBodySkeleton />;
     }
 
     if (employees.length === 0) {

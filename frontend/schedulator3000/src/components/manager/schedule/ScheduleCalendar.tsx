@@ -56,6 +56,14 @@ interface FormFieldValue {
 }
 
 export default function ScheduleCalendar() {
+  const backup = console.error;
+  console.error = function filter(msg) {
+    const supressedWarnings = ['Warning: Using UNSAFE_component', 'Warning: %s is deprecated in StrictMode'];
+
+    if (!supressedWarnings.some((entry) => msg.includes(entry))) {
+      backup.apply(console, [msg]);
+    }
+  };
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [events, setEvents] = useState<ShiftEvent[]>([]);
   const [currentWeek, setCurrentWeek] = useState<Date>(startOfWeek(getCurrentTimezoneDate(new Date())));

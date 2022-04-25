@@ -2,9 +2,9 @@ import { Box, Collapse, IconButton, Skeleton, Table, TableBody, TableCell, Table
 import { KeyboardArrowDown } from '@mui/icons-material';
 import React from 'react';
 
-export default function ScheduleTableRowSkeleton() {
+export default function ScheduleTableBodySkeleton() {
   return (
-    <>
+    <TableBody>
       <TableRow className="myRow">
         <TableCell width="6.5%">
           <IconButton aria-label="expand row" size="small">
@@ -82,6 +82,6 @@ export default function ScheduleTableRowSkeleton() {
           </Collapse>
         </TableCell>
       </TableRow>
-    </>
+    </TableBody>
   );
 }

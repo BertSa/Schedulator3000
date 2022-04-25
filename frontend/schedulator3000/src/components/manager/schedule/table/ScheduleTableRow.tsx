@@ -42,7 +42,7 @@ export default function ScheduleTableRow({
 
     const total: string = `${hours}:${minutes < 10 ? `0${minutes}` : minutes}h`;
 
-    return <span>{total}</span>;
+    return <span>{total ?? '00:00h'}</span>;
   }
 
   const isLoadingShifts = !isSameDay(previousWeek, currentWeek.getPreviousWeek())
@@ -58,20 +58,18 @@ export default function ScheduleTableRow({
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row" width="15%">
-          {employee.firstName}
-          {' '}
-          {employee.lastName}
+          {`${employee.firstName} ${employee.lastName}`}
         </TableCell>
         {shifts.map((shift, key) =>
           isLoadingShifts ? (
-            <TableCell key={key} align="center">
+            <TableCell key={`${employee}:${key}`} align="center">
               <Skeleton />
               -
               <Skeleton />
             </TableCell>
           ) : (
             <ScheduleTableColumnWeek
-              key={shift?.id ?? key}
+              key={`${employee}:${key}`}
               index={key}
               isSelected={selectedItem?.day === key && selectedItem?.employee.id === employee.id}
               shift={shift}
@@ -83,8 +81,8 @@ export default function ScheduleTableRow({
                     ? null
                     : {
                       employee,
-                      day: key,
                       shift,
+                      day: key,
                     },
                 )}
             />

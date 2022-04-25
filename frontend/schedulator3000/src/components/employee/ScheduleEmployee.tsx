@@ -10,6 +10,14 @@ import { useAuth } from '../../hooks/use-auth';
 import useCurrentWeek from '../../hooks/use-currentWeek';
 
 export default function ScheduleEmployee() {
+  const backup = console.error;
+  console.error = function filter(msg) {
+    const supressedWarnings = ['Warning: Using UNSAFE_component', 'Warning: %s is deprecated in StrictMode'];
+
+    if (!supressedWarnings.some((entry) => msg.includes(entry))) {
+      backup.apply(console, [msg]);
+    }
+  };
   const { shiftService } = useServices();
   const user = useAuth().getEmployee();
   const currentWeek = useCurrentWeek();
