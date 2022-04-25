@@ -1,12 +1,12 @@
 interface PasswordChange {
-    currentPassword: string;
-    newPassword: string;
+  currentPassword: string;
+  newPassword: string;
 }
 
 export interface PasswordChangeDto extends PasswordChange {
-    email?: string;
+  email?: string;
 }
 
 export interface PasswordChangeFieldValues extends PasswordChange {
-    confirmationPassword: string;
+  confirmationPassword: string;
 }

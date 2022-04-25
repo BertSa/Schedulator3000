@@ -1,5 +1,5 @@
 export interface RequestDtoShiftsFromTo {
-    userEmail: string;
-    from: Date | string;
-    to: Date | string;
+  userEmail: string;
+  from: Date | string;
+  to: Date | string;
 }

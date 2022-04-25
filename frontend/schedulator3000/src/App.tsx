@@ -6,31 +6,30 @@ import ManagerPages from './components/manager/ManagerPages';
 import { RequireAdmin, RequireEmployee, RequireNoAuth } from './hooks/use-auth';
 import EmployeePages from './components/employee/EmployeePages';
 
+function Register(): React.ReactElement {
+  return <h1>Register</h1>;
+}
 
 export default function App() {
-    // document.addEventListener('contextmenu', (event) => {
-    //     event.preventDefault();
-    // });
+  // document.addEventListener('contextmenu', (event) => {
+  //     event.preventDefault();
+  // });
 
-    const Register = (): React.ReactElement => {
-        return <h1>Register</h1>;
-    };
-
-    return (
-        <Router>
-            <Navbar />
-            <main>
-                <RequireAdmin>
-                    <Route path="/manager" component={ ManagerPages } />
-                </RequireAdmin>
-                <RequireEmployee>
-                    <EmployeePages />
-                </RequireEmployee>
-                <RequireNoAuth>
-                    <Route path="/register" component={ Register } />
-                    <Route path="/signin" component={ SignInPage } />
-                </RequireNoAuth>
-            </main>
-        </Router>
-    );
+  return (
+    <Router>
+      <Navbar />
+      <main>
+        <RequireAdmin>
+          <Route path="/manager" component={ManagerPages} />
+        </RequireAdmin>
+        <RequireEmployee>
+          <EmployeePages />
+        </RequireEmployee>
+        <RequireNoAuth>
+          <Route path="/register" component={Register} />
+          <Route path="/signin" component={SignInPage} />
+        </RequireNoAuth>
+      </main>
+    </Router>
+  );
 }

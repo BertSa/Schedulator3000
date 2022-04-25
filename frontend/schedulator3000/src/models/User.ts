@@ -1,74 +1,78 @@
+// eslint-disable-next-line max-classes-per-file
 import { Nullable } from './Nullable';
 
 export class User {
-    private readonly _id: number;
-    private readonly _email: string;
-    private readonly _phone: string;
-    private readonly _password: string;
+  private readonly _id: number;
 
-    constructor(id: number, email: string, phone: string, password: string) {
-        this._id = id;
-        this._email = email;
-        this._phone = phone;
-        this._password = password;
-    }
+  private readonly _email: string;
 
+  private readonly _phone: string;
 
-    get id(): number {
-        return this._id;
-    }
+  private readonly _password: string;
 
-    get email(): string {
-        return this._email ?? '';
-    }
+  constructor(id: number, email: string, phone: string, password: string) {
+    this._id = id;
+    this._email = email;
+    this._phone = phone;
+    this._password = password;
+  }
 
-    get phone(): string {
-        return this._phone ?? '';
-    }
+  get id(): number {
+    return this._id;
+  }
 
-    get password(): string {
-        return this._password ?? '';
-    }
+  get email(): string {
+    return this._email ?? '';
+  }
+
+  get phone(): string {
+    return this._phone ?? '';
+  }
+
+  get password(): string {
+    return this._password ?? '';
+  }
 }
 
 export class Employee extends User {
-    private readonly _firstName: string;
-    private readonly _lastName: string;
-    private readonly _role: string;
-    private _active: Nullable<boolean> = null;
+  private readonly _firstName: string;
 
-    constructor(id: number, email: string, phone: string, firstName: string, lastName: string, role: string, password: string = '', active: boolean | null = null) {
-        super(id, email, phone, password);
-        this._firstName = firstName;
-        this._lastName = lastName;
-        this._role = role;
-        this._active = active;
-    }
+  private readonly _lastName: string;
 
+  private readonly _role: string;
 
-    get firstName(): string {
-        return this._firstName;
-    }
+  private _active: Nullable<boolean> = null;
 
-    get lastName(): string {
-        return this._lastName;
-    }
+  constructor(id: number, email: string, phone: string, firstName: string, lastName: string, role: string, password: string = '', active: boolean | null = null) {
+    super(id, email, phone, password);
+    this._firstName = firstName;
+    this._lastName = lastName;
+    this._role = role;
+    this._active = active;
+  }
 
-    get role(): string {
-        return this._role;
-    }
+  get firstName(): string {
+    return this._firstName;
+  }
 
-    set active(value: Nullable<boolean>) {
-        this._active = value;
-    }
+  get lastName(): string {
+    return this._lastName;
+  }
 
-    get active(): Nullable<boolean> {
-        return this._active;
-    }
+  get role(): string {
+    return this._role;
+  }
+
+  set active(value: Nullable<boolean>) {
+    this._active = value;
+  }
+
+  get active(): Nullable<boolean> {
+    return this._active;
+  }
 }
 
 export class Manager extends User {
 }
 
-
-export type EmployeeFormType = Omit<Employee, 'id' | 'active' | 'password'>
+export type EmployeeFormType = Omit<Employee, 'id' | 'active' | 'password'>;

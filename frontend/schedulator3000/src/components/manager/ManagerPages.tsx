@@ -6,14 +6,13 @@ import ScheduleTable from './schedule/table/ScheduleTable';
 import VacationRequestManagementTable from './vacation-request-management/VacationRequestManagementTable';
 
 export default function ManagerPages(): React.ReactElement {
-    const {path} = useRouteMatch();
-    return (
-        <>
-            <Route path={ `${ path }/employees` } component={ EmployeeManagement } />
-            <Route path={ `${ path }/schedulev2` } component={ ScheduleCalendar } />
-            <Route path={ `${ path }/schedule` } component={ ScheduleTable } />
-            <Route path={ `${ path }/vacation-requests` } component={ VacationRequestManagementTable } />
-        </>
-    );
+  const { path } = useRouteMatch();
+  return (
+    <>
+      <Route path={`${path}/employees`} component={EmployeeManagement} />
+      <Route path={`${path}/schedulev2`} component={ScheduleCalendar} />
+      <Route path={`${path}/schedule`} component={ScheduleTable} />
+      <Route path={`${path}/vacation-requests`} component={VacationRequestManagementTable} />
+    </>
+  );
 }
-

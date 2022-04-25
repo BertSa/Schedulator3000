@@ -1,81 +1,84 @@
 import { useSnackbar } from 'notistack';
+import React from 'react';
 import { useDialog } from '../use-dialog';
 import { Employee, EmployeeFormType } from '../../models/User';
 import DialogWarningDelete from '../../components/DialogWarningDelete';
-import React from 'react';
 import { http } from './use-services';
 
 export interface IManagerService {
-    addEmployee: (emailManager: string, employee: EmployeeFormType) => Promise<Employee>,
-    getEmployees: (emailManager: string) => Promise<Employee[]>,
-    fireEmployee: (idEmployee: number, emailManager: string) => Promise<Employee>,
+  addEmployee: (emailManager: string, employee: EmployeeFormType) => Promise<Employee>;
+  getEmployees: (emailManager: string) => Promise<Employee[]>;
+  fireEmployee: (idEmployee: number, emailManager: string) => Promise<Employee>;
 }
 
 export function useProvideManagerService(): IManagerService {
-    const {enqueueSnackbar} = useSnackbar();
-    let [openDialog, closeDialog] = useDialog();
+  const { enqueueSnackbar } = useSnackbar();
+  const [openDialog, closeDialog] = useDialog();
 
+  async function addEmployee(emailManager: string, employee: EmployeeFormType): Promise<Employee> {
+    const { response, body } = await http.post(`/manager/${emailManager}/employees/create`, employee);
 
-    async function addEmployee(emailManager: string, employee: EmployeeFormType): Promise<Employee> {
-        const {response, body} = await http.post(`/manager/${ emailManager }/employees/create`, employee);
-
-        if (response.ok) {
-            enqueueSnackbar('Employee added!', {
-                variant: 'success',
-                autoHideDuration: 3000
-            });
-            return body;
-        }
-
-        enqueueSnackbar(body.message, {
-            variant: 'error',
-            autoHideDuration: 3000
-        });
-        return Promise.reject(body.message);
+    if (response.ok) {
+      enqueueSnackbar('Employee added!', {
+        variant: 'success',
+        autoHideDuration: 3000,
+      });
+      return body;
     }
 
-    async function fireEmployee(idEmployee: number, emailManager: string): Promise<Employee> {
-        const canceled = await new Promise<boolean>(resolve => {
-            openDialog(<DialogWarningDelete resolve={ resolve }
-                                            closeDialog={ closeDialog }
-                                            title={ 'Wait a minute!' }
-                                            text={ 'Are you sure you want to fire this employee?' } />);
-        });
+    enqueueSnackbar(body.message, {
+      variant: 'error',
+      autoHideDuration: 3000,
+    });
+    return Promise.reject(body.message);
+  }
 
-        if (canceled) {
-            return Promise.reject('Canceled');
-        }
+  async function fireEmployee(idEmployee: number, emailManager: string): Promise<Employee> {
+    const canceled = await new Promise<boolean>((resolve) => {
+      openDialog(
+        <DialogWarningDelete
+          resolve={resolve}
+          closeDialog={closeDialog}
+          title="Wait a minute!"
+          text="Are you sure you want to fire this employee?"
+        />,
+      );
+    });
 
-        const {response, body} = await http.put(`/manager/${ emailManager }/employees/${ idEmployee }/fire`);
-
-        if (response.ok) {
-            enqueueSnackbar('Employee fired', {
-                variant: 'success',
-                autoHideDuration: 3000
-            });
-            return body;
-        }
-        enqueueSnackbar(body.message, {
-            variant: 'error',
-            autoHideDuration: 3000
-        });
-
-        return Promise.reject(body.message);
+    if (canceled) {
+      return Promise.reject();
     }
 
-    async function getEmployees(emailManager: string): Promise<Employee[]> {
-        const {response, body} = await http.get(`/manager/${ emailManager }/employees`);
+    const { response, body } = await http.put(`/manager/${emailManager}/employees/${idEmployee}/fire`);
 
-        if (response.ok) {
-            return body;
-        }
+    if (response.ok) {
+      enqueueSnackbar('Employee fired', {
+        variant: 'success',
+        autoHideDuration: 3000,
+      });
+      return body;
+    }
+    enqueueSnackbar(body.message, {
+      variant: 'error',
+      autoHideDuration: 3000,
+    });
 
-        return Promise.reject(body.message);
+    return Promise.reject(body.message);
+  }
+
+  async function getEmployees(emailManager: string): Promise<Employee[]> {
+    const { response, body } = await http.get(`/manager/${emailManager}/employees`);
+
+    if (response.ok) {
+      return body;
     }
 
-    return {
-        addEmployee,
-        getEmployees,
-        fireEmployee,
-    };
+    return Promise.reject(body.message);
+  }
+
+  return {
+    addEmployee,
+    getEmployees,
+    fireEmployee,
+  };
 }
