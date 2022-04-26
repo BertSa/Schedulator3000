@@ -6,24 +6,26 @@ name: Node.js CI
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'frontend/schedulator3000/**'
   pull_request:
     branches: [ master ]
-
+    paths:
+      - 'frontend/schedulator3000/**'
+defaults:
+  run:
+    working-directory: frontend/schedulator3000
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x, 16.x]
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm install
-    - run: npm build
+      - name: Clone repository
+        uses: actions/checkout@v3  
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+      - name: Install dependencies
+        run: npm install  
+      - name: Build
+        run: npm build
