@@ -1,7 +1,12 @@
 import { TableBody, TableCell, TableRow } from '@mui/material';
 import React from 'react';
 
-export default function TableBodyEmpty({ colSpan, message }: { colSpan: number; message: string }) {
+interface TableBodyEmptyProps {
+  colSpan: number;
+  message: string;
+}
+
+export default function TableBodyEmpty({ colSpan, message }: TableBodyEmptyProps) {
   return (
     <TableBody>
       <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
