@@ -88,3 +88,7 @@ export default function VacationRequestForm({ submit, onCancel, vacationRequest 
     </Grid>
   );
 }
+
+VacationRequestForm.defaultProps = {
+  vacationRequest: undefined,
+};

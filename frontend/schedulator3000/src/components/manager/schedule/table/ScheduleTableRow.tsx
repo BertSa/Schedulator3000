@@ -62,6 +62,7 @@ export default function ScheduleTableRow({
         </TableCell>
         {shifts.map((shift, key) =>
           isLoadingShifts ? (
+            // eslint-disable-next-line react/no-array-index-key
             <TableCell key={`${employee}:${key}`} align="center">
               <Skeleton />
               -
@@ -69,6 +70,7 @@ export default function ScheduleTableRow({
             </TableCell>
           ) : (
             <ScheduleTableColumnWeek
+              // eslint-disable-next-line react/no-array-index-key
               key={`${employee}:${key}`}
               index={key}
               isSelected={selectedItem?.day === key && selectedItem?.employee.id === employee.id}
