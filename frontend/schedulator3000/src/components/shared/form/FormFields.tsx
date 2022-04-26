@@ -40,7 +40,13 @@ FieldInput.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
+  register: PropTypes.func.isRequired,
   autoComplete: PropTypes.string,
   defaultValue: PropTypes.string,
-  register: PropTypes.func.isRequired,
+};
+
+FieldInput.defaultProps = {
+  autoComplete: 'auto',
+  defaultValue: '',
+  disabled: false,
 };

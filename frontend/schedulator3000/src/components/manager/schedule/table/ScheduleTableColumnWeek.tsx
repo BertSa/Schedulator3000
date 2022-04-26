@@ -17,7 +17,6 @@ interface EmployeeWeekColumnProps {
 }
 
 export default function ScheduleTableColumnWeek({ index, isSelected, onClick, vacations, shift, currentWeek }: EmployeeWeekColumnProps) {
-  // eslint-disable-next-line max-len
   const vacationRequest = vacations.find((vacation) =>
     isBetween(currentWeek.getDayOfWeek(index), parseISO(vacation.startDate.toString()), addDays(parseISO(vacation.endDate.toString()), 1)),
   );
@@ -29,6 +28,7 @@ export default function ScheduleTableColumnWeek({ index, isSelected, onClick, va
         color = theme.palette.warning.main;
         break;
       case VacationRequestStatus.Approved:
+        // eslint-disable-next-line prefer-destructuring
         color = theme.palette.grey[500];
         break;
       default:

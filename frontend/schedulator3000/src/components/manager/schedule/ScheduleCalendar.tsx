@@ -56,7 +56,9 @@ interface FormFieldValue {
 }
 
 export default function ScheduleCalendar() {
+  // eslint-disable-next-line no-console
   const backup = console.error;
+  // eslint-disable-next-line no-console
   console.error = function filter(msg) {
     const supressedWarnings = ['Warning: Using UNSAFE_component', 'Warning: %s is deprecated in StrictMode'];
 

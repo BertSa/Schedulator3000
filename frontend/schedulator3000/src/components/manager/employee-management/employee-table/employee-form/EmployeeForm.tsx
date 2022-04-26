@@ -131,4 +131,5 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
 
 EmployeeForm.defaultProps = {
   emailDisabled: false,
+  employee: undefined,
 };
