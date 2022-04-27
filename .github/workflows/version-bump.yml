@@ -5,7 +5,6 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
@@ -18,3 +17,4 @@ jobs:
           tag-prefix: 'v'
           minor-wording: '#minor'
           major-wording: '#major'
+          commit-message: 'Update to : {{version}}'
