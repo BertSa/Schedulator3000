@@ -9,6 +9,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name:  'Automated Version Bump'
+        id: version-bump
         uses:  'BertSa/gh-action-bump-version@master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -18,3 +19,7 @@ jobs:
           minor-wording: '#minor'
           major-wording: '#major'
           commit-message: 'Update to : {{version}}'
+      - name: 'Output Step'
+        env:
+          NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
+        run: echo "new tag $NEW_TAG"
