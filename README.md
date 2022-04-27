@@ -4,3 +4,5 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/bertsa/schedulator3000/badge)](https://www.codefactor.io/repository/github/bertsa/schedulator3000)
 ![GitHub issues](https://img.shields.io/github/issues/BertSa/Schedulator3000)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/BertSa/Schedulator3000)
+
+This is my computer science curriculum synthesis project
