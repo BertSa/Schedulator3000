@@ -16,8 +16,8 @@ jobs:
       uses: BertSa/maven-version-bump-action@master
       with:
         github-token: ${{ secrets.github_token }}
-        pom-path: './backend'
-        package-json-path: './frontend/schedulator3000'
+        pom-path: 'backend'
+        package-json-path: 'frontend/schedulator3000'
 
     - name: Print Version
       run: "echo 'New Version: ${{steps.bump.outputs.version}}'"
