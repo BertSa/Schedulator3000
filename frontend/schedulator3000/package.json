@@ -1,6 +1,6 @@
 {
   "name": "schedulator3000",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "proxy": "http://localhost:8781/api",
   "private": true,
   "dependencies": {
