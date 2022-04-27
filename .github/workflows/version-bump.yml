@@ -1,0 +1,16 @@
+name: 'Bump Version'
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name:  'Automated Version Bump'
+        uses:  'BertSa/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGEJSON_DIR:  'frontend/schedulator3000'
