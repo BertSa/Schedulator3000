@@ -6,7 +6,7 @@ on:
     paths:
       - 'frontend/schedulator3000/**'
   pull_request:
-    branches: [ master ]
+    branches: [ master, development ]
     paths:
       - 'frontend/schedulator3000/**'
 defaults:
