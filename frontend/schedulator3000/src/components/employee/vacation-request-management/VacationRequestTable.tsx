@@ -12,6 +12,7 @@ import { Nullable } from '../../../models/Nullable';
 import VacationRequestTableRow from './VacationRequestTableRow';
 import useAsync from '../../../hooks/use-async';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
+import DialogWarningDelete from '../../DialogWarningDelete';
 
 function VacationRequestTableRowSkeleton() {
   return (
@@ -85,8 +86,23 @@ export default function VacationRequestTable() {
     );
   };
 
-  const cancelAction = (): void => {
+  const cancelAction = async (): Promise<void> => {
     if (!selectedVacationRequest) {
+      return;
+    }
+
+    const canceledByDialog = await new Promise<boolean>((resolve) => {
+      openDialog(
+        <DialogWarningDelete
+          text="Are you sure you want to cancel this vacation request?"
+          title="Cancel vacation request"
+          closeDialog={closeDialog}
+          resolve={resolve}
+        />,
+      );
+    });
+
+    if (canceledByDialog) {
       return;
     }
 
