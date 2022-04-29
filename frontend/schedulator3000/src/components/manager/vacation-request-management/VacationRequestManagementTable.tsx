@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Hidden,
-  Icon,
-  Paper,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Container, Hidden, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VacationRequest, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
 import { useServices } from '../../../hooks/use-services/use-services';
 import { useAuth } from '../../../hooks/use-auth';
@@ -21,17 +9,33 @@ import { Nullable } from '../../../models/Nullable';
 import VacationRequestManagementTableRow from './VacationRequestManagementTableRow';
 import useAsync from '../../../hooks/use-async';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
+import VacationRequestFormEdit from '../../employee/vacation-request-management/form/VacationRequestFormEdit';
+import { useDialog } from '../../../hooks/use-dialog';
 
 function VacationRequestManagementTableBodySkeleton() {
   return (
     <TableBody>
       <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-        <TableCell component="th" scope="row" width="5%"><Skeleton /></TableCell>
-        <TableCell width="15%"><Skeleton /></TableCell>
-        <TableCell width="10%"><Skeleton /></TableCell>
-        <TableCell width="10%"><Skeleton /></TableCell>
-        <TableCell><Skeleton /></TableCell>
-        <TableCell align="center" width="10%"><Icon><Skeleton variant="circular" /></Icon></TableCell>
+        <TableCell component="th" scope="row" width="5%">
+          <Skeleton />
+        </TableCell>
+        <TableCell width="15%">
+          <Skeleton />
+        </TableCell>
+        <TableCell width="10%">
+          <Skeleton />
+        </TableCell>
+        <TableCell width="10%">
+          <Skeleton />
+        </TableCell>
+        <TableCell>
+          <Skeleton />
+        </TableCell>
+        <TableCell align="center" width="10%">
+          <Icon>
+            <Skeleton variant="circular" />
+          </Icon>
+        </TableCell>
       </TableRow>
     </TableBody>
   );
@@ -43,12 +47,17 @@ export default function VacationRequestManagementTable() {
   const { managerService, vacationRequestService } = useServices();
   const [selectedVacationRequest, setSelectedVacationRequest] = useState<Nullable<VacationRequest>>(null);
   const manager: Manager = useAuth().getManager();
+  const [openDialog, closeDialog] = useDialog();
 
-  const { loading } = useAsync(() => new Promise<void>(async (resolve, reject) => {
-    await managerService.getEmployees(manager.email).then(setEmployees, reject);
-    await vacationRequestService.getAllByManagerEmail(manager.email).then(setVacationRequests, reject);
-    resolve();
-  }), [manager.email]);
+  const { loading } = useAsync(
+    () =>
+      new Promise<void>(async (resolve, reject) => {
+        await managerService.getEmployees(manager.email).then(setEmployees, reject);
+        await vacationRequestService.getAllByManagerEmail(manager.email).then(setVacationRequests, reject);
+        resolve();
+      }),
+    [manager.email],
+  );
 
   function updateRequest(status: VacationRequestUpdateStatus): void {
     if (!selectedVacationRequest) {
@@ -62,6 +71,37 @@ export default function VacationRequestManagementTable() {
 
   const approveAction = (): void => updateRequest(VacationRequestUpdateStatus.Approve);
   const rejectAction = (): void => updateRequest(VacationRequestUpdateStatus.Reject);
+
+  const callback = (vacationRequest: VacationRequest): void => {
+    closeDialog();
+    setVacationRequests((current) => [...current.filter((value) => value.id !== vacationRequest.id), vacationRequest]);
+  };
+
+  const editAction = (): void => {
+    if (!selectedVacationRequest) {
+      return;
+    }
+
+    openDialog(
+      <VacationRequestFormEdit
+        vacationRequestService={vacationRequestService}
+        callback={callback}
+        onCancel={closeDialog}
+        vacationRequest={selectedVacationRequest}
+      />,
+    );
+  };
+
+  const deleteAction = async (): Promise<void> => {
+    if (!selectedVacationRequest) {
+      return;
+    }
+
+    vacationRequestService.deleteById(selectedVacationRequest.id).then(() => {
+      setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequest.id)]);
+      setSelectedVacationRequest(null);
+    });
+  };
 
   function VacationRequestManagementTableBody() {
     if (loading) {
@@ -105,6 +145,8 @@ export default function VacationRequestManagementTable() {
           actions={{
             approve: approveAction,
             reject: rejectAction,
+            edit: editAction,
+            del: deleteAction,
           }}
         />
         <Table aria-label="collapsible table">

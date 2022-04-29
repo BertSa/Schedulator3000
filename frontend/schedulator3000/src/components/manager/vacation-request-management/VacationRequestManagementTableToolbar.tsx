@@ -1,5 +1,5 @@
 import { alpha, IconButton, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
-import { CheckCircle, FlagCircle } from '@mui/icons-material';
+import { CheckCircle, Delete, Edit, FlagCircle } from '@mui/icons-material';
 import React from 'react';
 import { VacationRequest, VacationRequestStatus } from '../../../models/VacationRequest';
 import { Nullable } from '../../../models/Nullable';
@@ -9,12 +9,14 @@ interface VacationRequestManagementTableToolbarProps {
   actions: {
     approve: VoidFunction;
     reject: VoidFunction;
+    edit: VoidFunction;
+    del: VoidFunction;
   };
 }
 
 export default function VacationRequestManagementTableToolbar({
   selectedVacationRequest,
-  actions: { approve, reject },
+  actions: { approve, reject, del, edit },
 }: VacationRequestManagementTableToolbarProps) {
   const toolbarSx: SxProps<Theme> = {
     pl: { sm: 2 },
@@ -63,6 +65,24 @@ export default function VacationRequestManagementTableToolbar({
 
       {selectedVacationRequest && (
         <div>
+          <Tooltip title="Delete">
+            <span>
+              <IconButton
+                onClick={del}
+                disabled={selectedVacationRequest.status.toUpperCase() !== VacationRequestStatus.Pending
+                  && selectedVacationRequest.status.toUpperCase() !== VacationRequestStatus.Rejected}
+              >
+                <Delete />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title="Edit">
+            <span>
+              <IconButton onClick={edit}>
+                <Edit />
+              </IconButton>
+            </span>
+          </Tooltip>
           <Tooltip title={titleReject}>
             <span>
               <IconButton
