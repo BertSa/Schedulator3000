@@ -75,4 +75,16 @@ public class VacationRequestService {
         final VacationRequest request = vacationRequestRepository.save(vacationRequest);
         return request.mapToDto();
     }
+
+    public boolean deleteVacationRequest(Long id) {
+        final VacationRequest vacationRequest = vacationRequestRepository.getById(id);
+        final VacationRequestStatus status = vacationRequest.getStatus();
+
+        if (status != VacationRequestStatus.REJECTED && status != VacationRequestStatus.PENDING) {
+            throw new IllegalArgumentException("Vacation request can only be deleted when status is rejected or pending");
+        }
+
+        vacationRequestRepository.deleteById(id);
+        return true;
+    }
 }
