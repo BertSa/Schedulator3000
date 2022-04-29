@@ -2,19 +2,19 @@ version: 2
 updates:
 
   - package-ecosystem: "maven"
-      directory: "/backend"
-      target-branch: "development"
-      schedule:
-        interval: "weekly"
-        day: "sunday"
-      labels:
-        - "dependencies"
+    directory: "/backend"
+    target-branch: "development"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    labels:
+      - "dependencies"
 
   - package-ecosystem: "npm"
-      directory: "/frontend/schedulator3000"
-      target-branch: "development"
-      schedule:
-        interval: "weekly"
-        day: "saturday"
-      labels:
-        - "dependencies"
+    directory: "/frontend/schedulator3000"
+    target-branch: "development"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+    labels:
+      - "dependencies"
