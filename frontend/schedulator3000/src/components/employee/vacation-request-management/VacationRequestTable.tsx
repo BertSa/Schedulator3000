@@ -12,6 +12,7 @@ import { Nullable } from '../../../models/Nullable';
 import VacationRequestTableRow from './VacationRequestTableRow';
 import useAsync from '../../../hooks/use-async';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
+import DialogWarningDelete from '../../DialogWarningDelete';
 
 function VacationRequestTableRowSkeleton() {
   return (
@@ -85,14 +86,40 @@ export default function VacationRequestTable() {
     );
   };
 
-  const cancelAction = (): void => {
+  const cancelAction = async (): Promise<void> => {
     if (!selectedVacationRequest) {
+      return;
+    }
+
+    const canceledByDialog = await new Promise<boolean>((resolve) => {
+      openDialog(
+        <DialogWarningDelete
+          text="Are you sure you want to cancel this vacation request?"
+          title="Cancel vacation request"
+          closeDialog={closeDialog}
+          resolve={resolve}
+        />,
+      );
+    });
+
+    if (canceledByDialog) {
       return;
     }
 
     vacationRequestService.updateStatus(selectedVacationRequest.id, VacationRequestUpdateStatus.Cancel).then((response) => {
       setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequest.id), response]);
       setSelectedVacationRequest(response);
+    });
+  };
+
+  const deleteAction = async (): Promise<void> => {
+    if (!selectedVacationRequest) {
+      return;
+    }
+
+    vacationRequestService.deleteById(selectedVacationRequest.id).then(() => {
+      setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequest.id)]);
+      setSelectedVacationRequest(null);
     });
   };
 
@@ -132,6 +159,7 @@ export default function VacationRequestTable() {
             create: createAction,
             edit: editAction,
             cancel: cancelAction,
+            del: deleteAction,
           }}
         />
         <Table aria-label="collapsible table">
