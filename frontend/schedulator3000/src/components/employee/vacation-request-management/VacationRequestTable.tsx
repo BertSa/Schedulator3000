@@ -112,6 +112,17 @@ export default function VacationRequestTable() {
     });
   };
 
+  const deleteAction = async (): Promise<void> => {
+    if (!selectedVacationRequest) {
+      return;
+    }
+
+    vacationRequestService.deleteById(selectedVacationRequest.id).then(() => {
+      setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequest.id)]);
+      setSelectedVacationRequest(null);
+    });
+  };
+
   function VacationRequestTableBody() {
     if (loading) {
       return <VacationRequestTableRowSkeleton />;
@@ -148,6 +159,7 @@ export default function VacationRequestTable() {
             create: createAction,
             edit: editAction,
             cancel: cancelAction,
+            del: deleteAction,
           }}
         />
         <Table aria-label="collapsible table">

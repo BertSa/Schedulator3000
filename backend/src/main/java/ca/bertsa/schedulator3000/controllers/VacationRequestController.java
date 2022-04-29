@@ -46,6 +46,12 @@ public class VacationRequestController {
         return vacationRequestService.updateVacationRequestStatus(id, VacationRequestStatus.CANCELLED);
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean deleteVacation(@PathVariable Long id) {
+        return vacationRequestService.deleteVacationRequest(id);
+    }
+
     @GetMapping("/manager/{managerEmail}")
     @ResponseStatus(HttpStatus.OK)
     public List<VacationRequestDto> getAllByEmployeeManagerEmail(@PathVariable String managerEmail) {

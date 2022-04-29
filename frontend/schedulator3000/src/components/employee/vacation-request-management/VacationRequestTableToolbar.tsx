@@ -1,5 +1,5 @@
 import { alpha, IconButton, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
-import { Add, CancelRounded, Edit } from '@mui/icons-material';
+import { Add, CancelRounded, Delete, Edit } from '@mui/icons-material';
 import React from 'react';
 import { VacationRequest, VacationRequestStatus } from '../../../models/VacationRequest';
 import { Nullable } from '../../../models/Nullable';
@@ -10,10 +10,14 @@ interface VacationRequestTableToolbarProps {
     create: VoidFunction;
     edit: VoidFunction;
     cancel: VoidFunction;
+    del: VoidFunction;
   };
 }
 
-export default function VacationRequestTableToolbar({ selected, actions: { create, edit, cancel } }: VacationRequestTableToolbarProps) {
+export default function VacationRequestTableToolbar({
+  selected,
+  actions: { create, edit, cancel, del },
+}: VacationRequestTableToolbarProps) {
   const toolbarSx: SxProps<Theme> = {
     pl: { sm: 2 },
     pr: { xs: 1, sm: 1 },
@@ -37,9 +41,20 @@ export default function VacationRequestTableToolbar({ selected, actions: { creat
 
       {selected ? (
         <div>
+          <Tooltip title="Delete">
+            <span>
+              <IconButton
+                onClick={del}
+                disabled={selected.status.toUpperCase() !== VacationRequestStatus.Pending
+                  && selected.status.toUpperCase() !== VacationRequestStatus.Rejected}
+              >
+                <Delete />
+              </IconButton>
+            </span>
+          </Tooltip>
           <Tooltip title="Cancel request">
             <span>
-              <IconButton onClick={cancel} disabled={selected.status.toUpperCase() !== VacationRequestStatus.Pending}>
+              <IconButton onClick={cancel} disabled={selected.status.toUpperCase() !== VacationRequestStatus.Approved}>
                 <CancelRounded />
               </IconButton>
             </span>
