@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+      directory: "/backend"
+      target-branch: "development"
+      schedule:
+        interval: "weekly"
+        day: "sunday"
+  - package-ecosystem: "npm"
+      directory: "/frontend/schedulator3000"
+      target-branch: "development"
+      schedule:
+        interval: "weekly"
+        day: "saturday"
+        labels:
+          - "dependencies"
