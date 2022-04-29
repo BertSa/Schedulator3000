@@ -2,7 +2,7 @@ name: Frontend Build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, development ]
     paths:
       - 'frontend/schedulator3000/**'
   pull_request:
