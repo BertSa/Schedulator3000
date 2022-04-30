@@ -71,6 +71,7 @@ public class VacationRequestService {
         vacationRequest.setStartDate(dto.getStartDate());
         vacationRequest.setEndDate(dto.getEndDate());
         vacationRequest.setReason(dto.getReason());
+        vacationRequest.setType(dto.getType());
 
         final VacationRequest request = vacationRequestRepository.save(vacationRequest);
         return request.mapToDto();

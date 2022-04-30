@@ -24,6 +24,7 @@ export default function VacationRequestFormEdit({
       startDate: data.startEnd[0],
       endDate: data.startEnd[1],
       reason: data.reason,
+      type: data.type,
     };
 
     vacationRequestService.update(body).then(callback);
