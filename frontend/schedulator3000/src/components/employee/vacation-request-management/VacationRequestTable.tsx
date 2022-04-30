@@ -27,6 +27,9 @@ function VacationRequestTableRowSkeleton() {
         <TableCell width="10%">
           <Skeleton />
         </TableCell>
+        <TableCell width="10%">
+          <Skeleton />
+        </TableCell>
         <TableCell>
           <Skeleton />
         </TableCell>
@@ -129,7 +132,7 @@ export default function VacationRequestTable() {
     }
 
     if (vacationRequests.length === 0) {
-      return <TableBodyEmpty colSpan={5} message="No vacation requests" />;
+      return <TableBodyEmpty colSpan={6} message="No vacation requests" />;
     }
 
     function handleRowClick(vacationRequest: VacationRequest): void {
@@ -166,6 +169,7 @@ export default function VacationRequestTable() {
           <TableHead>
             <TableRow>
               <TableCell width="5%">#</TableCell>
+              <TableCell width="10%">Type</TableCell>
               <TableCell width="10%">Start Date</TableCell>
               <TableCell width="10%">End Date</TableCell>
               <TableCell>Reason</TableCell>

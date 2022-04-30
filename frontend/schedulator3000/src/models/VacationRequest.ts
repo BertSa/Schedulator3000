@@ -12,12 +12,19 @@ export enum VacationRequestUpdateStatus {
   Cancel = 'cancel',
 }
 
+export enum VacationRequestType {
+  MEDICAL = 'MEDICAL',
+  PAID = 'PAID',
+  UNPAID = 'UNPAID',
+}
+
 export interface VacationRequest {
   id: number;
   employeeEmail: string;
   reason: string;
   startDate: Date;
   endDate: Date;
+  type: VacationRequestType;
   status: VacationRequestStatus;
 }
 export type VacationRequestCreate = Omit<VacationRequest, 'status' | 'id'>;

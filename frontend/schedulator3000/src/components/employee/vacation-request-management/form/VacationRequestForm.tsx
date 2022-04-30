@@ -1,13 +1,15 @@
 import { DateRangePicker } from '@mui/lab';
-import { Box, Button, Grid, TextField } from '@mui/material';
+import { Box, Button, Grid, MenuItem, TextField } from '@mui/material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import React from 'react';
 import { parseISO, startOfToday } from 'date-fns';
-import { DateRange, VacationRequest } from '../../../../models/VacationRequest';
+import { DateRange, VacationRequest, VacationRequestType } from '../../../../models/VacationRequest';
+import { toFirstUpper } from '../../../../utilities/StringUtilities';
 
 export interface VacationRequestFormFieldValue {
   startEnd: DateRange;
   reason: string;
+  type: VacationRequestType;
 }
 
 interface VacationRequestFormProps {
@@ -37,6 +39,23 @@ export default function VacationRequestForm({ submit, onCancel, vacationRequest 
       onSubmit={handleSubmit(submit)}
       noValidate
     >
+      <Grid item xs={12}>
+        <TextField
+          select
+          label="Type"
+          error={!!errors.type}
+          autoComplete=""
+          fullWidth
+          helperText={errors.type?.message ?? ' '}
+          {...register('type', { required: 'This field is required' })}
+        >
+          {Object.values(VacationRequestType).map((type) => (
+            <MenuItem key={type} value={type}>
+              {toFirstUpper(type)}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
       <Grid item xs={12}>
         <Controller
           name="startEnd"

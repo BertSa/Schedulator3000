@@ -154,6 +154,7 @@ export default function VacationRequestManagementTable() {
             <TableRow>
               <TableCell width="5%">#</TableCell>
               <TableCell width="15%">Employee</TableCell>
+              <TableCell width="10%">Type</TableCell>
               <TableCell width="10%">Start Date</TableCell>
               <TableCell width="10%">End Date</TableCell>
               <TableCell>Reason</TableCell>

@@ -25,6 +25,7 @@ export default function VacationRequestFormCreate({
       startDate: data.startEnd[0],
       endDate: data.startEnd[1],
       reason: data.reason,
+      type: data.type,
     };
 
     vacationRequestService.create(body).then(callback);

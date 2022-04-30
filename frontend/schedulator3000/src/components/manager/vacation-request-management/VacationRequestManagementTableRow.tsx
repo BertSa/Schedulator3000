@@ -3,6 +3,7 @@ import React from 'react';
 import { VacationRequest } from '../../../models/VacationRequest';
 import { Employee } from '../../../models/User';
 import VacationRequestStatusIcon from '../../employee/vacation-request-management/VacationRequestStatusIcon';
+import { toFirstUpper } from '../../../utilities/StringUtilities';
 
 interface VacationRequestManagementTableRowProps {
   vacationRequest: VacationRequest;
@@ -31,6 +32,7 @@ export default function VacationRequestManagementTableRow({
         {vacationRequest.id}
       </TableCell>
       <TableCell width="15%">{`${employee?.firstName} ${employee?.lastName}`}</TableCell>
+      <TableCell width="10%">{toFirstUpper(vacationRequest.type)}</TableCell>
       <TableCell width="10%">{vacationRequest.startDate}</TableCell>
       <TableCell width="10%">{vacationRequest.endDate}</TableCell>
       <TableCell>{vacationRequest.reason}</TableCell>
