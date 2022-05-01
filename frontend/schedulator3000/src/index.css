@@ -34,3 +34,20 @@ tbody tr.myRow:last-child * {
 .table-schedule-row-shift {
     margin-top: 5px !important;
 }
+
+.calendar-weekend{
+    background-color: #3a3a3a !important;
+}
+.rbc-header.rbc-today *> span:after{
+    content:" (Today)";
+}
+.rbc-header.rbc-today *> span{
+    color: aquamarine!important;
+}
+
+.rbc-allday-cell {
+    display: none;
+}
+.rbc-time-view .rbc-header {
+    border-bottom: none;
+}

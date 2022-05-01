@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { format, startOfWeek } from 'date-fns';
-import { Calendar, Event, Views } from 'react-big-calendar';
+import { Calendar, Views } from 'react-big-calendar';
 import { zonedTimeToUtc } from 'date-fns-tz';
+import { useTheme } from '@mui/material';
 import { useServices } from '../../hooks/use-services/use-services';
 import { RequestDtoShiftsFromTo } from '../../models/ShiftsFromTo';
 import { localizer, preferences } from '../../utilities/DateUtilities';
@@ -24,6 +25,7 @@ export default function ScheduleEmployee() {
   const user = useAuth().getEmployee();
   const currentWeek = useCurrentWeek();
   const [events, setEvents] = useState<ShiftEvent[]>([]);
+  const { palette: { warning, grey } } = useTheme();
 
   useEffect(() => {
     const body: RequestDtoShiftsFromTo = {
@@ -37,7 +39,7 @@ export default function ScheduleEmployee() {
           ? []
           : shifts.map((shift) => ({
             resourceId: shift.id,
-            title: 'Title',
+            title: '',
             start: zonedTimeToUtc(shift.startTime, 'UTC'),
             end: zonedTimeToUtc(shift.endTime, 'UTC'),
             resource: {},
@@ -52,73 +54,58 @@ export default function ScheduleEmployee() {
       <Calendar
         defaultView={Views.WEEK}
         defaultDate={startOfWeek(new Date())}
-        views={[Views.WEEK, Views.WORK_WEEK, Views.DAY]}
+        views={[Views.WEEK, Views.WORK_WEEK]}
         events={events}
         localizer={localizer}
-        style={{
-          height: 500,
-          colorScheme: 'dark',
-          color: '#fff',
-        }}
+        showAllEvents={false}
+        showMultiDayTimes={false}
+        toolbar={preferences.calendar.toolbar}
         step={preferences.calendar.step}
         timeslots={preferences.calendar.timeslots}
-        scrollToTime={preferences.calendar.scrollToTime}
-        showMultiDayTimes
-        allDayAccessor="allDay"
-        selectable="ignoreEvents"
-        popup
-        toolbar={preferences.calendar.toolbar}
-        startAccessor={(event: Event) => new Date(event.start as Date)}
-        onSelectEvent={() => {
-          // setValue('start', data.start as Date);
-          // setValue('end', data.end as Date);
-          // setValue('employeeId', data.resource.employeeId);
-          // setValue('shiftId', data.resourceId);
-          // openMyDialog(SubmitType.UPDATE);
-        }}
         min={new Date('2022-03-19T04:00:00.000Z')}
         max={new Date('2022-03-20T03:59:00.000Z')}
-        dayLayoutAlgorithm="overlap"
-        onNavigate={() => {
-          // setCurrentWeek(date);
+        slotPropGetter={() => ({ style: {
+          border: '0.5px',
+        } })}
+        style={{
+          colorScheme: 'dark',
         }}
-        components={{
-          eventWrapper: ({ children }) => (
-            <div
-              onContextMenu={() => {
-                /* handleContextMenu(e, event); */
-              }}
-            >
-              {children}
-            </div>
-          ),
-          dayColumnWrapper: ({ children }) => (
-            <div
-              onContextMenu={() => {
-                /* handleContextMenu(e, event); */
-              }}
-            >
-              {children}
-            </div>
-          ),
-          eventContainerWrapper: ({ children }) => (
-            <div
-              onContextMenu={() => {
-                /* handleContextMenu(e, event); */
-              }}
-            >
-              {children}
-            </div>
-          ),
-          dateCellWrapper: ({ children }) => (
-            <div
-              onContextMenu={() => {
-                /* handleContextMenu(e, event); */
-              }}
-            >
-              {children}
-            </div>
-          ),
+        dayPropGetter={(date) => {
+          const day = date.getDay();
+
+          // @ts-ignore
+          // eslint-disable-next-line no-constant-condition
+          if (1 === 3) {
+            return {
+              color: '#FFF',
+              style: {
+                backgroundColor: warning.main + 80,
+                border: '0.5px',
+              },
+            };
+          }
+
+          if (day === 0 || day === 6) {
+            return {
+              color: '#FFF',
+              style: {
+                backgroundColor: grey['800'] + 55,
+                border: '0.5px',
+              },
+            };
+          }
+          return {
+            color: '#FFF',
+          };
+        }}
+        onNavigate={(date, view, action) => {
+          if (action === 'PREV') {
+            currentWeek.previous();
+          } else if (action === 'NEXT') {
+            currentWeek.next();
+          } else if (action === 'TODAY') {
+            currentWeek.thisWeek();
+          }
         }}
       />
     </>

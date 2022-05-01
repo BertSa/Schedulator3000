@@ -391,7 +391,6 @@ export default function ScheduleCalendar() {
     setValue('shiftId', resourceId);
     openMyDialog(SubmitType.UPDATE);
   }
-
   const onEventResize: withDragAndDropProps<ShiftEvent, Ress>['onEventResize'] = (data) => updateEvent(data);
   const onEventDrop: withDragAndDropProps<ShiftEvent, Ress>['onEventDrop'] = (data) => updateEvent(data);
 
@@ -430,9 +429,24 @@ export default function ScheduleCalendar() {
           views={[Views.WEEK, Views.DAY]}
           events={events}
           localizer={localizer}
+          slotPropGetter={() => ({ style: {
+            border: '0.5px',
+          } })}
           style={{
             colorScheme: 'dark',
-            color: '#fff',
+          }}
+          dayPropGetter={(date) => {
+            const day = date.getDay();
+
+            if (day === 0 || day === 6) {
+              return {
+                color: '#FFF',
+                className: 'calendar-weekend',
+              };
+            }
+            return {
+              color: '#FFF',
+            };
           }}
           onEventDrop={onEventDrop}
           onEventResize={onEventResize}
