@@ -1,7 +1,7 @@
 import { SubmitHandler } from 'react-hook-form';
 import React from 'react';
 import VacationRequestForm, { VacationRequestFormFieldValue } from './VacationRequestForm';
-import { VacationRequest, VacationRequestCreate } from '../../../../models/VacationRequest';
+import { VacationRequest, VacationRequestCreate, VacationRequestType } from '../../../../models/VacationRequest';
 import { Employee } from '../../../../models/User';
 import { IVacationRequestService } from '../../../../hooks/use-services/use-provide-vacation-request-service';
 
@@ -25,7 +25,7 @@ export default function VacationRequestFormCreate({
       startDate: data.startEnd[0],
       endDate: data.startEnd[1],
       reason: data.reason,
-      type: data.type,
+      type: data.type as VacationRequestType,
     };
 
     vacationRequestService.create(body).then(callback);

@@ -35,19 +35,37 @@ tbody tr.myRow:last-child * {
     margin-top: 5px !important;
 }
 
-.calendar-weekend{
-    background-color: #3a3a3a !important;
+.rbc-header.rbc-today * > span:after {
+    content: " (Today)";
 }
-.rbc-header.rbc-today *> span:after{
-    content:" (Today)";
-}
-.rbc-header.rbc-today *> span{
-    color: aquamarine!important;
-}
+
+/*.rbc-header.rbc-today *> span{*/
+/*    color: aquamarine!important;*/
+/*}*/
 
 .rbc-allday-cell {
     display: none;
 }
+
 .rbc-time-view .rbc-header {
     border-bottom: none;
+}
+
+.rbc-header {
+    background-color: #121212 !important;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09)) !important;
+}
+
+.rbc-header:last-child {
+    border-radius: 0 5px 0 0;
+}
+
+
+.rbc-time-view{
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.rbc-day-slot .rbc-timeslot-group:last-child {
+    border-color: aquamarine!important;
 }

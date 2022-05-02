@@ -9,11 +9,10 @@ import {
   MenuItem,
   SxProps,
   Toolbar,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import React from 'react';
-import { AccountCircle, Menu as MenuIcon } from '@mui/icons-material';
+import { Login, Logout, Menu as MenuIcon } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../hooks/use-auth';
 import { Nullable } from '../models/Nullable';
@@ -177,53 +176,19 @@ export default function Navbar() {
   }
 
   function RightSide() {
-    const [anchorEl, setAnchorEl] = React.useState<Nullable<HTMLElement>>(null);
-
-    const handleMenu = (event: React.MouseEvent<HTMLElement>): void => setAnchorEl(event.currentTarget);
-    const handleClose = (): void => setAnchorEl(null);
-
     if (auth.isAuthenticated()) {
       return (
-        <>
-          <Tooltip title="Open settings">
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-          </Tooltip>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem
-              onClick={() => {
-                handleClose();
-                auth.signOut();
-                history.push('/');
-              }}
-            >
-              Log out
-            </MenuItem>
-            <MenuItem onClick={handleClose}>My account</MenuItem>
-          </Menu>
-        </>
+        <Button
+          onClick={() => {
+            auth.signOut();
+            history.push('/signin');
+          }}
+          sx={buttonSx}
+        >
+          Log out
+          {' '}
+          <Logout />
+        </Button>
       );
     }
 
@@ -231,11 +196,12 @@ export default function Navbar() {
       <Button
         onClick={() => {
           history.push('/signin');
-          handleClose();
         }}
         sx={buttonSx}
       >
         Log In
+        {' '}
+        <Login />
       </Button>
     );
   }

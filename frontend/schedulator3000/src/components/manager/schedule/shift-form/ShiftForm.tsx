@@ -1,9 +1,10 @@
 import { Button, Grid, InputAdornment, MenuItem, Stack, TextField } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { TimePicker } from '@mui/lab';
+import { DesktopTimePicker, TimePicker } from '@mui/lab';
 import React from 'react';
 import { Employee } from '../../../../models/User';
+import { preferences } from '../../../../utilities/DateUtilities';
 
 export interface ShiftFormFieldValue {
   shiftId?: number;
@@ -68,7 +69,10 @@ export default function ShiftForm({ submit, employees, onClose, selected }: Sche
           ))}
         </TextField>
       </Grid>
-      <Grid item xs={6}>
+      <Grid
+        item
+        xs={6}
+      >
         <Controller
           name="start"
           control={control}
@@ -78,6 +82,9 @@ export default function ShiftForm({ submit, employees, onClose, selected }: Sche
           render={({ fieldState, formState, field }) => (
             <TimePicker
               label="Start Time"
+              minutesStep={preferences.calendar.step}
+              showToolbar
+              shouldDisableTime={(timeValue, clockType) => clockType === 'minutes' && timeValue % preferences.calendar.step !== 0}
               renderInput={(props) => <TextField {...props} helperText={errors.start ?? ' '} error={!!errors.start} />}
               {...field}
               {...fieldState}
@@ -86,7 +93,10 @@ export default function ShiftForm({ submit, employees, onClose, selected }: Sche
           )}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid
+        item
+        xs={6}
+      >
         <Controller
           name="end"
           control={control}
@@ -95,8 +105,11 @@ export default function ShiftForm({ submit, employees, onClose, selected }: Sche
             validate: (value) => value > getValues().start || 'End time must be after start time',
           }}
           render={({ fieldState, formState, field }) => (
-            <TimePicker
+            <DesktopTimePicker
               label="End Time"
+              minutesStep={preferences.calendar.step}
+              showToolbar
+              shouldDisableTime={(timeValue, clockType) => clockType === 'minutes' && timeValue % preferences.calendar.step !== 0}
               renderInput={(props) => <TextField helperText={errors.end?.message ?? ' '} error={!!errors.end} {...props} />}
               {...field}
               {...fieldState}
