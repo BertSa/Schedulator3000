@@ -80,6 +80,7 @@
     "prefer-const": 2,
     "prefer-destructuring": 1,
     "prefer-exponentiation-operator": 2,
+    "prefer-template": 1,
     "import/no-cycle": 0,
     "object-curly-newline": 0,
     "implicit-arrow-linebreak": 0,

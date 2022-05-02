@@ -9,7 +9,7 @@ import { toFirstUpper } from '../../../../utilities/StringUtilities';
 export interface VacationRequestFormFieldValue {
   startEnd: DateRange;
   reason: string;
-  type: VacationRequestType;
+  type: VacationRequestType | string;
 }
 
 interface VacationRequestFormProps {
@@ -27,6 +27,7 @@ export default function VacationRequestForm({ submit, onCancel, vacationRequest 
         ? [parseISO(vacationRequest.startDate.toString()), parseISO(vacationRequest.endDate.toString())]
         : [startOfToday(), startOfToday()],
       reason: vacationRequest?.reason ?? '',
+      type: vacationRequest?.type ?? '',
     },
   });
 
@@ -46,6 +47,7 @@ export default function VacationRequestForm({ submit, onCancel, vacationRequest 
           error={!!errors.type}
           autoComplete=""
           fullWidth
+          defaultValue={vacationRequest?.type ?? ''}
           helperText={errors.type?.message ?? ' '}
           {...register('type', { required: 'This field is required' })}
         >

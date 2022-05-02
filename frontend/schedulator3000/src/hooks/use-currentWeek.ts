@@ -10,6 +10,7 @@ export interface ICurrentWeek {
   getNextWeek: () => Date;
   getDayOfWeek: (day: number) => Date;
   isDuringWeek: (date: Date) => boolean;
+  thisWeek:() => void;
 }
 
 export default function useCurrentWeek(defaultValue?: Date): ICurrentWeek {
@@ -33,6 +34,7 @@ export default function useCurrentWeek(defaultValue?: Date): ICurrentWeek {
 
   const previous = (): void => setCurrentWeek(getPreviousWeek);
   const next = (): void => setCurrentWeek(getNextWeek);
+  const thisWeek = (): void => setCurrentWeek(startOfWeek(new Date()));
 
   return {
     value,
@@ -42,5 +44,6 @@ export default function useCurrentWeek(defaultValue?: Date): ICurrentWeek {
     getPreviousWeek,
     getNextWeek,
     isDuringWeek,
+    thisWeek,
   };
 }
