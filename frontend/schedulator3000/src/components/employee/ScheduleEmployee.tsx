@@ -12,6 +12,7 @@ import { ShiftEvent } from '../../models/ShiftEvent';
 import { useAuth } from '../../hooks/use-auth';
 import useCurrentWeek from '../../hooks/use-currentWeek';
 import { VacationRequest, VacationRequestStatus } from '../../models/VacationRequest';
+import useDebounce from '../../hooks/use-debounce';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -107,6 +108,30 @@ export default function ScheduleEmployee() {
   const {
     palette: { warning, grey, primary, secondary, text },
   } = useTheme();
+
+  useDebounce(
+    () => {
+      const body: RequestDtoShiftsFromTo = {
+        userEmail: user.email,
+        from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
+        to: format(currentWeek.getNextWeek(), 'yyyy-MM-dd'),
+      };
+      shiftService.getShiftsEmployee(body).then((shifts) =>
+        setEvents(
+          shifts.length === 0
+            ? []
+            : shifts.map((shift) => ({
+              resourceId: shift.id,
+              title: '',
+              start: zonedTimeToUtc(shift.startTime, 'UTC'),
+              end: zonedTimeToUtc(shift.endTime, 'UTC'),
+              resource: {},
+            })),
+        ));
+    },
+    1000,
+    [currentWeek.value],
+  );
 
   useEffect(() => {
     const body: RequestDtoShiftsFromTo = {
