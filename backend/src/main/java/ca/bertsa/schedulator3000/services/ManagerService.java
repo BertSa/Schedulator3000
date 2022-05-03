@@ -66,4 +66,22 @@ public class ManagerService {
 
         return employeeService.update(employee);
     }
+
+    public ManagerDto signup(ManagerDto managerDto) {
+        Assert.notNull(managerDto, "Manager cannot be null!");
+
+        if (managerRepository.existsByEmailIgnoreCase(managerDto.getEmail())) {
+            throw new IllegalArgumentException("Manager with email " + managerDto.getEmail() + " already exists!");
+        }
+
+        final Manager manager = new Manager();
+        manager.setEmail(managerDto.getEmail());
+        manager.setPassword(managerDto.getPassword());
+        manager.setPhone(managerDto.getPhone());
+        manager.setCompanyName(managerDto.getCompanyName());
+
+        final Manager created = managerRepository.save(manager);
+
+        return created.mapToDto();
+    }
 }

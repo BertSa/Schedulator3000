@@ -25,7 +25,7 @@ export default function SignInPage() {
     if (tab === 0) {
       auth.signInEmployee(email, password).then(() => history.push('/'));
     } else if (tab === 1) {
-      auth.signInManager(email, password).then(() => history.push('/manager/dashboard'));
+      auth.signInManager(email, password).then(() => history.push('/manager'));
     }
   };
 
@@ -108,9 +108,8 @@ export default function SignInPage() {
           </Grid>
           <Grid item>
             <Typography fontSize="smaller">
-              {' '}
-              Do you have an account ?
-              <Link component={RouterLink} to={{ pathname: '/forgot_password' }}>
+              {'Do you have an account? '}
+              <Link component={RouterLink} to={{ pathname: '/register' }}>
                 Sign Up
               </Link>
             </Typography>

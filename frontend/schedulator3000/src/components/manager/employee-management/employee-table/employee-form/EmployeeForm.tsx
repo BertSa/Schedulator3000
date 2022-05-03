@@ -43,7 +43,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
             required: 'Ce champ est obligatoire!',
             pattern: {
               value: /^[a-zA-Z]+$/,
-              message: 'Le prénom doit contenir que des lettres!',
+              message: 'This field must contain only letters!',
             },
           }}
         />

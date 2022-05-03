@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-import { Login, Logout, Menu as MenuIcon } from '@mui/icons-material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../hooks/use-auth';
 import { Nullable } from '../models/Nullable';
@@ -181,13 +181,11 @@ export default function Navbar() {
         <Button
           onClick={() => {
             auth.signOut();
-            history.push('/signin');
+            history.push('/');
           }}
           sx={buttonSx}
         >
           Log out
-          {' '}
-          <Logout />
         </Button>
       );
     }
@@ -195,13 +193,11 @@ export default function Navbar() {
     return (
       <Button
         onClick={() => {
-          history.push('/signin');
+          history.push('/');
         }}
         sx={buttonSx}
       >
         Log In
-        {' '}
-        <Login />
       </Button>
     );
   }
