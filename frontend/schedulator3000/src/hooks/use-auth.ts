@@ -7,6 +7,7 @@ import NewEmployeePage from '../components/employee/NewEmployeePage';
 
 interface ProviderAuth {
   updatePassword: (passwordChange: PasswordChangeDto) => Promise<void>;
+  signUpManager: (manager: Manager) => Promise<void>;
   signInManager: (email: string, password: string) => Promise<void>;
   signInEmployee: (email: string, password: string) => Promise<void>;
   signOut: () => void;
@@ -55,6 +56,25 @@ function useProvideAuth(): ProviderAuth {
       sessionStorage.setItem('type', Manager.prototype.constructor.name);
     }
   }, [user, isManager, isEmployee]);
+
+  const signUpManager = async (manager:Manager): Promise<void> => {
+    const { response, body } = await http.post('/manager/signup', manager);
+
+    if (response.ok) {
+      setUser(Object.setPrototypeOf(body, Manager.prototype));
+      enqueueSnackbar('You are connected!', {
+        variant: 'success',
+        autoHideDuration: 3000,
+      });
+      return Promise.resolve();
+    }
+    enqueueSnackbar(body.message, {
+      variant: 'error',
+      autoHideDuration: 3000,
+    });
+
+    return Promise.reject(body.message);
+  };
 
   const signIn = async (endpoint: string, prototype: Manager | Employee, email: string, password: string): Promise<void> => {
     const { response, body } = await http.post(`/${endpoint}/signin`, {
@@ -146,6 +166,7 @@ function useProvideAuth(): ProviderAuth {
 
   return {
     updatePassword,
+    signUpManager,
     signInManager,
     signInEmployee,
     signOut,

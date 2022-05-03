@@ -25,9 +25,9 @@ export function FieldInput(props: FieldInputProps) {
       type={type}
       label={label}
       name={name}
+      fullWidth
       autoComplete={autoComplete}
       {...register(name, validation)}
-      fullWidth
       error={!!errors[name]}
       helperText={errors[name]?.message ?? ' '}
       defaultValue={defaultValue}

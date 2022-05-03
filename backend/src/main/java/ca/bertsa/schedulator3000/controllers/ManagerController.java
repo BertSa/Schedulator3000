@@ -18,6 +18,12 @@ public class ManagerController {
 
     private final ManagerService managerService;
 
+    @PostMapping("/signup")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ManagerDto signup(@RequestBody ManagerDto managerDto) {
+        return managerService.signup(managerDto);
+    }
+
     @PostMapping("/signin")
     @ResponseStatus(HttpStatus.OK)
     public ManagerDto signIn(@RequestBody ConnectionDto dto) {

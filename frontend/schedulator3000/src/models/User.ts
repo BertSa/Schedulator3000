@@ -73,6 +73,16 @@ export class Employee extends User {
 }
 
 export class Manager extends User {
+  private readonly _companyName: string;
+
+  constructor({ id = 1, email, phone, companyName, password = '' }:{ id: number, email: string, phone: string, companyName: string, password: string }) {
+    super(id, email, phone, password);
+    this._companyName = companyName;
+  }
+
+  get companyName(): string {
+    return this._companyName;
+  }
 }
 
 export type EmployeeFormType = Omit<Employee, 'id' | 'active' | 'password'>;

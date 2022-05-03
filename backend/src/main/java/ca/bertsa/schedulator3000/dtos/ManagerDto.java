@@ -21,5 +21,7 @@ public class ManagerDto {
     private String password;
     @NotBlank
     private String phone;
+    @NotBlank
+    private String companyName;
     private List<Holiday> holidays;
 }
