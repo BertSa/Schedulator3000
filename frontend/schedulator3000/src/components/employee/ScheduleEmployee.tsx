@@ -166,8 +166,8 @@ export default function ScheduleEmployee() {
         showAllEvents={false}
         showMultiDayTimes={false}
         components={{
-          toolbar: ({ date, view, onView, onNavigate }) => (
-            <ToolbarCalendar date={date} view={view} onView={onView} onNavigate={onNavigate} />
+          toolbar: ({ view, onView, onNavigate }) => (
+            <ToolbarCalendar date={currentWeek.value} view={view} onView={onView} onNavigate={onNavigate} />
           ),
         }}
         toolbar={preferences.calendar.toolbar}

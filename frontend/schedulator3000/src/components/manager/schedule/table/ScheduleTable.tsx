@@ -102,7 +102,7 @@ export default function ScheduleTable() {
     [],
   );
 
-  function createAction() {
+  const createAction = () => {
     if (!selectedItem) {
       return;
     }
@@ -130,9 +130,9 @@ export default function ScheduleTable() {
         callback={callback}
       />,
     );
-  }
+  };
 
-  function editAction() {
+  const editAction = () => {
     if (!selectedItem?.shift) {
       return;
     }
@@ -166,9 +166,9 @@ export default function ScheduleTable() {
         callbackUpdate={callbackUpdate}
       />,
     );
-  }
+  };
 
-  function removeAction() {
+  const removeAction = () => {
     if (!selectedItem?.shift?.id) {
       return;
     }
@@ -177,7 +177,7 @@ export default function ScheduleTable() {
       setShifts((current) => current.filter((shift) => shift.id !== selectedItem?.shift?.id));
       setSelectedItem(null);
     });
-  }
+  };
 
   function ScheduleTableBody() {
     const [rowData, setRowData] = useState<RowDataType[]>([]);

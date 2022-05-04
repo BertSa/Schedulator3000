@@ -4,6 +4,7 @@ import { IVacationRequestService, useProvideVacationRequestService } from './use
 import { IShiftService, useProvideShiftService } from './use-provide-shift-service';
 import { IEmployeeService, useProvideEmployeeService } from './use-provide-employee-service';
 import { INoteService, useProvideNoteService } from './use-provide-note-service';
+import { IAvailabilitiesService, useProvideAvailabilitiesService } from './use-provide-availabilities-service';
 
 export interface IProviderServices {
   managerService: IManagerService;
@@ -11,6 +12,7 @@ export interface IProviderServices {
   shiftService: IShiftService;
   vacationRequestService: IVacationRequestService;
   noteService: INoteService;
+  availabilitiesService: IAvailabilitiesService;
 }
 
 function useProvideServices(): IProviderServices {
@@ -20,6 +22,7 @@ function useProvideServices(): IProviderServices {
     shiftService: useProvideShiftService(),
     vacationRequestService: useProvideVacationRequestService(),
     noteService: useProvideNoteService(),
+    availabilitiesService: useProvideAvailabilitiesService(),
   };
 }
 

@@ -1,11 +1,11 @@
 import { alpha, SxProps, TableCell, Theme } from '@mui/material';
-import { addDays, format, parseISO } from 'date-fns';
+import { addDays, parseISO } from 'date-fns';
 import React from 'react';
 import { VacationRequest, VacationRequestStatus } from '../../../../models/VacationRequest';
 import { Shift } from '../../../../models/Shift';
 import { Nullable } from '../../../../models/Nullable';
 import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
-import { isBetween } from '../../../../utilities/DateUtilities';
+import { getTimeInHourMinutesAMPM, isBetween } from '../../../../utilities/DateUtilities';
 
 interface EmployeeWeekColumnProps {
   index: number;
@@ -36,10 +36,6 @@ export default function ScheduleTableColumnWeek({ index, isSelected, onClick, va
         break;
     }
     return color;
-  }
-
-  function getTimeInHourMinutesAMPM(date: Date) {
-    return format(new Date(date), 'h:mma');
   }
 
   const mySx: SxProps<Theme> = {
