@@ -4,6 +4,13 @@ import { Employee, Manager } from '../models/User';
 import { http } from './use-services/useServices';
 import { PasswordChangeDto } from '../models/PasswordChange';
 import NewEmployeePage from '../components/employee/NewEmployeePage';
+import { useSessionStorage } from './useStorage';
+import { Nullable } from '../models/Nullable';
+
+interface SessionStorageUser {
+  type: 'employee' | 'manager';
+  user: Employee | Manager;
+}
 
 interface ProviderAuth {
   updatePassword: (passwordChange: PasswordChangeDto) => Promise<void>;
@@ -22,40 +29,30 @@ const authContext: React.Context<ProviderAuth> = createContext({} as ProviderAut
 
 function useProvideAuth(): ProviderAuth {
   const { enqueueSnackbar } = useSnackbar();
-  const [user, setUser] = useState<Manager | Employee | undefined>(() => {
-    if (sessionStorage.length === 0) {
-      return undefined;
+  const [sessionStorageUser, setSessionStorageUser, removeSessionStorageUser] = useSessionStorage<Nullable<SessionStorageUser>>('user', null);
+  const [user, setUser] = useState<Nullable<Manager | Employee>>(() => {
+    if (sessionStorageUser) {
+      if (sessionStorageUser.type === 'manager') {
+        return Object.setPrototypeOf(sessionStorageUser.user, Manager.prototype);
+      }
+      if (sessionStorageUser.type === 'employee') {
+        return Object.setPrototypeOf(sessionStorageUser.user, Employee.prototype);
+      }
     }
-
-    const item: string | null = sessionStorage.getItem('user');
-    if (item === null || item === 'undefined' || item === 'null') {
-      return undefined;
-    }
-
-    const userParsed = JSON.parse(item) as Employee | Manager;
-    const type = sessionStorage.getItem('type');
-
-    if (type === Employee.prototype.constructor.name) {
-      return Object.setPrototypeOf(userParsed, Employee.prototype);
-    }
-    if (type === Manager.prototype.constructor.name) {
-      return Object.setPrototypeOf(userParsed, Manager.prototype);
-    }
-    return undefined;
+    return null;
   });
 
-  const isAuthenticated = (): boolean => user !== undefined;
-  const isManager = useCallback(() => user !== undefined && user instanceof Manager, [user]);
-  const isEmployee = useCallback(() => user !== undefined && user instanceof Employee, [user]);
+  const isAuthenticated = (): boolean => !!user;
+  const isManager = useCallback(() => !!user && user instanceof Manager, [user]);
+  const isEmployee = useCallback(() => !!user && user instanceof Employee, [user]);
 
   useEffect(() => {
-    sessionStorage.setItem('user', JSON.stringify(user));
-    if (isEmployee()) {
-      sessionStorage.setItem('type', Employee.prototype.constructor.name);
-    } else if (isManager()) {
-      sessionStorage.setItem('type', Manager.prototype.constructor.name);
+    if (user) {
+      setSessionStorageUser({ type: isManager() ? 'manager' : 'employee', user });
+    } else {
+      removeSessionStorageUser();
     }
-  }, [user, isManager, isEmployee]);
+  }, [user, setSessionStorageUser, removeSessionStorageUser]);
 
   const signUpManager = async (manager:Manager): Promise<void> => {
     const { response, body } = await http.post('/manager/signup', manager);
@@ -102,9 +99,8 @@ function useProvideAuth(): ProviderAuth {
   const signInEmployee = async (email: string, password: string): Promise<void> => signIn('employees', Employee.prototype, email, password);
 
   const signOut = (): void => {
-    setUser(undefined);
-    sessionStorage.removeItem('user');
-    sessionStorage.removeItem('type');
+    setUser(null);
+    removeSessionStorageUser();
     enqueueSnackbar('You are now disconnected.', {
       variant: 'default',
       autoHideDuration: 3000,

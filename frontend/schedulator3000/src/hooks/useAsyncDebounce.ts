@@ -4,8 +4,8 @@ import useTimeout from './useTimeout';
 export default function useAsyncDebounce(callback: any, delay: number = 1000, dependencies: any[] = []) {
   const [loading1, setLoading] = useState(false);
   const firstRenderRef = useRef(true);
-  const [error, setError] = useState();
-  const [value, setValue] = useState();
+  const [error, setError] = useState<any>(undefined);
+  const [value, setValue] = useState<any>(undefined);
 
   const callbackRef = useRef(callback);
 
@@ -13,11 +13,11 @@ export default function useAsyncDebounce(callback: any, delay: number = 1000, de
     callbackRef.current = callback;
   }, [callback]);
 
-  const callbackMemoized = useCallback(async () => {
+  const callbackMemoized = useCallback(() => {
     setLoading(true);
     setError(undefined);
     setValue(undefined);
-    await callbackRef
+    callbackRef
       .current()
       .then(setValue)
       .catch(setError)
@@ -29,9 +29,15 @@ export default function useAsyncDebounce(callback: any, delay: number = 1000, de
     reset();
     if (firstRenderRef.current) {
       firstRenderRef.current = false;
-      return;
+    } else {
+      setLoading(true);
     }
-    setLoading(true);
+
+    return () => {
+      setLoading(false);
+      setError(undefined);
+      setValue(undefined);
+    };
   }, [...dependencies, reset]);
   useEffect(clear, [clear]);
 

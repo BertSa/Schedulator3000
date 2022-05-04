@@ -16,7 +16,7 @@ type DialogContainerProps = PropsWithChildren<{
   onEnded: VoidFunction;
 }>;
 
-let id = 0;
+let idd = 0;
 
 const DialogContext = React.createContext<ProviderContext>({} as ProviderContext);
 
@@ -26,7 +26,7 @@ export function useDialog(): [(container: ReactNode, onExited?: VoidFunction) =>
 
   const handleOpen = useCallback(
     (container: ReactNode, onExited?: VoidFunction) => {
-      idDialog = ++id as number;
+      idDialog = ++idd as number;
       createDialog({
         children: container,
         onExited,

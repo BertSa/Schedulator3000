@@ -183,33 +183,35 @@ export default function ScheduleTable() {
     const [rowData, setRowData] = useState<RowDataType[]>([]);
 
     useEffect(() => {
-      if (loading || employees.length === 0) {
-        return;
+      if (!loading && employees.length !== 0) {
+        employees.forEach((employee) => {
+          const requests: VacationRequest[] = vacationRequests.filter((value) => value.employeeEmail === employee.email);
+          // TODO: optimize
+          const tempShifts: Shift[] = shifts.filter(
+            (value) =>
+              isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1))
+            && value.emailEmployee === employee.email,
+          );
+
+          const weekShifts: Nullable<Shift>[] = [];
+          for (let i = 0; i < 7; i++) {
+            weekShifts[i] = tempShifts.find((shift) => getDay(new Date(shift.startTime)) === i) ?? null;
+          }
+
+          setRowData((prevState) => [
+            ...prevState.filter((data) => data.employee.id !== employee.id),
+            {
+              employee,
+              weekShifts,
+              requests,
+            },
+          ]);
+        });
       }
 
-      employees.forEach((employee) => {
-        const requests: VacationRequest[] = vacationRequests.filter((value) => value.employeeEmail === employee.email);
-        // TODO: optimize
-        const tempShifts: Shift[] = shifts.filter(
-          (value) =>
-            isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1))
-            && value.emailEmployee === employee.email,
-        );
-
-        const weekShifts: Nullable<Shift>[] = [];
-        for (let i = 0; i < 7; i++) {
-          weekShifts[i] = tempShifts.find((shift) => getDay(new Date(shift.startTime)) === i) ?? null;
-        }
-
-        setRowData((prevState) => [
-          ...prevState.filter((data) => data.employee.id !== employee.id),
-          {
-            employee,
-            weekShifts,
-            requests,
-          },
-        ]);
-      });
+      return () => {
+        setRowData([]);
+      };
     }, [currentWeek.value, employees, vacationRequests, shifts]);
 
     if (loading) {
