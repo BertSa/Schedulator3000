@@ -15,7 +15,7 @@ import {
 import React, { useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { zonedTimeToUtc } from 'date-fns-tz';
-import { differenceInMinutes, hoursToMinutes, minutesToHours } from 'date-fns';
+import { differenceInMinutes, hoursToMinutes, minutesToHours, startOfToday } from 'date-fns';
 import { Nullable } from '../../../models/Nullable';
 import { useAuth } from '../../../hooks/useAuth';
 import useAsync from '../../../hooks/useAsync';
@@ -28,7 +28,7 @@ import TableBodyEmpty from '../../shared/TableBodyEmpty';
 import AvailabilitiesTableToolbar from './AvailabilitiesTableToolbar';
 import AvailabilityForm, { AvailabilityFormFieldValue } from './AvailabilityForm';
 
-export type SelectedItemType = Nullable<{ day:number, availability:AvailabilityDay }>;
+export type SelectedItemType = Nullable<{ day:number, availability:Nullable<AvailabilityDay> }>;
 interface AvailiabilityTableColumnWeekProps { onClick: () => void, isSelected: boolean, day:AvailabilityDay }
 export function AvailiabilityTableColumnWeek({ onClick, isSelected, day }: AvailiabilityTableColumnWeekProps) {
   const { palette: { primary } } = useTheme();
@@ -58,7 +58,17 @@ export function AvailiabilityTableColumnWeek({ onClick, isSelected, day }: Avail
 
 export default function AvailabilitiesTable() {
   const [selectedItem, setSelectedItem] = useState<SelectedItemType>(null);
-  const [availabilities, setAvailabilities] = useState<IAvailabilities>();
+  const [availabilities, setAvailabilities] = useState<IAvailabilities>({
+    monday: null,
+    tuesday: null,
+    wednesday: null,
+    thursday: null,
+    friday: null,
+    saturday: null,
+    sunday: null,
+    lastModified: startOfToday(),
+    id: -1,
+  });
   const { availabilitiesService } = useServices();
   const [openDialog, closeDialog] = useDialog();
   const employee = useAuth().getEmployee();
@@ -71,6 +81,7 @@ export default function AvailabilitiesTable() {
       }),
     [],
   );
+
   function TotalTime() {
     if (!availabilities) {
       return <span>00:00</span>;
@@ -90,10 +101,11 @@ export default function AvailabilitiesTable() {
   }
 
   function updateSelected(availability: AvailabilityDay) {
-    if (!selectedItem?.day || !availabilities || selectedItem.day > 6 || selectedItem.day < 0) {
+    if (!selectedItem) {
       return;
     }
-    const body: IAvailabilities = { ...availabilities };
+
+    const body = { ...availabilities };
 
     if (selectedItem.day === 0) {
       body.sunday = availability;
@@ -111,7 +123,11 @@ export default function AvailabilitiesTable() {
       body.saturday = availability;
     }
 
-    availabilitiesService.update(employee.email, body).then(setAvailabilities);
+    availabilitiesService.update(employee.email, body).then(((value) => {
+      setAvailabilities(value);
+      setSelectedItem((current) => current
+        ? { day: current.day, availability } as SelectedItemType : null);
+    }));
   }
 
   const createAction = () => {

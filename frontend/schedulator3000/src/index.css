@@ -19,7 +19,7 @@ main {
     background-color: #4d4c4c;
 }
 
-tbody > tr.myRow:last-child > td, tbody > tr.myRow:last-child > th {
+tbody > tr.myRow:last-child td, tbody > tr.myRow:last-child th {
     border: 0;
 }
 
