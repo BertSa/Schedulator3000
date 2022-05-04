@@ -3,12 +3,14 @@ import { IManagerService, useProvideManagerService } from './use-provide-manager
 import { IVacationRequestService, useProvideVacationRequestService } from './use-provide-vacation-request-service';
 import { IShiftService, useProvideShiftService } from './use-provide-shift-service';
 import { IEmployeeService, useProvideEmployeeService } from './use-provide-employee-service';
+import { INoteService, useProvideNoteService } from './use-provide-note-service';
 
 export interface IProviderServices {
   managerService: IManagerService;
   employeeService: IEmployeeService;
   shiftService: IShiftService;
   vacationRequestService: IVacationRequestService;
+  noteService: INoteService;
 }
 
 function useProvideServices(): IProviderServices {
@@ -17,6 +19,7 @@ function useProvideServices(): IProviderServices {
     employeeService: useProvideEmployeeService(),
     shiftService: useProvideShiftService(),
     vacationRequestService: useProvideVacationRequestService(),
+    noteService: useProvideNoteService(),
   };
 }
 

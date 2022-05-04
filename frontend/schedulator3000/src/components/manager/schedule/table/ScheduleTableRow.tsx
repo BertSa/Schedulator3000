@@ -1,7 +1,7 @@
-import { differenceInMinutes, hoursToMinutes, isSameDay, minutesToHours } from 'date-fns';
-import { Box, Collapse, IconButton, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import { differenceInMinutes, format, hoursToMinutes, isSameDay, minutesToHours, parseISO } from 'date-fns';
+import { Box, Collapse, IconButton, Skeleton, TableCell, TableRow, Typography } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import React from 'react';
+import React, { useState } from 'react';
 import { Employee } from '../../../../models/User';
 import { Shift } from '../../../../models/Shift';
 import { VacationRequest } from '../../../../models/VacationRequest';
@@ -10,6 +10,10 @@ import { SelectedItemType } from './ScheduleTable';
 import ScheduleTableColumnWeek from './ScheduleTableColumnWeek';
 import { Nullable } from '../../../../models/Nullable';
 import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
+import useUpdateEffectOnlyOnce from '../../../../hooks/useUpdateOnlyOnce';
+import { useServices } from '../../../../hooks/use-services/use-services';
+import { INote } from '../../../../models/INote';
+import EditableTextField from '../../../shared/form/EditableTextField';
 
 interface EmployeeWeekRowProps {
   selectedItem: SelectedItemType;
@@ -31,6 +35,12 @@ export default function ScheduleTableRow({
   previousWeek,
 }: EmployeeWeekRowProps) {
   const [open, toggle] = useToggle();
+  const { noteService } = useServices();
+  const [note, setNote] = useState<Nullable<INote>>(null);
+
+  useUpdateEffectOnlyOnce(() => {
+    noteService.getByEmployeeEmail(employee.email).then(setNote);
+  }, [open]);
 
   function TotalTime() {
     const number: number = shifts.reduce(
@@ -53,7 +63,7 @@ export default function ScheduleTableRow({
     <>
       <TableRow className="myRow">
         <TableCell width="6.5%">
-          <IconButton aria-label="expand row" size="small" onClick={toggle} disabled={isLoadingShifts}>
+          <IconButton aria-label="expand row" size="small" onClick={() => toggle()} disabled={isLoadingShifts}>
             {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
           </IconButton>
         </TableCell>
@@ -102,23 +112,20 @@ export default function ScheduleTableRow({
                 Preferences and Notes
               </Typography>
             </Box>
-          </Collapse>
-        </TableCell>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Table>
-                <TableBody>
-                  {vacationRequests.map((value) => (
-                    <TableRow key={value.id}>
-                      <TableCell component="th" scope="row">
-                        {value.reason}
-                      </TableCell>
-                      <TableCell align="right">{value.status}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <Box
+              component="form"
+              sx={{
+                margin: 1,
+              }}
+              noValidate
+              autoComplete="off"
+            >
+              <EditableTextField
+                defaultValue={note?.text ?? ''}
+                onConfirm={((text) => noteService.update(employee.email, { ...note, text } as INote).then(setNote))}
+                textHelper={`Last edited on:${note?.lastModified
+                  ? format(parseISO(note.lastModified.toString()), 'yyyy-MM-dd hh:mm') : 'Never'}`}
+              />
             </Box>
           </Collapse>
         </TableCell>
