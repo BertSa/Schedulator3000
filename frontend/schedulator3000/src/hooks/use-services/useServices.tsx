@@ -1,10 +1,10 @@
 import React, { createContext, PropsWithChildren, useContext } from 'react';
-import { IManagerService, useProvideManagerService } from './use-provide-manager-service';
-import { IVacationRequestService, useProvideVacationRequestService } from './use-provide-vacation-request-service';
-import { IShiftService, useProvideShiftService } from './use-provide-shift-service';
-import { IEmployeeService, useProvideEmployeeService } from './use-provide-employee-service';
-import { INoteService, useProvideNoteService } from './use-provide-note-service';
-import { IAvailabilitiesService, useProvideAvailabilitiesService } from './use-provide-availabilities-service';
+import { IManagerService, useProvideManagerService } from './useProvideManagerService';
+import { IVacationRequestService, useProvideVacationRequestService } from './useProvideVacationRequestService';
+import { IShiftService, useProvideShiftService } from './useProvideShiftService';
+import { IEmployeeService, useProvideEmployeeService } from './useProvideEmployeeService';
+import { INoteService, useProvideNoteService } from './useProvideNoteService';
+import { IAvailabilitiesService, useProvideAvailabilitiesService } from './useProvideAvailabilitiesService';
 
 export interface IProviderServices {
   managerService: IManagerService;

@@ -1,7 +1,7 @@
 import React, { MouseEventHandler, useState } from 'react';
 import { IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
 import { Check, Edit } from '@mui/icons-material';
-import useToggle from '../../../hooks/use-toggle';
+import useToggle from '../../../hooks/useToggle';
 
 interface EditableTextFieldProps { defaultValue: string, onConfirm: (value: string) => void, textHelper:string }
 export default function EditableTextField({ defaultValue, onConfirm, textHelper }: EditableTextFieldProps) {
@@ -26,9 +26,9 @@ export default function EditableTextField({ defaultValue, onConfirm, textHelper 
       <TextField
         name="editable-text-field"
         value={value}
-        defaultValue=""
         label="Note"
         multiline
+        fullWidth
         variant="filled"
         InputLabelProps={{ shrink: true }}
         helperText={textHelper}

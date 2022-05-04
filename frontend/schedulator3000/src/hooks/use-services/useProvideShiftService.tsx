@@ -1,10 +1,10 @@
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import { useDialog } from '../use-dialog';
+import { useDialog } from '../useDialog';
 import { RequestDtoShiftsFromTo } from '../../models/ShiftsFromTo';
 import { Shift, ShiftWithoutId } from '../../models/Shift';
 import DialogWarningDelete from '../../components/DialogWarningDelete';
-import { http } from './use-services';
+import { http } from './useServices';
 
 const PATH = '/shifts';
 

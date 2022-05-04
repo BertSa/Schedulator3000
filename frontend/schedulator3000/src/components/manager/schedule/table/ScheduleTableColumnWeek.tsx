@@ -4,7 +4,7 @@ import React from 'react';
 import { VacationRequest, VacationRequestStatus } from '../../../../models/VacationRequest';
 import { Shift } from '../../../../models/Shift';
 import { Nullable } from '../../../../models/Nullable';
-import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
+import { ICurrentWeek } from '../../../../hooks/useCurrentWeek';
 import { getTimeInHourMinutesAMPM, isBetween } from '../../../../utilities/DateUtilities';
 
 interface EmployeeWeekColumnProps {

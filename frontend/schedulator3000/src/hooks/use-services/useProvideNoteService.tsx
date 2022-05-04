@@ -1,5 +1,5 @@
 import { useSnackbar } from 'notistack';
-import { http } from './use-services';
+import { http } from './useServices';
 import { INote } from '../../models/INote';
 
 export interface INoteService {

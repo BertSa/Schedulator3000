@@ -2,7 +2,7 @@ import React from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { Employee, EmployeeFormType, Manager } from '../../../../../models/User';
 import EmployeeForm from './EmployeeForm';
-import { IManagerService } from '../../../../../hooks/use-services/use-provide-manager-service';
+import { IManagerService } from '../../../../../hooks/use-services/useProvideManagerService';
 
 interface EmployeeFormRegisterProps {
   user: Manager;

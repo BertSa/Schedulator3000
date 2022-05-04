@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import useTimeout from './use-timeout';
+import useTimeout from './useTimeout';
 
 export default function useAsyncDebounce(callback: any, delay: number = 1000, dependencies: any[] = []) {
   const [loading1, setLoading] = useState(false);
-  const [firstLoad, setFirstLoad] = useState(true);
+  const firstRenderRef = useRef(true);
   const [error, setError] = useState();
   const [value, setValue] = useState();
 
@@ -27,8 +27,8 @@ export default function useAsyncDebounce(callback: any, delay: number = 1000, de
   const { reset, clear } = useTimeout(callbackMemoized, delay);
   useEffect(() => {
     reset();
-    if (firstLoad) {
-      setFirstLoad(false);
+    if (firstRenderRef.current) {
+      firstRenderRef.current = false;
       return;
     }
     setLoading(true);

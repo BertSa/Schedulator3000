@@ -3,7 +3,7 @@ import React from 'react';
 import VacationRequestForm, { VacationRequestFormFieldValue } from './VacationRequestForm';
 import { VacationRequest, VacationRequestCreate, VacationRequestType } from '../../../../models/VacationRequest';
 import { Employee } from '../../../../models/User';
-import { IVacationRequestService } from '../../../../hooks/use-services/use-provide-vacation-request-service';
+import { IVacationRequestService } from '../../../../hooks/use-services/useProvideVacationRequestService';
 
 interface VacationRequestFormCreateProps {
   vacationRequestService: IVacationRequestService;

@@ -21,12 +21,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../models/User';
-import { useAuth } from '../../../hooks/use-auth';
+import { useAuth } from '../../../hooks/useAuth';
 import { stringAvatar, stringToColor } from '../../../utilities/utilities';
 import { getCurrentTimezoneDate, localizer, preferences } from '../../../utilities/DateUtilities';
-import { useDialog } from '../../../hooks/use-dialog';
+import { useDialog } from '../../../hooks/useDialog';
 import { Shift, ShiftWithoutId } from '../../../models/Shift';
-import { useServices } from '../../../hooks/use-services/use-services';
+import { useServices } from '../../../hooks/use-services/useServices';
 import { RequestDtoShiftsFromTo } from '../../../models/ShiftsFromTo';
 import { ShiftEvent } from '../../../models/ShiftEvent';
 

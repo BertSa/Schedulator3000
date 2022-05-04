@@ -5,7 +5,7 @@ import React from 'react';
 import { startOfToday } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { preferences } from '../../../utilities/DateUtilities';
-import { IAvailabilityDay } from '../../../models/Availabilities';
+import { AvailabilityDay } from '../../../models/Availabilities';
 
 export interface AvailabilityFormFieldValue {
   start: Date;
@@ -15,7 +15,7 @@ export interface AvailabilityFormFieldValue {
 interface ScheduleTableAvailabilityFormProps {
   submit: SubmitHandler<AvailabilityFormFieldValue>;
   onClose: VoidFunction;
-  availability?: IAvailabilityDay;
+  availability?: AvailabilityDay;
 }
 
 export default function AvailabilityForm({ submit, onClose, availability }: ScheduleTableAvailabilityFormProps) {

@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Container, Hidden, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VacationRequest, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
-import { useServices } from '../../../hooks/use-services/use-services';
-import { useAuth } from '../../../hooks/use-auth';
+import { useServices } from '../../../hooks/use-services/useServices';
+import { useAuth } from '../../../hooks/useAuth';
 import { Employee, Manager } from '../../../models/User';
 import VacationRequestManagementTableToolbar from './VacationRequestManagementTableToolbar';
 import { Nullable } from '../../../models/Nullable';
 import VacationRequestManagementTableRow from './VacationRequestManagementTableRow';
-import useAsync from '../../../hooks/use-async';
+import useAsync from '../../../hooks/useAsync';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
 import VacationRequestFormEdit from '../../employee/vacation-request-management/form/VacationRequestFormEdit';
-import { useDialog } from '../../../hooks/use-dialog';
+import { useDialog } from '../../../hooks/useDialog';
 
 function VacationRequestManagementTableBodySkeleton() {
   return (

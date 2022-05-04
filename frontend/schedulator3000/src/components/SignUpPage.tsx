@@ -2,7 +2,7 @@ import { Button, Container, Grid, Link, Typography } from '@mui/material';
 import React, { BaseSyntheticEvent } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useAuth } from '../hooks/use-auth';
+import { useAuth } from '../hooks/useAuth';
 import { FieldInput } from './shared/form/FormFields';
 import { regex } from '../utilities/utilities';
 import { Manager } from '../models/User';

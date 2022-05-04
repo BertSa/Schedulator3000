@@ -4,7 +4,7 @@ import { Typography } from '@mui/material';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Shift } from '../../../../models/Shift';
 import ShiftForm, { ShiftFormFieldValue } from './ShiftForm';
-import { IShiftService } from '../../../../hooks/use-services/use-provide-shift-service';
+import { IShiftService } from '../../../../hooks/use-services/useProvideShiftService';
 import { Employee, Manager } from '../../../../models/User';
 
 interface ScheduleUpdateShiftProps {

@@ -19,12 +19,8 @@ main {
     background-color: #4d4c4c;
 }
 
-tbody tr.myRow:nth-child(odd) td, tbody tr.myRow:nth-child(odd) th {
-    border: 0 !important;
-}
-
-tbody tr.myRow:last-child td, tbody tr.myRow:last-child th {
-    border: 0 !important;
+tbody > tr.myRow:last-child > td, tbody > tr.myRow:last-child > th {
+    border: 0;
 }
 
 .table-schedule-row-shift:first-child {

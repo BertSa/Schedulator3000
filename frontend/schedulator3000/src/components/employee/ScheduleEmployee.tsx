@@ -5,14 +5,14 @@ import { Calendar, Navigate, NavigateAction, View, Views } from 'react-big-calen
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Box, Button, Container, Grid, Paper, Tab, Tabs, Typography, useTheme } from '@mui/material';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { useServices } from '../../hooks/use-services/use-services';
+import { useServices } from '../../hooks/use-services/useServices';
 import { RequestDtoShiftsFromTo } from '../../models/ShiftsFromTo';
 import { isBetween, localizer, preferences } from '../../utilities/DateUtilities';
 import { ShiftEvent } from '../../models/ShiftEvent';
-import { useAuth } from '../../hooks/use-auth';
-import useCurrentWeek from '../../hooks/use-currentWeek';
+import { useAuth } from '../../hooks/useAuth';
+import useCurrentWeek from '../../hooks/useCurrentWeek';
 import { VacationRequest, VacationRequestStatus } from '../../models/VacationRequest';
-import useDebounce from '../../hooks/use-debounce';
+import useDebounce from '../../hooks/useDebounce';
 
 interface TabPanelProps {
   children?: React.ReactNode;

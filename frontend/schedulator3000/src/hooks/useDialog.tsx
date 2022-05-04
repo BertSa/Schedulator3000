@@ -16,14 +16,7 @@ type DialogContainerProps = PropsWithChildren<{
   onEnded: VoidFunction;
 }>;
 
-function* idGenerator() {
-  let id = 1;
-  while (true) {
-    yield id++;
-  }
-}
-
-const generator: Generator<number, void> = idGenerator();
+let id = 0;
 
 const DialogContext = React.createContext<ProviderContext>({} as ProviderContext);
 
@@ -33,7 +26,7 @@ export function useDialog(): [(container: ReactNode, onExited?: VoidFunction) =>
 
   const handleOpen = useCallback(
     (container: ReactNode, onExited?: VoidFunction) => {
-      idDialog = generator.next().value as number;
+      idDialog = ++id as number;
       createDialog({
         children: container,
         onExited,

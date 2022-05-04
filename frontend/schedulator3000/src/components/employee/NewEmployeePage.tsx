@@ -3,7 +3,7 @@ import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FieldInput } from '../shared/form/FormFields';
-import { useAuth } from '../../hooks/use-auth';
+import { useAuth } from '../../hooks/useAuth';
 import { PasswordChangeDto, PasswordChangeFieldValues } from '../../models/PasswordChange';
 
 export default function NewEmployeePage() {

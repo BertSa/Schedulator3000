@@ -1,19 +1,71 @@
 import { differenceInMinutes, format, hoursToMinutes, isSameDay, minutesToHours, parseISO } from 'date-fns';
-import { Box, Collapse, IconButton, Skeleton, TableCell, TableRow, Typography } from '@mui/material';
+import { Box, Collapse, Grid, IconButton, Skeleton, Table, TableBody, TableCell, TableRow } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import React, { useState } from 'react';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../../models/User';
 import { Shift } from '../../../../models/Shift';
 import { VacationRequest } from '../../../../models/VacationRequest';
-import useToggle from '../../../../hooks/use-toggle';
+import useToggle from '../../../../hooks/useToggle';
 import { SelectedItemType } from './ScheduleTable';
 import ScheduleTableColumnWeek from './ScheduleTableColumnWeek';
 import { Nullable } from '../../../../models/Nullable';
-import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
-import useUpdateEffectOnlyOnce from '../../../../hooks/useUpdateOnlyOnce';
-import { useServices } from '../../../../hooks/use-services/use-services';
+import { ICurrentWeek } from '../../../../hooks/useCurrentWeek';
+import useUpdateEffect from '../../../../hooks/useUpdateEffect';
+import { useServices } from '../../../../hooks/use-services/useServices';
 import { INote } from '../../../../models/INote';
 import EditableTextField from '../../../shared/form/EditableTextField';
+import { IAvailabilities, AvailabilityDay } from '../../../../models/Availabilities';
+import { getTimeInHourMinutesAMPM } from '../../../../utilities/DateUtilities';
+
+interface AvailabilityRowProps {
+  availability?: AvailabilityDay;
+  text:string;
+}
+
+function AvailabilityRow({ availability, text }: AvailabilityRowProps) {
+  if (!availability) {
+    return (
+      <TableRow
+        sx={{
+          ':last-child td, :last-child th': {
+            border: 0,
+          },
+        }}
+      >
+        <TableCell component="th" scope="row">{text}</TableCell>
+        <TableCell><small>No availability</small></TableCell>
+      </TableRow>
+    );
+  }
+
+  return (
+    <TableRow
+      sx={{
+        ':last-child td, :last-child th': {
+          border: 0,
+        },
+      }}
+    >
+      <TableCell component="th" scope="row">
+        {text}
+      </TableCell>
+      <TableCell>
+        <small>
+          {getTimeInHourMinutesAMPM(zonedTimeToUtc(availability.start, 'utc'))}
+        </small>
+        <small> to </small>
+        <small>
+          {getTimeInHourMinutesAMPM(zonedTimeToUtc(availability.end, 'utc'))}
+        </small>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+AvailabilityRow.defaultProps = {
+  availability: undefined,
+};
 
 interface EmployeeWeekRowProps {
   selectedItem: SelectedItemType;
@@ -35,11 +87,13 @@ export default function ScheduleTableRow({
   previousWeek,
 }: EmployeeWeekRowProps) {
   const [open, toggle] = useToggle();
-  const { noteService } = useServices();
+  const { noteService, availabilitiesService } = useServices();
   const [note, setNote] = useState<Nullable<INote>>(null);
+  const [availabilities, setAvailabilities] = useState<Nullable<IAvailabilities>>(null);
 
-  useUpdateEffectOnlyOnce(() => {
+  useUpdateEffect(() => {
     noteService.getByEmployeeEmail(employee.email).then(setNote);
+    availabilitiesService.getByEmployeeEmail(employee.email).then(setAvailabilities);
   }, [open]);
 
   function TotalTime() {
@@ -105,28 +159,40 @@ export default function ScheduleTableRow({
         </TableCell>
       </TableRow>
       <TableRow className="myRow">
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                Preferences and Notes
-              </Typography>
-            </Box>
-            <Box
-              component="form"
-              sx={{
-                margin: 1,
-              }}
-              noValidate
-              autoComplete="off"
-            >
-              <EditableTextField
-                defaultValue={note?.text ?? ''}
-                onConfirm={((text) => noteService.update(employee.email, { ...note, text } as INote).then(setNote))}
-                textHelper={`Last edited on:${note?.lastModified
-                  ? format(parseISO(note.lastModified.toString()), 'yyyy-MM-dd hh:mm') : 'Never'}`}
-              />
-            </Box>
+            <Grid container>
+              <Grid item xs={4}>
+                <Table
+                  size="small"
+                >
+                  <TableBody>
+                    <AvailabilityRow text="Sunday" availability={availabilities?.sunday} />
+                    <AvailabilityRow text="Monday" availability={availabilities?.monday} />
+                    <AvailabilityRow text="Tuesday" availability={availabilities?.tuesday} />
+                    <AvailabilityRow text="Wednesday" availability={availabilities?.wednesday} />
+                    <AvailabilityRow text="Thursday" availability={availabilities?.thursday} />
+                    <AvailabilityRow text="Friday" availability={availabilities?.friday} />
+                    <AvailabilityRow text="Saturday" availability={availabilities?.saturday} />
+                  </TableBody>
+                </Table>
+              </Grid>
+
+              <Grid item xs={8}>
+                <Box
+                  component="form"
+                  noValidate
+                  autoComplete="off"
+                >
+                  <EditableTextField
+                    defaultValue={note?.text ?? ''}
+                    onConfirm={((text) => noteService.update(employee.email, { ...note, text } as INote).then(setNote))}
+                    textHelper={`Last edited on:${note?.lastModified
+                      ? format(parseISO(note.lastModified.toString()), 'yyyy-MM-dd hh:mm') : 'Never'}`}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
           </Collapse>
         </TableCell>
       </TableRow>

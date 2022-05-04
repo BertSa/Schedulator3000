@@ -17,20 +17,20 @@ import { SubmitHandler } from 'react-hook-form';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { differenceInMinutes, hoursToMinutes, minutesToHours } from 'date-fns';
 import { Nullable } from '../../../models/Nullable';
-import { useAuth } from '../../../hooks/use-auth';
-import useAsync from '../../../hooks/use-async';
-import { useDialog } from '../../../hooks/use-dialog';
+import { useAuth } from '../../../hooks/useAuth';
+import useAsync from '../../../hooks/useAsync';
+import { useDialog } from '../../../hooks/useDialog';
 import ScheduleTableBodySkeleton from '../../manager/schedule/table/ScheduleTableBodySkeleton';
-import { useServices } from '../../../hooks/use-services/use-services';
-import { IAvailabilities, IAvailabilityDay } from '../../../models/Availabilities';
+import { useServices } from '../../../hooks/use-services/useServices';
+import { IAvailabilities, AvailabilityDay } from '../../../models/Availabilities';
 import { getTimeInHourMinutesAMPM } from '../../../utilities/DateUtilities';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
 import AvailabilitiesTableToolbar from './AvailabilitiesTableToolbar';
 import AvailabilityForm, { AvailabilityFormFieldValue } from './AvailabilityForm';
 
-export type SelectedItemType = Nullable<{ day:number, availability:IAvailabilityDay }>;
-
-function AvailiabilityTableColumnWeek({ onClick, isSelected, day }: { onClick: () => void, isSelected: boolean, day:IAvailabilityDay }) {
+export type SelectedItemType = Nullable<{ day:number, availability:AvailabilityDay }>;
+interface AvailiabilityTableColumnWeekProps { onClick: () => void, isSelected: boolean, day:AvailabilityDay }
+export function AvailiabilityTableColumnWeek({ onClick, isSelected, day }: AvailiabilityTableColumnWeekProps) {
   const { palette: { primary } } = useTheme();
   const mySx: SxProps<Theme> = {
     cursor: 'pointer',
@@ -89,7 +89,7 @@ export default function AvailabilitiesTable() {
     return <span>{total ?? '00:00h'}</span>;
   }
 
-  function updateSelected(availability: IAvailabilityDay) {
+  function updateSelected(availability: AvailabilityDay) {
     if (!selectedItem?.day || !availabilities || selectedItem.day > 6 || selectedItem.day < 0) {
       return;
     }
@@ -135,7 +135,7 @@ export default function AvailabilitiesTable() {
     );
   };
 
-  const removeAction = () => updateSelected({ start: null, end: null });
+  const removeAction = () => updateSelected(null);
 
   const editAction = () => {
     if (!selectedItem) {
@@ -168,7 +168,7 @@ export default function AvailabilitiesTable() {
       return <TableBodyEmpty colSpan={7} message="No ava" />;
     }
 
-    const setSelectedByDay = (day:number, availability: IAvailabilityDay) =>
+    const setSelectedByDay = (day:number, availability: AvailabilityDay) =>
       setSelectedItem((current) => current?.day === day ? null : {
         day,
         availability,

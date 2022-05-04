@@ -1,7 +1,7 @@
 import React, { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Employee, Manager } from '../models/User';
-import { http } from './use-services/use-services';
+import { http } from './use-services/useServices';
 import { PasswordChangeDto } from '../models/PasswordChange';
 import NewEmployeePage from '../components/employee/NewEmployeePage';
 
