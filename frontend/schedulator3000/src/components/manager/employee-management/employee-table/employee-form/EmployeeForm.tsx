@@ -30,7 +30,14 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
   });
 
   return (
-    <Grid container component="form" spacing={2} onSubmit={handleSubmit(submit)} noValidate>
+    <Grid
+      container
+      component="form"
+      spacing={2}
+      padding={2}
+      onSubmit={handleSubmit(submit)}
+      noValidate
+    >
       <Grid item xs={12} sm={6}>
         <FieldInput
           register={register}
@@ -117,7 +124,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
           }}
         />
       </Grid>
-      <Grid item xs={12} justifyContent="center">
+      <Grid item xs={12} justifyContent="center" alignContent="center" alignItems="center" justifyItems="center">
         <Button type="submit" variant="contained" color="primary">
           Submit
         </Button>

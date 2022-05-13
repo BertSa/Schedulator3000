@@ -38,6 +38,19 @@ function EmployeeTableBodySkeleton() {
   );
 }
 
+function ActiveMessage({ isActive }: { isActive: Nullable<boolean> }) {
+  if (isActive === null) {
+    return <span>Never logged in before</span>;
+  }
+
+  // Will probably be removed in the future
+  if (!isActive) {
+    return <span>Fired</span>;
+  }
+
+  return <span>Active</span>;
+}
+
 export default function EmployeeTable() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedEmployee, setSelectedEmployee] = useState<Nullable<Employee>>(null);
@@ -126,6 +139,7 @@ export default function EmployeeTable() {
             <TableCell>{employee.email}</TableCell>
             <TableCell width="15%">{employee.phone}</TableCell>
             <TableCell width="10%">{employee.role}</TableCell>
+            <TableCell width="10%"><ActiveMessage isActive={employee.active} /></TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -151,6 +165,7 @@ export default function EmployeeTable() {
             <TableCell>Email</TableCell>
             <TableCell width="15%">Phone</TableCell>
             <TableCell width="10%">Role</TableCell>
+            <TableCell width="10%">Active</TableCell>
           </TableRow>
         </TableHead>
         <EmployeeTableBody />

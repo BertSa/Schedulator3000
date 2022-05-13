@@ -1,5 +1,6 @@
 import React from 'react';
 import { SubmitHandler } from 'react-hook-form';
+import { Typography } from '@mui/material';
 import { Employee, EmployeeFormType } from '../../../../../models/User';
 import EmployeeForm from './EmployeeForm';
 import { IEmployeeService } from '../../../../../hooks/use-services/useProvideEmployeeService';
@@ -19,7 +20,7 @@ export default function EmployeeFormEdit({ employeeService, callback, onCancel, 
 
   return (
     <>
-      <h3>Modify Employee</h3>
+      <Typography variant="h5" component="h5" sx={{ marginTop: 2, marginBottom: 3 }} alignSelf="center">Modify Employee</Typography>
       <EmployeeForm submit={submit} emailDisabled onCancel={onCancel} employee={employee} />
     </>
   );

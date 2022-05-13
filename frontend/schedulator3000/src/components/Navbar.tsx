@@ -100,6 +100,15 @@ export default function Navbar() {
         >
           Schedule
         </Button>
+        <Button
+          onClick={() => {
+            history.push('/availabilities');
+            handleCloseNavMenu();
+          }}
+          sx={buttonSx}
+        >
+          Availabilities
+        </Button>
       </>
     );
   }
@@ -170,6 +179,15 @@ export default function Navbar() {
           }}
         >
           <Typography textAlign="center">Schedule</Typography>
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            history.push('/availabilities');
+            handleCloseNavMenu();
+          }}
+        >
+          <Typography textAlign="center">Availabilities</Typography>
         </MenuItem>
       </>
     );

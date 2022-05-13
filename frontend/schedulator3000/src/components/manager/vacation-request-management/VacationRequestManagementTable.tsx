@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Hidden, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Container, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VacationRequest, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
 import { useServices } from '../../../hooks/use-services/useServices';
 import { useAuth } from '../../../hooks/useAuth';
@@ -58,9 +58,10 @@ export default function VacationRequestManagementTable() {
       }),
     [manager.email],
   );
+
   useEffect(() => () => {
-    setVacationRequests([]);
-    setEmployees([]);
+    // setVacationRequests([]);
+    // setEmployees([]);
   }, []);
 
   function updateRequest(status: VacationRequestUpdateStatus): void {
@@ -135,7 +136,7 @@ export default function VacationRequestManagementTable() {
               />
             );
           }
-          return <Hidden key={vacationRequest.id} />;
+          return null;
         })}
       </TableBody>
     );

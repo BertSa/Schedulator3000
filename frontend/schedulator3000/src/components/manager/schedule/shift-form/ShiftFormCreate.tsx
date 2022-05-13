@@ -1,6 +1,5 @@
 import { UnpackNestedValue } from 'react-hook-form';
 import React from 'react';
-import { Typography } from '@mui/material';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Shift, ShiftWithoutId } from '../../../../models/Shift';
 import ShiftForm, { ShiftFormFieldValue } from './ShiftForm';
@@ -51,14 +50,12 @@ export default function ShiftFormCreate({
   };
 
   return (
-    <>
-      <Typography variant="h5" component="h5">Create Shift</Typography>
-      <ShiftForm
-        selected={selected}
-        submit={submit}
-        onClose={closeDialog}
-        employees={employees}
-      />
-    </>
+    <ShiftForm
+      selected={selected}
+      submit={submit}
+      onClose={closeDialog}
+      employees={employees}
+      title="Create Shift"
+    />
   );
 }

@@ -1,5 +1,5 @@
 import { differenceInMinutes, format, hoursToMinutes, isSameDay, minutesToHours, parseISO } from 'date-fns';
-import { Box, Collapse, Grid, IconButton, Skeleton, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { Box, IconButton, Skeleton, TableCell, TableRow } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import React, { useState } from 'react';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -15,51 +15,29 @@ import useUpdateEffect from '../../../../hooks/useUpdateEffect';
 import { useServices } from '../../../../hooks/use-services/useServices';
 import { INote } from '../../../../models/INote';
 import EditableTextField from '../../../shared/form/EditableTextField';
-import { IAvailabilities, AvailabilityDay } from '../../../../models/Availabilities';
+import { AvailabilityDay, IAvailabilities } from '../../../../models/Availabilities';
 import { getTimeInHourMinutesAMPM } from '../../../../utilities/DateUtilities';
 
 interface AvailabilityRowProps {
   availability?: AvailabilityDay;
-  text:string;
 }
-
-function AvailabilityRow({ availability, text }: AvailabilityRowProps) {
+function AvailabilityRow({ availability }: AvailabilityRowProps) {
   if (!availability) {
     return (
-      <TableRow
-        sx={{
-          ':last-child td, :last-child th': {
-            border: 0,
-          },
-        }}
-      >
-        <TableCell component="th" scope="row">{text}</TableCell>
-        <TableCell><small>No availability</small></TableCell>
-      </TableRow>
+      <TableCell align="center" sx={{ border: 0 }}><small>No availability</small></TableCell>
     );
   }
 
   return (
-    <TableRow
-      sx={{
-        ':last-child td, :last-child th': {
-          border: 0,
-        },
-      }}
-    >
-      <TableCell component="th" scope="row">
-        {text}
-      </TableCell>
-      <TableCell>
-        <small>
-          {getTimeInHourMinutesAMPM(zonedTimeToUtc(availability.start, 'utc'))}
-        </small>
-        <small> to </small>
-        <small>
-          {getTimeInHourMinutesAMPM(zonedTimeToUtc(availability.end, 'utc'))}
-        </small>
-      </TableCell>
-    </TableRow>
+    <TableCell align="center" sx={{ border: 0 }}>
+      <small>
+        {getTimeInHourMinutesAMPM(zonedTimeToUtc(availability.start, 'utc'))}
+      </small>
+      <small> to </small>
+      <small>
+        {getTimeInHourMinutesAMPM(zonedTimeToUtc(availability.end, 'utc'))}
+      </small>
+    </TableCell>
   );
 }
 
@@ -116,27 +94,28 @@ export default function ScheduleTableRow({
   return (
     <>
       <TableRow className="myRow">
-        <TableCell width="6.5%">
+        <TableCell width="6.5%" sx={{ ...(open && { border: 0 }) }}>
           <IconButton aria-label="expand row" size="small" onClick={() => toggle()} disabled={isLoadingShifts}>
             {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row" width="15%">
+        <TableCell component="th" scope="row" width="15%" sx={{ ...(open && { border: 0 }) }}>
           {`${employee.firstName} ${employee.lastName}`}
         </TableCell>
         {shifts.map((shift, key) =>
           isLoadingShifts ? (
-            // eslint-disable-next-line react/no-array-index-key
-            <TableCell key={`${employee}:${key}`} align="center">
+          // eslint-disable-next-line react/no-array-index-key
+            <TableCell key={`${employee}:${key}`} align="center" sx={{ ...(open && { border: 0 }) }}>
               <Skeleton />
               -
               <Skeleton />
             </TableCell>
           ) : (
             <ScheduleTableColumnWeek
-              // eslint-disable-next-line react/no-array-index-key
+            // eslint-disable-next-line react/no-array-index-key
               key={`${employee}:${key}`}
               index={key}
+              open={open}
               isSelected={selectedItem?.day === key && selectedItem?.employee.id === employee.id}
               shift={shift}
               vacations={vacationRequests}
@@ -154,48 +133,43 @@ export default function ScheduleTableRow({
             />
           ),
         )}
-        <TableCell align="right" width="7%">
+        <TableCell align="right" width="7%" sx={{ ...(open && { border: 0 }) }}>
           <TotalTime />
         </TableCell>
       </TableRow>
-      <TableRow className="myRow">
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={10}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Grid container>
-              <Grid item xs={4}>
-                <Table
-                  size="small"
-                >
-                  <TableBody>
-                    <AvailabilityRow text="Sunday" availability={availabilities?.sunday} />
-                    <AvailabilityRow text="Monday" availability={availabilities?.monday} />
-                    <AvailabilityRow text="Tuesday" availability={availabilities?.tuesday} />
-                    <AvailabilityRow text="Wednesday" availability={availabilities?.wednesday} />
-                    <AvailabilityRow text="Thursday" availability={availabilities?.thursday} />
-                    <AvailabilityRow text="Friday" availability={availabilities?.friday} />
-                    <AvailabilityRow text="Saturday" availability={availabilities?.saturday} />
-                  </TableBody>
-                </Table>
-              </Grid>
-
-              <Grid item xs={8}>
-                <Box
-                  component="form"
-                  noValidate
-                  autoComplete="off"
-                >
-                  <EditableTextField
-                    defaultValue={note?.text ?? ''}
-                    onConfirm={((text) => noteService.update(employee.email, { ...note, text } as INote).then(setNote))}
-                    textHelper={`Last edited on:${note?.lastModified
-                      ? format(parseISO(note.lastModified.toString()), 'yyyy-MM-dd hh:mm') : 'Never'}`}
-                  />
-                </Box>
-              </Grid>
-            </Grid>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+      {open
+        && (
+        <>
+          <TableRow>
+            <TableCell sx={{ border: 0 }} />
+            <TableCell sx={{ border: 0 }} />
+            <AvailabilityRow availability={availabilities?.sunday} />
+            <AvailabilityRow availability={availabilities?.monday} />
+            <AvailabilityRow availability={availabilities?.tuesday} />
+            <AvailabilityRow availability={availabilities?.wednesday} />
+            <AvailabilityRow availability={availabilities?.thursday} />
+            <AvailabilityRow availability={availabilities?.friday} />
+            <AvailabilityRow availability={availabilities?.saturday} />
+            <TableCell sx={{ border: 0 }} />
+          </TableRow>
+          <TableRow className="myRow">
+            <TableCell width="100%" colSpan={10}>
+              <Box
+                component="form"
+                noValidate
+                autoComplete="off"
+              >
+                <EditableTextField
+                  defaultValue={note?.text ?? ''}
+                  onConfirm={((text) => noteService.update(employee.email, { ...note, text } as INote).then(setNote))}
+                  textHelper={`Last edited on:${note?.lastModified
+                    ? format(parseISO(note.lastModified.toString()), 'yyyy-MM-dd hh:mm') : 'Never'}`}
+                />
+              </Box>
+            </TableCell>
+          </TableRow>
+        </>
+        )}
     </>
   );
 }

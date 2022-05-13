@@ -121,16 +121,6 @@ function useProvideAuth(): ProviderAuth {
     throw new Error('You are not an employee!');
   };
 
-  const setActive = (): void => {
-    if (isEmployee()) {
-      setUser((prevState) => {
-        const prevState1 = prevState as Employee;
-        prevState1.active = true;
-        return prevState1;
-      });
-    }
-  };
-
   const updatePassword = async (passwordChange: PasswordChangeDto): Promise<void> => {
     if (!isAuthenticated()) {
       return Promise.reject();
@@ -145,7 +135,7 @@ function useProvideAuth(): ProviderAuth {
     const { response, body } = await http.post(`/${endpoint}/password/update`, data);
 
     if (response.status === 200) {
-      setActive();
+      setUser(Object.setPrototypeOf(body, Employee.prototype));
       enqueueSnackbar('Password Updated!', {
         variant: 'success',
         autoHideDuration: 3000,

@@ -4,7 +4,9 @@ import ca.bertsa.schedulator3000.dtos.ConnectionDto;
 import ca.bertsa.schedulator3000.dtos.PasswordChangeDto;
 import ca.bertsa.schedulator3000.exceptions.EmployeeInactiveException;
 import ca.bertsa.schedulator3000.exceptions.UserNotFoundException;
+import ca.bertsa.schedulator3000.helpers.MailHelper;
 import ca.bertsa.schedulator3000.models.Employee;
+import ca.bertsa.schedulator3000.models.Mail;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.UUID;
 @Service
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
+    private final MailHelper mailHelper;
 
     public Employee getOneById(Long id) {
         return employeeRepository.getById(id);
@@ -38,10 +41,17 @@ public class EmployeeService {
         Assert.notNull(employee, "Employee cannot be null!");
         Assert.isTrue(
                 !employeeRepository.existsByEmailIgnoreCase(employee.getEmail()),
-                "Employee with email " + employee.getEmail() + " already exists!");
+                String.format("Employee with email %s already exists!", employee.getEmail()));
 
         employee.setManager(manager);
         employee.setPassword(UUID.randomUUID().toString());
+
+        final Mail mail = new Mail();
+        mail.setTo(employee.getEmail());
+        mail.setSubject("Welcome to Schedulator 3000!");
+        mail.setBody("Your password is: " + employee.getPassword());
+
+        mailHelper.sendMail(mail);
 
         return employeeRepository.save(employee);
     }

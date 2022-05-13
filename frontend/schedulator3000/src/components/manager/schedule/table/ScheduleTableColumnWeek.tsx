@@ -14,9 +14,11 @@ interface EmployeeWeekColumnProps {
   vacations: VacationRequest[];
   shift: Nullable<Shift>;
   currentWeek: ICurrentWeek;
+  open: boolean;
 }
 
-export default function ScheduleTableColumnWeek({ index, isSelected, onClick, vacations, shift, currentWeek }: EmployeeWeekColumnProps) {
+export default function ScheduleTableColumnWeek(
+  { index, isSelected, onClick, vacations, shift, currentWeek, open }: EmployeeWeekColumnProps) {
   const vacationRequest = vacations.find((vacation) =>
     isBetween(currentWeek.getDayOfWeek(index), parseISO(vacation.startDate.toString()), addDays(parseISO(vacation.endDate.toString()), 1)),
   );
@@ -40,6 +42,7 @@ export default function ScheduleTableColumnWeek({ index, isSelected, onClick, va
 
   const mySx: SxProps<Theme> = {
     cursor: 'pointer',
+    ...(open && { border: 0 }),
     ...{
       bgcolor: (theme) => {
         const opacity: number = isSelected ? theme.palette.action.selectedOpacity : theme.palette.action.disabledOpacity;
