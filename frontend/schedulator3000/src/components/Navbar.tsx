@@ -14,7 +14,7 @@ import {
 import React from 'react';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
-import { useAuth } from '../hooks/use-auth';
+import { useAuth } from '../hooks/useAuth';
 import { Nullable } from '../models/Nullable';
 
 export default function Navbar() {
@@ -100,6 +100,15 @@ export default function Navbar() {
         >
           Schedule
         </Button>
+        <Button
+          onClick={() => {
+            history.push('/availabilities');
+            handleCloseNavMenu();
+          }}
+          sx={buttonSx}
+        >
+          Availabilities
+        </Button>
       </>
     );
   }
@@ -170,6 +179,15 @@ export default function Navbar() {
           }}
         >
           <Typography textAlign="center">Schedule</Typography>
+        </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            history.push('/availabilities');
+            handleCloseNavMenu();
+          }}
+        >
+          <Typography textAlign="center">Availabilities</Typography>
         </MenuItem>
       </>
     );

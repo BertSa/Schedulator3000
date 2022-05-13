@@ -1,12 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import SignInPage from './components/SignInPage';
 import ManagerPages from './components/manager/ManagerPages';
-import { RequireAdmin, RequireEmployee, RequireNoAuth } from './hooks/use-auth';
+import { RequireAdmin, RequireEmployee, RequireNoAuth } from './hooks/useAuth';
 import EmployeePages from './components/employee/EmployeePages';
 import SignUpPage from './components/SignUpPage';
-import NotFound from './components/NotFound';
+import NotFoundPage from './components/NotFoundPage';
 
 export default function App() {
   // document.addEventListener('contextmenu', (event) => {
@@ -27,8 +27,7 @@ export default function App() {
           <Route path="/register" component={SignUpPage} />
           <Route exact path="/" component={SignInPage} />
         </RequireNoAuth>
-        <Route path="/404" component={NotFound} />
-        <Redirect to="/404" />
+        <Route path="/404" component={NotFoundPage} />
       </main>
     </Router>
   );

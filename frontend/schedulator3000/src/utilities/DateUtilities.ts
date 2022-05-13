@@ -31,6 +31,10 @@ export const preferences = Object.freeze({
   },
 });
 
+export function getTimeInHourMinutesAMPM(date: Date) {
+  return format(new Date(date), 'h:mma');
+}
+
 export const localizer = dateFnsLocalizer({
   format,
   parse,

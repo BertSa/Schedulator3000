@@ -1,95 +1,24 @@
-/* eslint-disable no-shadow */
 import React, { useEffect, useState } from 'react';
 import { addDays, format, isToday, parseISO, startOfWeek } from 'date-fns';
-import { Calendar, Navigate, NavigateAction, View, Views } from 'react-big-calendar';
+import { Calendar, Views } from 'react-big-calendar';
 import { zonedTimeToUtc } from 'date-fns-tz';
-import { Box, Button, Container, Grid, Paper, Tab, Tabs, Typography, useTheme } from '@mui/material';
-import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { useServices } from '../../hooks/use-services/use-services';
+import { Container, Paper, useTheme } from '@mui/material';
+import { useServices } from '../../hooks/use-services/useServices';
 import { RequestDtoShiftsFromTo } from '../../models/ShiftsFromTo';
 import { isBetween, localizer, preferences } from '../../utilities/DateUtilities';
 import { ShiftEvent } from '../../models/ShiftEvent';
-import { useAuth } from '../../hooks/use-auth';
-import useCurrentWeek from '../../hooks/use-currentWeek';
+import { useAuth } from '../../hooks/useAuth';
+import useCurrentWeek from '../../hooks/useCurrentWeek';
 import { VacationRequest, VacationRequestStatus } from '../../models/VacationRequest';
-import useDebounce from '../../hooks/use-debounce';
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div role="tabpanel" hidden={value !== index} id={`simple-tabpanel-${index}`} aria-labelledby={`simple-tab-${index}`} {...other}>
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.defaultProps = {
-  children: undefined,
-};
-
-function ToolbarCalendar({
-  onNavigate,
-  onView,
-  view,
-  date,
-}: {
-  onView: (view: View) => void;
-  view: View;
-  onNavigate: (navigate: NavigateAction, date?: Date) => void;
-  date: Date;
-}) {
-  const selectedTab = view === 'work_week' ? 1 : 0;
-
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    if (newValue === 0) {
-      onView('week');
-    } else if (newValue === 1) {
-      onView('work_week');
-    }
-  };
-
-  return (
-    <Grid container sx={{ width: '100%' }} paddingBottom={3}>
-      <Grid item xs={4}>
-        <Tabs value={selectedTab} onChange={handleChange} aria-label="basic tabs example" sx={{ width: 'auto', minWidth: 0 }}>
-          <Tab label="Week" />
-          <Tab label="Work Week" />
-        </Tabs>
-      </Grid>
-      <Grid item xs={4}>
-        <Typography variant="h6" sx={{ textAlign: 'center' }}>
-          {format(date, 'MMM dd')}
-          {' to '}
-          {format(addDays(date, 6), 'MMM dd')}
-        </Typography>
-      </Grid>
-      <Grid item xs={4} display="flex" justifySelf="flex-end" justifyItems="flex-end" justifyContent="flex-end">
-        <Button sx={{ height: '100%' }} color="inherit" onClick={() => onNavigate(Navigate.PREVIOUS)}>
-          <ArrowBack />
-        </Button>
-        <Button sx={{ height: '100%' }} color="inherit" onClick={() => onNavigate(Navigate.TODAY)}>
-          Today
-        </Button>
-        <Button sx={{ height: '100%' }} color="inherit" onClick={() => onNavigate(Navigate.NEXT)}>
-          <ArrowForward />
-        </Button>
-      </Grid>
-    </Grid>
-  );
-}
+import useDebounce from '../../hooks/useDebounce';
+import ToolbarCalendar from './ToolbarCalendar';
 
 export default function ScheduleEmployee() {
+  const user = useAuth().getEmployee();
+  const currentWeek = useCurrentWeek();
+  const [events, setEvents] = useState<ShiftEvent[]>([]);
+  const [vacationRequests, setVacationRequests] = useState<VacationRequest[]>([]);
+  const { shiftService, vacationRequestService } = useServices();
   // eslint-disable-next-line no-console
   const backup = console.error;
   // eslint-disable-next-line no-console
@@ -100,15 +29,9 @@ export default function ScheduleEmployee() {
       backup.apply(console, [msg]);
     }
   };
-  const { shiftService, vacationRequestService } = useServices();
-  const user = useAuth().getEmployee();
-  const currentWeek = useCurrentWeek();
-  const [events, setEvents] = useState<ShiftEvent[]>([]);
-  const [vacationRequests, setVacationRequests] = useState<VacationRequest[]>([]);
   const {
     palette: { warning, grey, primary, secondary, text },
   } = useTheme();
-
   useDebounce(
     () => {
       const body: RequestDtoShiftsFromTo = {
@@ -128,6 +51,9 @@ export default function ScheduleEmployee() {
               resource: {},
             })),
         ));
+      return () => {
+        setEvents([]);
+      };
     },
     1000,
     [currentWeek.value],
@@ -153,6 +79,11 @@ export default function ScheduleEmployee() {
       ),
     );
     vacationRequestService.getAllByEmployeeEmail(user.email).then(setVacationRequests);
+
+    return () => {
+      setEvents([]);
+      setVacationRequests([]);
+    };
   }, [user.email, shiftService]);
 
   return (
@@ -166,8 +97,8 @@ export default function ScheduleEmployee() {
         showAllEvents={false}
         showMultiDayTimes={false}
         components={{
-          toolbar: ({ date, view, onView, onNavigate }) => (
-            <ToolbarCalendar date={date} view={view} onView={onView} onNavigate={onNavigate} />
+          toolbar: ({ view, onView, onNavigate }) => (
+            <ToolbarCalendar date={currentWeek.value} view={view} onView={onView} onNavigate={onNavigate} />
           ),
         }}
         toolbar={preferences.calendar.toolbar}

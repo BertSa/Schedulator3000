@@ -1,8 +1,9 @@
 import React from 'react';
 import { SubmitHandler } from 'react-hook-form';
+import { Typography } from '@mui/material';
 import { Employee, EmployeeFormType, Manager } from '../../../../../models/User';
 import EmployeeForm from './EmployeeForm';
-import { IManagerService } from '../../../../../hooks/use-services/use-provide-manager-service';
+import { IManagerService } from '../../../../../hooks/use-services/useProvideManagerService';
 
 interface EmployeeFormRegisterProps {
   user: Manager;
@@ -19,7 +20,7 @@ export default function EmployeeFormRegister({ user, managerService, callback, o
 
   return (
     <>
-      <h3>Register New Employee</h3>
+      <Typography variant="h5" component="h5" sx={{ marginTop: 2, marginBottom: 3 }} alignSelf="center">Register New Employee</Typography>
       <EmployeeForm submit={submit} onCancel={onCancel} />
     </>
   );

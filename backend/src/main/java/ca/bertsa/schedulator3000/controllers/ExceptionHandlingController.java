@@ -15,7 +15,7 @@ public class ExceptionHandlingController {
 
     // @RequestHandler methods
 
-    @ExceptionHandler(EntityNotFoundException.class)
+    @ExceptionHandler({EntityNotFoundException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String badRequest(Exception e) {
         return e.getMessage();

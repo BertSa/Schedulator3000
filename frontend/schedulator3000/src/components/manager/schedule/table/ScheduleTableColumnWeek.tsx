@@ -1,11 +1,11 @@
 import { alpha, SxProps, TableCell, Theme } from '@mui/material';
-import { addDays, format, parseISO } from 'date-fns';
+import { addDays, parseISO } from 'date-fns';
 import React from 'react';
 import { VacationRequest, VacationRequestStatus } from '../../../../models/VacationRequest';
 import { Shift } from '../../../../models/Shift';
 import { Nullable } from '../../../../models/Nullable';
-import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
-import { isBetween } from '../../../../utilities/DateUtilities';
+import { ICurrentWeek } from '../../../../hooks/useCurrentWeek';
+import { getTimeInHourMinutesAMPM, isBetween } from '../../../../utilities/DateUtilities';
 
 interface EmployeeWeekColumnProps {
   index: number;
@@ -14,9 +14,11 @@ interface EmployeeWeekColumnProps {
   vacations: VacationRequest[];
   shift: Nullable<Shift>;
   currentWeek: ICurrentWeek;
+  open: boolean;
 }
 
-export default function ScheduleTableColumnWeek({ index, isSelected, onClick, vacations, shift, currentWeek }: EmployeeWeekColumnProps) {
+export default function ScheduleTableColumnWeek(
+  { index, isSelected, onClick, vacations, shift, currentWeek, open }: EmployeeWeekColumnProps) {
   const vacationRequest = vacations.find((vacation) =>
     isBetween(currentWeek.getDayOfWeek(index), parseISO(vacation.startDate.toString()), addDays(parseISO(vacation.endDate.toString()), 1)),
   );
@@ -38,12 +40,9 @@ export default function ScheduleTableColumnWeek({ index, isSelected, onClick, va
     return color;
   }
 
-  function getTimeInHourMinutesAMPM(date: Date) {
-    return format(new Date(date), 'h:mma');
-  }
-
   const mySx: SxProps<Theme> = {
     cursor: 'pointer',
+    ...(open && { border: 0 }),
     ...{
       bgcolor: (theme) => {
         const opacity: number = isSelected ? theme.palette.action.selectedOpacity : theme.palette.action.disabledOpacity;

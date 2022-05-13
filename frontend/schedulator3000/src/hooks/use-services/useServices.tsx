@@ -1,14 +1,18 @@
 import React, { createContext, PropsWithChildren, useContext } from 'react';
-import { IManagerService, useProvideManagerService } from './use-provide-manager-service';
-import { IVacationRequestService, useProvideVacationRequestService } from './use-provide-vacation-request-service';
-import { IShiftService, useProvideShiftService } from './use-provide-shift-service';
-import { IEmployeeService, useProvideEmployeeService } from './use-provide-employee-service';
+import { IManagerService, useProvideManagerService } from './useProvideManagerService';
+import { IVacationRequestService, useProvideVacationRequestService } from './useProvideVacationRequestService';
+import { IShiftService, useProvideShiftService } from './useProvideShiftService';
+import { IEmployeeService, useProvideEmployeeService } from './useProvideEmployeeService';
+import { INoteService, useProvideNoteService } from './useProvideNoteService';
+import { IAvailabilitiesService, useProvideAvailabilitiesService } from './useProvideAvailabilitiesService';
 
 export interface IProviderServices {
   managerService: IManagerService;
   employeeService: IEmployeeService;
   shiftService: IShiftService;
   vacationRequestService: IVacationRequestService;
+  noteService: INoteService;
+  availabilitiesService: IAvailabilitiesService;
 }
 
 function useProvideServices(): IProviderServices {
@@ -17,16 +21,18 @@ function useProvideServices(): IProviderServices {
     employeeService: useProvideEmployeeService(),
     shiftService: useProvideShiftService(),
     vacationRequestService: useProvideVacationRequestService(),
+    noteService: useProvideNoteService(),
+    availabilitiesService: useProvideAvailabilitiesService(),
   };
 }
 
-const authContext: React.Context<IProviderServices> = createContext({} as IProviderServices);
+const serviceContext: React.Context<IProviderServices> = createContext({} as IProviderServices);
 
-export const useServices = () => useContext(authContext);
+export const useServices = () => useContext(serviceContext);
 
 export function ServicesProvider({ children }: PropsWithChildren<{}>) {
-  const auth = useProvideServices();
-  return React.createElement(authContext.Provider, { value: auth }, children);
+  const services = useProvideServices();
+  return React.createElement(serviceContext.Provider, { value: services }, children);
 }
 
 async function post(path: string, data?: any): Promise<{ response: Response, body: any }> {

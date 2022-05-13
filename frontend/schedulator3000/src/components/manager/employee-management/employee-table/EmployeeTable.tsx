@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { Employee } from '../../../../models/User';
-import { useDialog } from '../../../../hooks/use-dialog';
-import { useServices } from '../../../../hooks/use-services/use-services';
-import { useAuth } from '../../../../hooks/use-auth';
+import { useDialog } from '../../../../hooks/useDialog';
+import { useServices } from '../../../../hooks/use-services/useServices';
+import { useAuth } from '../../../../hooks/useAuth';
 import EmployeeTableToolbar from './EmployeeTableToolbar';
 import EmployeeFormRegister from './employee-form/EmployeeFormRegister';
 import EmployeeFormEdit from './employee-form/EmployeeFormEdit';
 import { Nullable } from '../../../../models/Nullable';
-import useAsync from '../../../../hooks/use-async';
+import useAsync from '../../../../hooks/useAsync';
 import TableBodyEmpty from '../../../shared/TableBodyEmpty';
 
 function EmployeeTableBodySkeleton() {
@@ -36,6 +36,19 @@ function EmployeeTableBodySkeleton() {
       </TableRow>
     </TableBody>
   );
+}
+
+function ActiveMessage({ isActive }: { isActive: Nullable<boolean> }) {
+  if (isActive === null) {
+    return <span>Never logged in before</span>;
+  }
+
+  // Will probably be removed in the future
+  if (!isActive) {
+    return <span>Fired</span>;
+  }
+
+  return <span>Active</span>;
 }
 
 export default function EmployeeTable() {
@@ -126,6 +139,7 @@ export default function EmployeeTable() {
             <TableCell>{employee.email}</TableCell>
             <TableCell width="15%">{employee.phone}</TableCell>
             <TableCell width="10%">{employee.role}</TableCell>
+            <TableCell width="10%"><ActiveMessage isActive={employee.active} /></TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -151,6 +165,7 @@ export default function EmployeeTable() {
             <TableCell>Email</TableCell>
             <TableCell width="15%">Phone</TableCell>
             <TableCell width="10%">Role</TableCell>
+            <TableCell width="10%">Active</TableCell>
           </TableRow>
         </TableHead>
         <EmployeeTableBody />

@@ -34,7 +34,7 @@ export default function useCurrentWeek(defaultValue?: Date): ICurrentWeek {
 
   const previous = (): void => setCurrentWeek(getPreviousWeek);
   const next = (): void => setCurrentWeek(getNextWeek);
-  const thisWeek = (): void => setCurrentWeek(startOfWeek(new Date()));
+  const thisWeek = (): void => setCurrentWeek(startOfWeek(defaultValue ?? new Date()));
 
   return {
     value,

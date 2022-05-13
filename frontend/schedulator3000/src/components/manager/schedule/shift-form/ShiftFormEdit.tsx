@@ -1,10 +1,9 @@
 import { UnpackNestedValue } from 'react-hook-form';
 import React from 'react';
-import { Typography } from '@mui/material';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Shift } from '../../../../models/Shift';
 import ShiftForm, { ShiftFormFieldValue } from './ShiftForm';
-import { IShiftService } from '../../../../hooks/use-services/use-provide-shift-service';
+import { IShiftService } from '../../../../hooks/use-services/useProvideShiftService';
 import { Employee, Manager } from '../../../../models/User';
 
 interface ScheduleUpdateShiftProps {
@@ -62,14 +61,12 @@ export default function ShiftFormEdit({
   };
 
   return (
-    <>
-      <Typography variant="h5" component="h5">Update Shift</Typography>
-      <ShiftForm
-        selected={selected}
-        submit={submit}
-        onClose={closeDialog}
-        employees={employees}
-      />
-    </>
+    <ShiftForm
+      selected={selected}
+      submit={submit}
+      onClose={closeDialog}
+      employees={employees}
+      title="Update Shift"
+    />
   );
 }

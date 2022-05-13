@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack';
 import { Employee, EmployeeFormType } from '../../models/User';
-import { http } from './use-services';
+import { http } from './useServices';
 
 export interface IEmployeeService {
   updateEmployee: (body: EmployeeFormType) => Promise<Employee>;

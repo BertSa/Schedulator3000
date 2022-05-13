@@ -2,14 +2,14 @@ import { Button, Container, Grid, Link, Tab, Tabs, Typography } from '@mui/mater
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { useAuth } from '../hooks/use-auth';
+import { useAuth } from '../hooks/useAuth';
 import { FieldInput } from './shared/form/FormFields';
 import { regex } from '../utilities/utilities';
 
 export default function SignInPage() {
   const [tab, setTab] = useState<number>(0);
-  const auth = useAuth();
   const history = useHistory();
+  const auth = useAuth();
   const {
     register,
     handleSubmit,
