@@ -8,8 +8,8 @@ import { regex } from '../utilities/utilities';
 
 export default function SignInPage() {
   const [tab, setTab] = useState<number>(0);
-  const auth = useAuth();
   const history = useHistory();
+  const auth = useAuth();
   const {
     register,
     handleSubmit,

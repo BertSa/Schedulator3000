@@ -65,9 +65,9 @@ export default function ScheduleTableRow({
   previousWeek,
 }: EmployeeWeekRowProps) {
   const [open, toggle] = useToggle();
-  const { noteService, availabilitiesService } = useServices();
   const [note, setNote] = useState<Nullable<INote>>(null);
   const [availabilities, setAvailabilities] = useState<Nullable<IAvailabilities>>(null);
+  const { noteService, availabilitiesService } = useServices();
 
   useUpdateEffect(() => {
     noteService.getByEmployeeEmail(employee.email).then(setNote);
@@ -137,12 +137,11 @@ export default function ScheduleTableRow({
           <TotalTime />
         </TableCell>
       </TableRow>
-      {open
+      {open && note
         && (
         <>
           <TableRow>
-            <TableCell sx={{ border: 0 }} />
-            <TableCell sx={{ border: 0 }} />
+            <TableCell sx={{ border: 0 }} colSpan={2} />
             <AvailabilityRow availability={availabilities?.sunday} />
             <AvailabilityRow availability={availabilities?.monday} />
             <AvailabilityRow availability={availabilities?.tuesday} />

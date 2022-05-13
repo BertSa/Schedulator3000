@@ -52,6 +52,9 @@ function useProvideAuth(): ProviderAuth {
     } else {
       removeSessionStorageUser();
     }
+    return () => {
+
+    };
   }, [user, setSessionStorageUser, removeSessionStorageUser]);
 
   const signUpManager = async (manager:Manager): Promise<void> => {

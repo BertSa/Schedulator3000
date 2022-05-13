@@ -90,6 +90,11 @@ function ToolbarCalendar({
 }
 
 export default function ScheduleEmployee() {
+  const user = useAuth().getEmployee();
+  const currentWeek = useCurrentWeek();
+  const [events, setEvents] = useState<ShiftEvent[]>([]);
+  const [vacationRequests, setVacationRequests] = useState<VacationRequest[]>([]);
+  const { shiftService, vacationRequestService } = useServices();
   // eslint-disable-next-line no-console
   const backup = console.error;
   // eslint-disable-next-line no-console
@@ -100,11 +105,6 @@ export default function ScheduleEmployee() {
       backup.apply(console, [msg]);
     }
   };
-  const { shiftService, vacationRequestService } = useServices();
-  const user = useAuth().getEmployee();
-  const currentWeek = useCurrentWeek();
-  const [events, setEvents] = useState<ShiftEvent[]>([]);
-  const [vacationRequests, setVacationRequests] = useState<VacationRequest[]>([]);
   const {
     palette: { warning, grey, primary, secondary, text },
   } = useTheme();
@@ -128,6 +128,9 @@ export default function ScheduleEmployee() {
               resource: {},
             })),
         ));
+      return () => {
+        setEvents([]);
+      };
     },
     1000,
     [currentWeek.value],
@@ -153,6 +156,11 @@ export default function ScheduleEmployee() {
       ),
     );
     vacationRequestService.getAllByEmployeeEmail(user.email).then(setVacationRequests);
+
+    return () => {
+      setEvents([]);
+      setVacationRequests([]);
+    };
   }, [user.email, shiftService]);
 
   return (

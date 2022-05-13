@@ -26,13 +26,13 @@ function useProvideServices(): IProviderServices {
   };
 }
 
-const authContext: React.Context<IProviderServices> = createContext({} as IProviderServices);
+const serviceContext: React.Context<IProviderServices> = createContext({} as IProviderServices);
 
-export const useServices = () => useContext(authContext);
+export const useServices = () => useContext(serviceContext);
 
 export function ServicesProvider({ children }: PropsWithChildren<{}>) {
-  const auth = useProvideServices();
-  return React.createElement(authContext.Provider, { value: auth }, children);
+  const services = useProvideServices();
+  return React.createElement(serviceContext.Provider, { value: services }, children);
 }
 
 async function post(path: string, data?: any): Promise<{ response: Response, body: any }> {

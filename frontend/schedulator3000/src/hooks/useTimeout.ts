@@ -6,6 +6,7 @@ export default function useTimeout(callback: any, delay: number = 1000) {
 
   useEffect(() => {
     callbackRef.current = callback;
+    return () => {};
   }, [callback]);
 
   const set = useCallback(() => {
