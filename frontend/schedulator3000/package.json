@@ -1,6 +1,6 @@
 {
   "name": "schedulator3000",
-  "version": "v1.0.1",
+  "version": "v1.0.2",
   "proxy": "http://localhost:8781/api",
   "private": true,
   "dependencies": {
@@ -12,10 +12,10 @@
     "@mui/material": "^5.5.1",
     "@popperjs/core": "^2.10.2",
     "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/react": "^12.1.2",
+    "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.4.0",
-    "@types/node": "^16.11.24",
+    "@types/node": "^17.0.30",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
     "@types/react-router-dom": "^5.3.3",
@@ -29,13 +29,14 @@
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.27.1",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "5.0.0",
+    "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "serve": "serv",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -58,7 +59,7 @@
   },
   "devDependencies": {
     "@types/react-big-calendar": "^0.36.4",
-    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
     "@typescript-eslint/parser": "^5.20.0",
     "eslint": "^8.14.0",
     "eslint-config-airbnb": "^19.0.4",

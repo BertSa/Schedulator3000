@@ -22,6 +22,8 @@ public class VacationRequest {
     private String reason;
     @Enumerated(EnumType.STRING)
     private VacationRequestStatus status;
+    @Enumerated(EnumType.STRING)
+    private VacationRequestType type = VacationRequestType.UNPAID;
 
 
     public VacationRequestDto mapToDto() {
@@ -32,6 +34,7 @@ public class VacationRequest {
         dto.setEndDate(this.endDate);
         dto.setReason(this.reason);
         dto.setStatus(this.status);
+        dto.setType(this.type);
         return dto;
     }
 }

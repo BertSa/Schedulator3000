@@ -9,13 +9,12 @@ import {
   MenuItem,
   SxProps,
   Toolbar,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import React from 'react';
-import { AccountCircle, Menu as MenuIcon } from '@mui/icons-material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
-import { useAuth } from '../hooks/use-auth';
+import { useAuth } from '../hooks/useAuth';
 import { Nullable } from '../models/Nullable';
 
 export default function Navbar() {
@@ -101,6 +100,15 @@ export default function Navbar() {
         >
           Schedule
         </Button>
+        <Button
+          onClick={() => {
+            history.push('/availabilities');
+            handleCloseNavMenu();
+          }}
+          sx={buttonSx}
+        >
+          Availabilities
+        </Button>
       </>
     );
   }
@@ -172,66 +180,38 @@ export default function Navbar() {
         >
           <Typography textAlign="center">Schedule</Typography>
         </MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            history.push('/availabilities');
+            handleCloseNavMenu();
+          }}
+        >
+          <Typography textAlign="center">Availabilities</Typography>
+        </MenuItem>
       </>
     );
   }
 
   function RightSide() {
-    const [anchorEl, setAnchorEl] = React.useState<Nullable<HTMLElement>>(null);
-
-    const handleMenu = (event: React.MouseEvent<HTMLElement>): void => setAnchorEl(event.currentTarget);
-    const handleClose = (): void => setAnchorEl(null);
-
     if (auth.isAuthenticated()) {
       return (
-        <>
-          <Tooltip title="Open settings">
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleMenu}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
-          </Tooltip>
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem
-              onClick={() => {
-                handleClose();
-                auth.signOut();
-                history.push('/');
-              }}
-            >
-              Log out
-            </MenuItem>
-            <MenuItem onClick={handleClose}>My account</MenuItem>
-          </Menu>
-        </>
+        <Button
+          onClick={() => {
+            auth.signOut();
+            history.push('/');
+          }}
+          sx={buttonSx}
+        >
+          Log out
+        </Button>
       );
     }
 
     return (
       <Button
         onClick={() => {
-          history.push('/signin');
-          handleClose();
+          history.push('/');
         }}
         sx={buttonSx}
       >

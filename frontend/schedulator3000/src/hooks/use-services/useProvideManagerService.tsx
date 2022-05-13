@@ -1,9 +1,9 @@
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import { useDialog } from '../use-dialog';
+import { useDialog } from '../useDialog';
 import { Employee, EmployeeFormType } from '../../models/User';
 import DialogWarningDelete from '../../components/DialogWarningDelete';
-import { http } from './use-services';
+import { http } from './useServices';
 
 export interface IManagerService {
   addEmployee: (emailManager: string, employee: EmployeeFormType) => Promise<Employee>;

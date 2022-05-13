@@ -6,8 +6,8 @@ import {
   VacationRequestUpdate,
   VacationRequestUpdateStatus,
 } from '../../models/VacationRequest';
-import { http } from './use-services';
-import { useDialog } from '../use-dialog';
+import { http } from './useServices';
+import { useDialog } from '../useDialog';
 import DialogWarningDelete from '../../components/DialogWarningDelete';
 
 export interface IVacationRequestService {

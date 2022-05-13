@@ -6,11 +6,11 @@ export default function useTimeout(callback: any, delay: number = 1000) {
 
   useEffect(() => {
     callbackRef.current = callback;
+    return () => {};
   }, [callback]);
 
   const set = useCallback(() => {
-    // eslint-disable-next-line no-return-await,@typescript-eslint/return-await
-    timeoutRef.current = setTimeout(async () => await callbackRef.current(), delay);
+    timeoutRef.current = setTimeout(() => callbackRef.current(), delay);
   }, [delay]);
 
   const clear = useCallback(() => {

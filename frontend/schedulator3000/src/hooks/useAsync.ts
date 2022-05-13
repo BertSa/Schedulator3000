@@ -22,12 +22,18 @@ export default function useAsync(callback: any, dependencies: any[] = []) {
       .finally(() => {
         setLoading(false);
       });
+    return () => {
+      setLoading(false);
+      setError(undefined);
+      setValue(undefined);
+    };
   }, [callbackRef, ...dependencies]);
 
   useEffect(() => {
     if (typeof callbackMemoized === 'function') {
       callbackMemoized();
     }
+    return () => {};
   }, [callbackMemoized]);
 
   return { loading, error, value };

@@ -2,12 +2,10 @@ package ca.bertsa.schedulator3000.services;
 
 import ca.bertsa.schedulator3000.dtos.VacationRequestDto;
 import ca.bertsa.schedulator3000.enums.VacationRequestStatus;
-import ca.bertsa.schedulator3000.extensions.StringExtensions;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.VacationRequest;
 import ca.bertsa.schedulator3000.repositories.VacationRequestRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.ExtensionMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -16,7 +14,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@ExtensionMethod(StringExtensions.class)
 public class VacationRequestService {
 
     private final VacationRequestRepository vacationRequestRepository;
@@ -35,7 +32,7 @@ public class VacationRequestService {
     }
 
     public List<VacationRequestDto> getAllVacationRequestByEmployeeManagerEmail(String email) {
-        Assert.isTrue(!email.isNullOrEmpty(), "Email must not be null or empty");
+        Assert.isTrue(email != null && email.length() > 0, "Email must not be null or empty");
 
         final List<VacationRequest> vacationRequests = vacationRequestRepository.findAllByEmployee_Manager_Email(email);
 
@@ -45,7 +42,7 @@ public class VacationRequestService {
     }
 
     public List<VacationRequestDto> getAllVacationRequestByEmployeeEmail(String email) {
-        Assert.isTrue(!email.isNullOrEmpty(), "Email must not be null or empty");
+        Assert.isTrue(email != null && email.length() > 0, "Email must not be null or empty");
 
         final List<VacationRequest> vacationRequests = vacationRequestRepository.findAllByEmployee_Email(email);
 
@@ -71,6 +68,7 @@ public class VacationRequestService {
         vacationRequest.setStartDate(dto.getStartDate());
         vacationRequest.setEndDate(dto.getEndDate());
         vacationRequest.setReason(dto.getReason());
+        vacationRequest.setType(dto.getType());
 
         final VacationRequest request = vacationRequestRepository.save(vacationRequest);
         return request.mapToDto();

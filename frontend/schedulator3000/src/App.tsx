@@ -3,12 +3,10 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import SignInPage from './components/SignInPage';
 import ManagerPages from './components/manager/ManagerPages';
-import { RequireAdmin, RequireEmployee, RequireNoAuth } from './hooks/use-auth';
+import { RequireAdmin, RequireEmployee, RequireNoAuth } from './hooks/useAuth';
 import EmployeePages from './components/employee/EmployeePages';
-
-function Register(): React.ReactElement {
-  return <h1>Register</h1>;
-}
+import SignUpPage from './components/SignUpPage';
+import NotFoundPage from './components/NotFoundPage';
 
 export default function App() {
   // document.addEventListener('contextmenu', (event) => {
@@ -26,9 +24,10 @@ export default function App() {
           <EmployeePages />
         </RequireEmployee>
         <RequireNoAuth>
-          <Route path="/register" component={Register} />
-          <Route path="/signin" component={SignInPage} />
+          <Route path="/register" component={SignUpPage} />
+          <Route exact path="/" component={SignInPage} />
         </RequireNoAuth>
+        <Route path="/404" component={NotFoundPage} />
       </main>
     </Router>
   );

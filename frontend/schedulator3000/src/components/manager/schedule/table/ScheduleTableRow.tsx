@@ -1,15 +1,49 @@
-import { differenceInMinutes, hoursToMinutes, isSameDay, minutesToHours } from 'date-fns';
-import { Box, Collapse, IconButton, Skeleton, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import { differenceInMinutes, format, hoursToMinutes, isSameDay, minutesToHours, parseISO } from 'date-fns';
+import { Box, IconButton, Skeleton, TableCell, TableRow } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import React from 'react';
+import React, { useState } from 'react';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../../models/User';
 import { Shift } from '../../../../models/Shift';
 import { VacationRequest } from '../../../../models/VacationRequest';
-import useToggle from '../../../../hooks/use-toggle';
+import useToggle from '../../../../hooks/useToggle';
 import { SelectedItemType } from './ScheduleTable';
 import ScheduleTableColumnWeek from './ScheduleTableColumnWeek';
 import { Nullable } from '../../../../models/Nullable';
-import { ICurrentWeek } from '../../../../hooks/use-currentWeek';
+import { ICurrentWeek } from '../../../../hooks/useCurrentWeek';
+import useUpdateEffect from '../../../../hooks/useUpdateEffect';
+import { useServices } from '../../../../hooks/use-services/useServices';
+import { INote } from '../../../../models/INote';
+import EditableTextField from '../../../shared/form/EditableTextField';
+import { AvailabilityDay, IAvailabilities } from '../../../../models/Availabilities';
+import { getTimeInHourMinutesAMPM } from '../../../../utilities/DateUtilities';
+
+interface AvailabilityRowProps {
+  availability?: AvailabilityDay;
+}
+function AvailabilityRow({ availability }: AvailabilityRowProps) {
+  if (!availability) {
+    return (
+      <TableCell align="center" sx={{ border: 0 }}><small>No availability</small></TableCell>
+    );
+  }
+
+  return (
+    <TableCell align="center" sx={{ border: 0 }}>
+      <small>
+        {getTimeInHourMinutesAMPM(zonedTimeToUtc(availability.start, 'utc'))}
+      </small>
+      <small> to </small>
+      <small>
+        {getTimeInHourMinutesAMPM(zonedTimeToUtc(availability.end, 'utc'))}
+      </small>
+    </TableCell>
+  );
+}
+
+AvailabilityRow.defaultProps = {
+  availability: undefined,
+};
 
 interface EmployeeWeekRowProps {
   selectedItem: SelectedItemType;
@@ -31,6 +65,14 @@ export default function ScheduleTableRow({
   previousWeek,
 }: EmployeeWeekRowProps) {
   const [open, toggle] = useToggle();
+  const [note, setNote] = useState<Nullable<INote>>(null);
+  const [availabilities, setAvailabilities] = useState<Nullable<IAvailabilities>>(null);
+  const { noteService, availabilitiesService } = useServices();
+
+  useUpdateEffect(() => {
+    noteService.getByEmployeeEmail(employee.email).then(setNote);
+    availabilitiesService.getByEmployeeEmail(employee.email).then(setAvailabilities);
+  }, [open]);
 
   function TotalTime() {
     const number: number = shifts.reduce(
@@ -52,27 +94,28 @@ export default function ScheduleTableRow({
   return (
     <>
       <TableRow className="myRow">
-        <TableCell width="6.5%">
-          <IconButton aria-label="expand row" size="small" onClick={toggle} disabled={isLoadingShifts}>
+        <TableCell width="6.5%" sx={{ ...(open && { border: 0 }) }}>
+          <IconButton aria-label="expand row" size="small" onClick={() => toggle()} disabled={isLoadingShifts}>
             {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row" width="15%">
+        <TableCell component="th" scope="row" width="15%" sx={{ ...(open && { border: 0 }) }}>
           {`${employee.firstName} ${employee.lastName}`}
         </TableCell>
         {shifts.map((shift, key) =>
           isLoadingShifts ? (
-            // eslint-disable-next-line react/no-array-index-key
-            <TableCell key={`${employee}:${key}`} align="center">
+          // eslint-disable-next-line react/no-array-index-key
+            <TableCell key={`${employee}:${key}`} align="center" sx={{ ...(open && { border: 0 }) }}>
               <Skeleton />
               -
               <Skeleton />
             </TableCell>
           ) : (
             <ScheduleTableColumnWeek
-              // eslint-disable-next-line react/no-array-index-key
+            // eslint-disable-next-line react/no-array-index-key
               key={`${employee}:${key}`}
               index={key}
+              open={open}
               isSelected={selectedItem?.day === key && selectedItem?.employee.id === employee.id}
               shift={shift}
               vacations={vacationRequests}
@@ -90,39 +133,42 @@ export default function ScheduleTableRow({
             />
           ),
         )}
-        <TableCell align="right" width="7%">
+        <TableCell align="right" width="7%" sx={{ ...(open && { border: 0 }) }}>
           <TotalTime />
         </TableCell>
       </TableRow>
-      <TableRow className="myRow">
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                Preferences and Notes
-              </Typography>
-            </Box>
-          </Collapse>
-        </TableCell>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Table>
-                <TableBody>
-                  {vacationRequests.map((value) => (
-                    <TableRow key={value.id}>
-                      <TableCell component="th" scope="row">
-                        {value.reason}
-                      </TableCell>
-                      <TableCell align="right">{value.status}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+      {open && note
+        && (
+        <>
+          <TableRow>
+            <TableCell sx={{ border: 0 }} colSpan={2} />
+            <AvailabilityRow availability={availabilities?.sunday} />
+            <AvailabilityRow availability={availabilities?.monday} />
+            <AvailabilityRow availability={availabilities?.tuesday} />
+            <AvailabilityRow availability={availabilities?.wednesday} />
+            <AvailabilityRow availability={availabilities?.thursday} />
+            <AvailabilityRow availability={availabilities?.friday} />
+            <AvailabilityRow availability={availabilities?.saturday} />
+            <TableCell sx={{ border: 0 }} />
+          </TableRow>
+          <TableRow className="myRow">
+            <TableCell width="100%" colSpan={10}>
+              <Box
+                component="form"
+                noValidate
+                autoComplete="off"
+              >
+                <EditableTextField
+                  defaultValue={note?.text ?? ''}
+                  onConfirm={((text) => noteService.update(employee.email, { ...note, text } as INote).then(setNote))}
+                  textHelper={`Last edited on:${note?.lastModified
+                    ? format(parseISO(note.lastModified.toString()), 'yyyy-MM-dd hh:mm') : 'Never'}`}
+                />
+              </Box>
+            </TableCell>
+          </TableRow>
+        </>
+        )}
     </>
   );
 }

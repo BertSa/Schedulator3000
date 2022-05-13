@@ -2,6 +2,7 @@ package ca.bertsa.schedulator3000.services;
 
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
 import ca.bertsa.schedulator3000.dtos.ManagerDto;
+import ca.bertsa.schedulator3000.exceptions.UserAlreadyExistException;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.ManagerRepository;
@@ -16,7 +17,7 @@ import java.util.List;
 @Service
 public class ManagerService {
     private final EmployeeService employeeService;
-
+    private final NoteService noteService;
     private final ManagerRepository managerRepository;
 
     public List<Employee> getAllEmployee(String emailManager) {
@@ -27,7 +28,10 @@ public class ManagerService {
     public Employee createEmployee(String emailManager, Employee dto) {
         final Manager manager = getOneByEmail(emailManager);
 
-        return employeeService.create(dto, manager);
+        final Employee employee = employeeService.create(dto, manager);
+        noteService.createNoteForEmployee(employee);
+
+        return employee;
     }
 
     public Manager getOneByEmail(String emailManager) {
@@ -65,5 +69,23 @@ public class ManagerService {
         employee.setActive(false);
 
         return employeeService.update(employee);
+    }
+
+    public ManagerDto signup(ManagerDto managerDto) {
+        Assert.notNull(managerDto, "Manager cannot be null!");
+
+        if (managerRepository.existsByEmailIgnoreCase(managerDto.getEmail())) {
+            throw new UserAlreadyExistException("Manager with email " + managerDto.getEmail() + " already exists!");
+        }
+
+        final Manager manager = new Manager();
+        manager.setEmail(managerDto.getEmail());
+        manager.setPassword(managerDto.getPassword());
+        manager.setPhone(managerDto.getPhone());
+        manager.setCompanyName(managerDto.getCompanyName());
+
+        final Manager created = managerRepository.save(manager);
+
+        return created.mapToDto();
     }
 }

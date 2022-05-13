@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Container, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VacationRequest, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
-import { useServices } from '../../../hooks/use-services/use-services';
-import { useAuth } from '../../../hooks/use-auth';
+import { useServices } from '../../../hooks/use-services/useServices';
+import { useAuth } from '../../../hooks/useAuth';
 import { Employee } from '../../../models/User';
 import VacationRequestTableToolbar from './VacationRequestTableToolbar';
-import { useDialog } from '../../../hooks/use-dialog';
+import { useDialog } from '../../../hooks/useDialog';
 import VacationRequestFormCreate from './form/VacationRequestFormCreate';
 import VacationRequestFormEdit from './form/VacationRequestFormEdit';
 import { Nullable } from '../../../models/Nullable';
 import VacationRequestTableRow from './VacationRequestTableRow';
-import useAsync from '../../../hooks/use-async';
+import useAsync from '../../../hooks/useAsync';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
 import DialogWarningDelete from '../../DialogWarningDelete';
 
@@ -19,6 +19,9 @@ function VacationRequestTableRowSkeleton() {
     <TableBody>
       <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
         <TableCell component="th" scope="row" width="5%">
+          <Skeleton />
+        </TableCell>
+        <TableCell width="10%">
           <Skeleton />
         </TableCell>
         <TableCell width="10%">
@@ -129,7 +132,7 @@ export default function VacationRequestTable() {
     }
 
     if (vacationRequests.length === 0) {
-      return <TableBodyEmpty colSpan={5} message="No vacation requests" />;
+      return <TableBodyEmpty colSpan={6} message="No vacation requests" />;
     }
 
     function handleRowClick(vacationRequest: VacationRequest): void {
@@ -166,6 +169,7 @@ export default function VacationRequestTable() {
           <TableHead>
             <TableRow>
               <TableCell width="5%">#</TableCell>
+              <TableCell width="10%">Type</TableCell>
               <TableCell width="10%">Start Date</TableCell>
               <TableCell width="10%">End Date</TableCell>
               <TableCell>Reason</TableCell>

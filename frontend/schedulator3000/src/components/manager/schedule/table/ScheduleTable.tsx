@@ -4,22 +4,22 @@ import { addWeeks, format, getDay } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../../models/User';
 import { isBetween } from '../../../../utilities/DateUtilities';
-import { useAuth } from '../../../../hooks/use-auth';
-import { useServices } from '../../../../hooks/use-services/use-services';
+import { useAuth } from '../../../../hooks/useAuth';
+import { useServices } from '../../../../hooks/use-services/useServices';
 import { RequestDtoShiftsFromTo } from '../../../../models/ShiftsFromTo';
 import { Shift } from '../../../../models/Shift';
-import { useDialog } from '../../../../hooks/use-dialog';
+import { useDialog } from '../../../../hooks/useDialog';
 import ScheduleTableToolbar from './ScheduleTableToolbar';
 import { VacationRequest } from '../../../../models/VacationRequest';
-import useCurrentWeek, { ICurrentWeek } from '../../../../hooks/use-currentWeek';
+import useCurrentWeek, { ICurrentWeek } from '../../../../hooks/useCurrentWeek';
 import { Nullable } from '../../../../models/Nullable';
 import { ShiftFormFieldValue } from '../shift-form/ShiftForm';
 import ShiftFormCreate from '../shift-form/ShiftFormCreate';
 import ShiftFormEdit from '../shift-form/ShiftFormEdit';
-import useAsync from '../../../../hooks/use-async';
+import useAsync from '../../../../hooks/useAsync';
 import ScheduleTableBodySkeleton from './ScheduleTableBodySkeleton';
-import useAsyncDebounce from '../../../../hooks/use-async-debounce';
-import useDebounce from '../../../../hooks/use-debounce';
+import useAsyncDebounce from '../../../../hooks/useAsyncDebounce';
+import useDebounce from '../../../../hooks/useDebounce';
 import TableBodyEmpty from '../../../shared/TableBodyEmpty';
 import ScheduleTableRow from './ScheduleTableRow';
 
@@ -102,7 +102,7 @@ export default function ScheduleTable() {
     [],
   );
 
-  function createAction() {
+  const createAction = () => {
     if (!selectedItem) {
       return;
     }
@@ -130,9 +130,9 @@ export default function ScheduleTable() {
         callback={callback}
       />,
     );
-  }
+  };
 
-  function editAction() {
+  const editAction = () => {
     if (!selectedItem?.shift) {
       return;
     }
@@ -166,9 +166,9 @@ export default function ScheduleTable() {
         callbackUpdate={callbackUpdate}
       />,
     );
-  }
+  };
 
-  function removeAction() {
+  const removeAction = () => {
     if (!selectedItem?.shift?.id) {
       return;
     }
@@ -177,39 +177,41 @@ export default function ScheduleTable() {
       setShifts((current) => current.filter((shift) => shift.id !== selectedItem?.shift?.id));
       setSelectedItem(null);
     });
-  }
+  };
 
   function ScheduleTableBody() {
     const [rowData, setRowData] = useState<RowDataType[]>([]);
 
     useEffect(() => {
-      if (loading || employees.length === 0) {
-        return;
+      if (!loading && employees.length !== 0) {
+        employees.forEach((employee) => {
+          const requests: VacationRequest[] = vacationRequests.filter((value) => value.employeeEmail === employee.email);
+          // TODO: optimize
+          const tempShifts: Shift[] = shifts.filter(
+            (value) =>
+              isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1))
+            && value.emailEmployee === employee.email,
+          );
+
+          const weekShifts: Nullable<Shift>[] = [];
+          for (let i = 0; i < 7; i++) {
+            weekShifts[i] = tempShifts.find((shift) => getDay(new Date(shift.startTime)) === i) ?? null;
+          }
+
+          setRowData((prevState) => [
+            ...prevState.filter((data) => data.employee.id !== employee.id),
+            {
+              employee,
+              weekShifts,
+              requests,
+            },
+          ]);
+        });
       }
 
-      employees.forEach((employee) => {
-        const requests: VacationRequest[] = vacationRequests.filter((value) => value.employeeEmail === employee.email);
-        // TODO: optimize
-        const tempShifts: Shift[] = shifts.filter(
-          (value) =>
-            isBetween(value.startTime, currentWeek.value, addWeeks(currentWeek.value, 1))
-            && value.emailEmployee === employee.email,
-        );
-
-        const weekShifts: Nullable<Shift>[] = [];
-        for (let i = 0; i < 7; i++) {
-          weekShifts[i] = tempShifts.find((shift) => getDay(new Date(shift.startTime)) === i) ?? null;
-        }
-
-        setRowData((prevState) => [
-          ...prevState.filter((data) => data.employee.id !== employee.id),
-          {
-            employee,
-            weekShifts,
-            requests,
-          },
-        ]);
-      });
+      return () => {
+        setRowData([]);
+      };
     }, [currentWeek.value, employees, vacationRequests, shifts]);
 
     if (loading) {

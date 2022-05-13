@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,8 @@ import java.util.List;
 @JsonIgnoreProperties
 public class Manager extends User {
 
+    @NotBlank
+    private String companyName;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE)
     private List<VacationRequest> vacationRequests;
@@ -27,6 +30,7 @@ public class Manager extends User {
         managerDto.setEmail(this.getEmail());
         managerDto.setPassword(this.getPassword());
         managerDto.setPhone(this.getPhone());
+        managerDto.setCompanyName(this.getCompanyName());
         managerDto.setHolidays(this.getHolidays());
         return managerDto;
     }

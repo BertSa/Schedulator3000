@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { Container, Hidden, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Container, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { VacationRequest, VacationRequestUpdateStatus } from '../../../models/VacationRequest';
-import { useServices } from '../../../hooks/use-services/use-services';
-import { useAuth } from '../../../hooks/use-auth';
+import { useServices } from '../../../hooks/use-services/useServices';
+import { useAuth } from '../../../hooks/useAuth';
 import { Employee, Manager } from '../../../models/User';
 import VacationRequestManagementTableToolbar from './VacationRequestManagementTableToolbar';
 import { Nullable } from '../../../models/Nullable';
 import VacationRequestManagementTableRow from './VacationRequestManagementTableRow';
-import useAsync from '../../../hooks/use-async';
+import useAsync from '../../../hooks/useAsync';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
 import VacationRequestFormEdit from '../../employee/vacation-request-management/form/VacationRequestFormEdit';
-import { useDialog } from '../../../hooks/use-dialog';
+import { useDialog } from '../../../hooks/useDialog';
 
 function VacationRequestManagementTableBodySkeleton() {
   return (
@@ -58,6 +58,11 @@ export default function VacationRequestManagementTable() {
       }),
     [manager.email],
   );
+
+  useEffect(() => () => {
+    // setVacationRequests([]);
+    // setEmployees([]);
+  }, []);
 
   function updateRequest(status: VacationRequestUpdateStatus): void {
     if (!selectedVacationRequest) {
@@ -131,7 +136,7 @@ export default function VacationRequestManagementTable() {
               />
             );
           }
-          return <Hidden key={vacationRequest.id} />;
+          return null;
         })}
       </TableBody>
     );
@@ -154,6 +159,7 @@ export default function VacationRequestManagementTable() {
             <TableRow>
               <TableCell width="5%">#</TableCell>
               <TableCell width="15%">Employee</TableCell>
+              <TableCell width="10%">Type</TableCell>
               <TableCell width="10%">Start Date</TableCell>
               <TableCell width="10%">End Date</TableCell>
               <TableCell>Reason</TableCell>

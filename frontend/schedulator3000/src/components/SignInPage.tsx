@@ -2,14 +2,14 @@ import { Button, Container, Grid, Link, Tab, Tabs, Typography } from '@mui/mater
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { useAuth } from '../hooks/use-auth';
+import { useAuth } from '../hooks/useAuth';
 import { FieldInput } from './shared/form/FormFields';
 import { regex } from '../utilities/utilities';
 
 export default function SignInPage() {
   const [tab, setTab] = useState<number>(0);
-  const auth = useAuth();
   const history = useHistory();
+  const auth = useAuth();
   const {
     register,
     handleSubmit,
@@ -25,7 +25,7 @@ export default function SignInPage() {
     if (tab === 0) {
       auth.signInEmployee(email, password).then(() => history.push('/'));
     } else if (tab === 1) {
-      auth.signInManager(email, password).then(() => history.push('/manager/dashboard'));
+      auth.signInManager(email, password).then(() => history.push('/manager'));
     }
   };
 
@@ -108,9 +108,8 @@ export default function SignInPage() {
           </Grid>
           <Grid item>
             <Typography fontSize="smaller">
-              {' '}
-              Do you have an account ?
-              <Link component={RouterLink} to={{ pathname: '/forgot_password' }}>
+              {'Do you have an account? '}
+              <Link component={RouterLink} to={{ pathname: '/register' }}>
                 Sign Up
               </Link>
             </Typography>

@@ -2,6 +2,7 @@ package ca.bertsa.schedulator3000.dtos;
 
 import ca.bertsa.schedulator3000.enums.VacationRequestStatus;
 import ca.bertsa.schedulator3000.models.VacationRequest;
+import ca.bertsa.schedulator3000.models.VacationRequestType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,7 @@ public class VacationRequestDto {
     private LocalDate endDate;
     @NotBlank
     private String reason;
+    private VacationRequestType type = VacationRequestType.UNPAID;
     private VacationRequestStatus status;
 
     public VacationRequest mapToVacationRequest() {
@@ -30,6 +32,7 @@ public class VacationRequestDto {
         vacationRequest.setEndDate(endDate);
         vacationRequest.setReason(reason);
         vacationRequest.setStatus(status);
+        vacationRequest.setType(type);
 
         return vacationRequest;
     }
