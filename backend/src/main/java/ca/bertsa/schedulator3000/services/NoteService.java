@@ -16,9 +16,10 @@ public class NoteService {
     private final EmployeeService employeeService;
 
     public Note getNoteByEmployeeEmail(String employeeEmail) {
-        final Note note = noteRepository.getByEmployee_EmailIgnoreCase(employeeEmail);
-        Assert.notNull(note, "Note not found for employee with email: " + employeeEmail);
-
+        Note note = noteRepository.getByEmployee_EmailIgnoreCase(employeeEmail);
+        if (note == null) {
+            note = createNoteForEmployee(employeeService.getOneByEmail(employeeEmail));
+        }
         return note;
     }
 
