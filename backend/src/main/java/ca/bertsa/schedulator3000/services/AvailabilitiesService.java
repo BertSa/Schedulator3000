@@ -1,6 +1,7 @@
 package ca.bertsa.schedulator3000.services;
 
 import ca.bertsa.schedulator3000.models.Availabilities;
+import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.repositories.AvailabilityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,5 +29,13 @@ public class AvailabilitiesService {
         availabilities.setSunday(updatedAvailabilities.getSunday());
 
         return availabilityRepository.save(availabilities);
+    }
+
+    public void createAvailabilitiesForEmployee(Employee employee) {
+        final Availabilities availabilities = new Availabilities();
+        availabilities.setEmployee(employee);
+        availabilities.setLastModified(LocalDateTime.now());
+
+        availabilityRepository.save(availabilities);
     }
 }

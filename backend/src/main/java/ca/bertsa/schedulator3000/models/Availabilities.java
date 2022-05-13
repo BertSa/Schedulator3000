@@ -10,9 +10,10 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@SequenceGenerator(name = "avail_seq", initialValue = 6)
 public class Availabilities {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "avail_seq")
     private Long id;
     @OneToOne
     @JsonIgnore

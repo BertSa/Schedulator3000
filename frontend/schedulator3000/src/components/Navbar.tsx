@@ -115,7 +115,7 @@ export default function Navbar() {
 
   function ManagerLinksSm() {
     if (!auth.isManager()) {
-      return <MenuItem>allo</MenuItem>;
+      return <MenuItem><span /></MenuItem>;
     }
 
     return (

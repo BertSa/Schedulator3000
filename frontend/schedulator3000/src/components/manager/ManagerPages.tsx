@@ -1,4 +1,4 @@
-import { Route, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, useRouteMatch } from 'react-router-dom';
 import React from 'react';
 import ScheduleCalendar from './schedule/ScheduleCalendar';
 import EmployeeManagement from './employee-management/EmployeeManagement';
@@ -13,6 +13,7 @@ export default function ManagerPages(): React.ReactElement {
       <Route path={`${path}/schedulev2`} component={ScheduleCalendar} />
       <Route path={`${path}/schedule`} component={ScheduleTable} />
       <Route path={`${path}/vacation-requests`} component={VacationRequestManagementTable} />
+      <Route exact path={`${path}`} component={() => <Redirect to={`${path}/employees`} />} />
     </>
   );
 }
