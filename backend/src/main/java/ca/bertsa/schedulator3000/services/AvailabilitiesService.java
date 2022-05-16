@@ -12,9 +12,17 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class AvailabilitiesService {
     private final AvailabilityRepository availabilityRepository;
+    private final EmployeeService employeeService;
 
     public Availabilities getAvailabilities(String email) {
-        return availabilityRepository.getByEmployee_EmailIgnoreCase(email);
+        Availabilities availabilities = availabilityRepository.getByEmployee_EmailIgnoreCase(email);
+
+        if(availabilities == null){
+            final Employee employee = employeeService.getOneByEmail(email);
+            availabilities = createAvailabilitiesForEmployee(employee);
+        }
+
+        return availabilities;
     }
 
     public Availabilities updateAvailabilities(String email, Availabilities updatedAvailabilities) {
@@ -31,11 +39,11 @@ public class AvailabilitiesService {
         return availabilityRepository.save(availabilities);
     }
 
-    public void createAvailabilitiesForEmployee(Employee employee) {
+    public Availabilities createAvailabilitiesForEmployee(Employee employee) {
         final Availabilities availabilities = new Availabilities();
         availabilities.setEmployee(employee);
         availabilities.setLastModified(LocalDateTime.now());
 
-        availabilityRepository.save(availabilities);
+        return availabilityRepository.save(availabilities);
     }
 }

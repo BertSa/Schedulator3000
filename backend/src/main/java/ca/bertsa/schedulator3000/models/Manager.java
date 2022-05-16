@@ -21,8 +21,6 @@ public class Manager extends User {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE)
     private List<VacationRequest> vacationRequests;
-    @OneToMany
-    private List<Holiday> holidays;
 
     public ManagerDto mapToDto() {
         final ManagerDto managerDto = new ManagerDto();
@@ -31,7 +29,6 @@ public class Manager extends User {
         managerDto.setPassword(this.getPassword());
         managerDto.setPhone(this.getPhone());
         managerDto.setCompanyName(this.getCompanyName());
-        managerDto.setHolidays(this.getHolidays());
         return managerDto;
     }
 }
