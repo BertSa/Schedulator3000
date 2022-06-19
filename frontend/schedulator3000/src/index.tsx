@@ -7,11 +7,10 @@ import { createTheme, CssBaseline, ThemeOptions, ThemeProvider } from '@mui/mate
 import { SnackbarProvider } from 'notistack';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
-import reportWebVitals from './reportWebVitals';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import DialogProvider from './hooks/useDialog';
-import { AuthProvider } from './hooks/useAuth';
-import { ServicesProvider } from './hooks/use-services/useServices';
+import { AuthProvider } from './contexts/AuthContext';
 
 const themeOptions: ThemeOptions = createTheme({
   palette: {
@@ -39,9 +38,9 @@ ReactDOM.render(
         >
           <DialogProvider>
             <AuthProvider>
-              <ServicesProvider>
+              <BrowserRouter>
                 <App />
-              </ServicesProvider>
+              </BrowserRouter>
             </AuthProvider>
           </DialogProvider>
         </SnackbarProvider>
@@ -50,5 +49,3 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root'),
 );
-
-reportWebVitals();

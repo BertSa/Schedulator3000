@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise,no-mixed-operators,no-nested-ternary */
 export const regex = Object.freeze({
   email: /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i,
-  phone: /^\(?([0-9]{3})\)?[- ]?([0-9]{3})[- ]?([0-9]{4})$/,
+  phone: /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/,
   password: /.{5,}/,
   name: /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/,
 });
@@ -31,13 +31,4 @@ export function stringToColor(string: string) {
     .toString(16)
     .slice(1);
   return `#${s}`;
-}
-
-export function stringAvatar(name: string) {
-  return {
-    sx: {
-      bgcolor: stringToColor(name),
-    },
-    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-  };
 }
