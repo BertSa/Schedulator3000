@@ -29,7 +29,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<IVacationRequest>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -46,7 +46,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<IVacationRequest>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -97,7 +97,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<IVacationRequest>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -109,7 +109,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
   async function getAllByEmail(endpoint: string, email: string): Promise<IVacationRequest[]> {
     const { response, body } = await http.get(`/vacation-requests/${endpoint}/${email}`);
     if (response.ok) {
-      return Promise.resolve<IVacationRequest[]>(body);
+      return body;
     }
 
     return Promise.reject(body.message);

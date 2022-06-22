@@ -3,8 +3,8 @@ import { IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
 import { Check, Edit } from '@mui/icons-material';
 import useToggle from '../../hooks/useToggle';
 
-interface EditableTextFieldProps { defaultValue: string, onConfirm: (value: string) => void, textHelper:string }
-export default function EditableTextField({ defaultValue, onConfirm, textHelper }: EditableTextFieldProps) {
+interface IEditableTextFieldProps { defaultValue: string, onConfirm: (value: string) => void, textHelper:string }
+export default function EditableTextField({ defaultValue, onConfirm, textHelper }: IEditableTextFieldProps) {
   const [editMode, toggleEditMode] = useToggle(false);
   const [value, setValue] = useState<string>(defaultValue);
   const [previous, setPrevious] = useState<string>(defaultValue);

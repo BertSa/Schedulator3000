@@ -5,14 +5,14 @@ import { FieldInput } from '../../../../shared/FormFields';
 import { regex } from '../../../../../utilities/utilities';
 import { Employee, EmployeeFormType } from '../../../../../models/User';
 
-interface EmployeeFormProps {
+interface IEmployeeFormProps {
   submit: SubmitHandler<EmployeeFormType>;
   emailDisabled?: boolean;
   onCancel: VoidFunction;
   employee?: Employee;
 }
 
-export default function EmployeeForm({ submit, emailDisabled, onCancel, employee }: EmployeeFormProps) {
+export default function EmployeeForm({ submit, emailDisabled, onCancel, employee }: IEmployeeFormProps) {
   const {
     register,
     handleSubmit,

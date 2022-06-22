@@ -6,29 +6,29 @@ import React from 'react';
 import { Employee } from '../../../../models/User';
 import { preferences } from '../../../../utilities/DateUtilities';
 
-export interface ShiftFormFieldValue {
+export interface IShiftFormFieldValue {
   shiftId?: number;
   employeeId: number;
   start: Date;
   end: Date;
 }
 
-interface ScheduleTableShiftFormProps {
-  submit: SubmitHandler<ShiftFormFieldValue>;
+interface IScheduleTableShiftFormProps {
+  submit: SubmitHandler<IShiftFormFieldValue>;
   onClose: VoidFunction;
   employees: Employee[];
-  selected: ShiftFormFieldValue;
+  selected: IShiftFormFieldValue;
   title: string;
 }
 
-export default function ShiftForm({ submit, employees, onClose, selected, title }: ScheduleTableShiftFormProps) {
+export default function ShiftForm({ submit, employees, onClose, selected, title }: IScheduleTableShiftFormProps) {
   const {
     getValues,
     register,
     handleSubmit,
     formState: { errors },
     control,
-  } = useForm<ShiftFormFieldValue>({
+  } = useForm<IShiftFormFieldValue>({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     defaultValues: {

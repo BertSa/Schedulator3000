@@ -18,7 +18,7 @@ export function useProvideAvailabilitiesService(): IAvailabilitiesService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<IAvailabilities>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -31,7 +31,7 @@ export function useProvideAvailabilitiesService(): IAvailabilitiesService {
     const { response, body } = await http.get(`/availabilities/${emailEmployee}`);
 
     if (response.ok) {
-      return Promise.resolve<IAvailabilities>(body);
+      return body;
     }
     return Promise.reject(body.message);
   }

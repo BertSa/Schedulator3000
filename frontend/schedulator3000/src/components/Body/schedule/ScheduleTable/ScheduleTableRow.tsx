@@ -19,10 +19,10 @@ import { getTimeInHourMinutesAMPM } from '../../../../utilities/DateUtilities';
 import { IAvailabilities } from '../../../../models/IAvailabilities';
 import { IShift } from '../../../../models/IShift';
 
-interface AvailabilityRowProps {
+interface IAvailabilityRowProps {
   availability?: AvailabilityDay;
 }
-function AvailabilityRow({ availability }: AvailabilityRowProps) {
+function AvailabilityRow({ availability }: IAvailabilityRowProps) {
   if (!availability) {
     return (
       <TableCell align="center" sx={{ border: 0 }}><small>No availability</small></TableCell>
@@ -46,7 +46,7 @@ AvailabilityRow.defaultProps = {
   availability: undefined,
 };
 
-interface EmployeeWeekRowProps {
+interface IEmployeeWeekRowProps {
   selectedItem: SelectedItemType;
   employee: Employee;
   shifts: Nullable<IShift>[];
@@ -64,7 +64,7 @@ export default function ScheduleTableRow({
   currentWeek,
   setSelected,
   previousWeek,
-}: EmployeeWeekRowProps) {
+}: IEmployeeWeekRowProps) {
   const [open, toggle] = useToggle();
   const [note, setNote] = useState<Nullable<INote>>(null);
   const [availabilities, setAvailabilities] = useState<Nullable<IAvailabilities>>(null);

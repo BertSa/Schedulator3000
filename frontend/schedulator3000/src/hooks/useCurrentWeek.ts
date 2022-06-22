@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { addDays, addWeeks, startOfWeek, subWeeks } from 'date-fns';
+import { NavigateAction } from 'react-big-calendar';
 import { isBetween } from '../utilities/DateUtilities';
 
 export interface ICurrentWeek {
@@ -10,7 +11,8 @@ export interface ICurrentWeek {
   getNextWeek: () => Date;
   getDayOfWeek: (day: number) => Date;
   isDuringWeek: (date: Date) => boolean;
-  thisWeek:() => void;
+  thisWeek: VoidFunction;
+  onNavigate: (act: NavigateAction) => void;
 }
 
 export default function useCurrentWeek(defaultValue?: Date): ICurrentWeek {
@@ -35,6 +37,15 @@ export default function useCurrentWeek(defaultValue?: Date): ICurrentWeek {
   const previous = (): void => setCurrentWeek(getPreviousWeek);
   const next = (): void => setCurrentWeek(getNextWeek);
   const thisWeek = (): void => setCurrentWeek(startOfWeek(defaultValue ?? new Date()));
+  const onNavigate = (act: NavigateAction) => {
+    if (act === 'PREV') {
+      previous();
+    } else if (act === 'NEXT') {
+      next();
+    } else if (act === 'TODAY') {
+      thisWeek();
+    }
+  };
 
   return {
     value,
@@ -45,5 +56,6 @@ export default function useCurrentWeek(defaultValue?: Date): ICurrentWeek {
     getNextWeek,
     isDuringWeek,
     thisWeek,
+    onNavigate,
   };
 }

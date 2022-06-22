@@ -4,7 +4,7 @@ import React from 'react';
 import { Employee } from '../../../../models/User';
 import { Nullable } from '../../../../models/Nullable';
 
-interface EnhancedTableToolbarProps {
+interface IEnhancedTableToolbarProps {
   selected: Nullable<Employee>;
   actions: {
     create: VoidFunction;
@@ -13,7 +13,7 @@ interface EnhancedTableToolbarProps {
   };
 }
 
-export default function EmployeeTableToolbar({ selected, actions: { create, edit, fire } }: EnhancedTableToolbarProps) {
+export default function EmployeeTableToolbar({ selected, actions: { create, edit, fire } }: IEnhancedTableToolbarProps) {
   const toolbarSx: SxProps<Theme> = {
     pl: { sm: 2 },
     pr: { xs: 1, sm: 1 },

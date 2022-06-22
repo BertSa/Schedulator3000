@@ -5,14 +5,14 @@ import { Employee, EmployeeFormType } from '../../../../../models/User';
 import EmployeeForm from './EmployeeForm';
 import { IEmployeeService } from '../../../../../hooks/use-services/useProvideEmployeeService';
 
-interface EmployeeFormEditProps {
+interface IEmployeeFormEditProps {
   employeeService: IEmployeeService;
   callback: (employee: Employee) => void;
   onCancel: VoidFunction;
   employee: Employee;
 }
 
-export default function EmployeeFormEdit({ employeeService, callback, onCancel, employee }: EmployeeFormEditProps): React.ReactElement {
+export default function EmployeeFormEdit({ employeeService, callback, onCancel, employee }: IEmployeeFormEditProps): React.ReactElement {
   const submit: SubmitHandler<EmployeeFormType> = (data, event) => {
     event?.preventDefault();
     employeeService.updateEmployee(data).then(callback);

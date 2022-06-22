@@ -3,7 +3,7 @@ import { Add, Delete, Edit } from '@mui/icons-material';
 import React from 'react';
 import { SelectedItemType } from './AvailabilitiesTable';
 
-interface AvailabilitiesTableToolbarProps {
+interface IAvailabilitiesTableToolbarProps {
   selectedItem: SelectedItemType;
   actions: {
     create: VoidFunction;
@@ -15,7 +15,7 @@ interface AvailabilitiesTableToolbarProps {
 export default function AvailabilitiesTableToolbar({
   selectedItem,
   actions: { create, edit, remove },
-}: AvailabilitiesTableToolbarProps) {
+}: IAvailabilitiesTableToolbarProps) {
   const toolbarSx: SxProps<Theme> = {
     pl: { sm: 2 },
     pr: { xs: 1, sm: 1 },

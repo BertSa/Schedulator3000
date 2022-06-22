@@ -18,7 +18,7 @@ export function useProvideNoteService(): INoteService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<INote>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -31,7 +31,7 @@ export function useProvideNoteService(): INoteService {
     const { response, body } = await http.get(`/notes/${emailEmployee}`);
 
     if (response.ok) {
-      return Promise.resolve<INote>(body);
+      return body;
     }
     return Promise.reject(body.message);
   }

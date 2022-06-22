@@ -41,17 +41,17 @@ export default function SignInPage() {
     >
       <Grid
         container
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
         columnSpacing={2}
         rowSpacing={2}
         padding={2}
         component="form"
         onSubmit={handleSubmit(connect)}
         noValidate
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
       >
         <Typography component="h1" variant="h5">
           Sign in

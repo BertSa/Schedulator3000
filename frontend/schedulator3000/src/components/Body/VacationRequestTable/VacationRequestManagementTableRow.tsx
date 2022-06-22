@@ -4,7 +4,7 @@ import { IVacationRequest } from '../../../models/IVacationRequest';
 import { Employee } from '../../../models/User';
 import VacationRequestStatusIcon from './VacationRequestStatusIcon';
 
-interface VacationRequestManagementTableRowProps {
+interface IVacationRequestManagementTableRowProps {
   vacationRequest: IVacationRequest;
   employee: Employee;
   isSelected: boolean;
@@ -16,7 +16,7 @@ export default function VacationRequestManagementTableRow({
   employee,
   isSelected,
   onClick,
-}: VacationRequestManagementTableRowProps) {
+}: IVacationRequestManagementTableRowProps) {
   return (
     <TableRow
       selected={isSelected}

@@ -1,13 +1,13 @@
 import { SubmitHandler } from 'react-hook-form';
 import React from 'react';
-import VacationRequestForm, { VacationRequestFormFieldValue } from './VacationRequestForm';
+import VacationRequestForm, { IVacationRequestFormFieldValue } from './VacationRequestForm';
 import { IVacationRequest } from '../../../../models/IVacationRequest';
 import { Employee } from '../../../../models/User';
 import { IVacationRequestService } from '../../../../hooks/use-services/useProvideVacationRequestService';
 import { VacationRequestType } from '../../../../enums/VacationRequestType';
 import { VacationRequestCreate } from '../../../../models/VacationRequestCreate';
 
-interface VacationRequestFormCreateProps {
+interface IVacationRequestFormCreateProps {
   vacationRequestService: IVacationRequestService;
   callback: (vacationRequest: IVacationRequest) => void;
   onCancel: VoidFunction;
@@ -19,8 +19,8 @@ export default function VacationRequestFormCreate({
   onCancel,
   callback,
   employee,
-}: VacationRequestFormCreateProps) {
-  const submit: SubmitHandler<VacationRequestFormFieldValue> = (data, event): void => {
+}: IVacationRequestFormCreateProps) {
+  const submit: SubmitHandler<IVacationRequestFormFieldValue> = (data, event): void => {
     event?.preventDefault();
     const body: VacationRequestCreate = {
       employeeEmail: employee.email,

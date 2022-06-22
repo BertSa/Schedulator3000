@@ -5,7 +5,7 @@ import { IVacationRequest } from '../../../models/IVacationRequest';
 import { Nullable } from '../../../models/Nullable';
 import { VacationRequestStatus } from '../../../enums/VacationRequestStatus';
 
-interface VacationRequestManagementTableToolbarProps {
+interface IVacationRequestManagementTableToolbarProps {
   selectedVacationRequest: Nullable<IVacationRequest>;
   actions: {
     approve: VoidFunction;
@@ -18,7 +18,7 @@ interface VacationRequestManagementTableToolbarProps {
 export default function VacationRequestManagementTableToolbar({
   selectedVacationRequest,
   actions: { approve, reject, del, edit },
-}: VacationRequestManagementTableToolbarProps) {
+}: IVacationRequestManagementTableToolbarProps) {
   const toolbarSx: SxProps<Theme> = {
     pl: { sm: 2 },
     pr: { xs: 1, sm: 1 },

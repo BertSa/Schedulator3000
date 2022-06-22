@@ -8,7 +8,7 @@ import { getTimeInHourMinutesAMPM, isBetween } from '../../../../utilities/DateU
 import { VacationRequestStatus } from '../../../../enums/VacationRequestStatus';
 import { IShift } from '../../../../models/IShift';
 
-interface EmployeeWeekColumnProps {
+interface IEmployeeWeekColumnProps {
   index: number;
   onClick: VoidFunction;
   isSelected: boolean;
@@ -19,7 +19,7 @@ interface EmployeeWeekColumnProps {
 }
 
 export default function ScheduleTableColumnWeek(
-  { index, isSelected, onClick, vacations, shift, currentWeek, open }: EmployeeWeekColumnProps) {
+  { index, isSelected, onClick, vacations, shift, currentWeek, open }: IEmployeeWeekColumnProps) {
   const vacationRequest = vacations.find((vacation) =>
     isBetween(currentWeek.getDayOfWeek(index), parseISO(vacation.startDate.toString()), addDays(parseISO(vacation.endDate.toString()), 1)),
   );

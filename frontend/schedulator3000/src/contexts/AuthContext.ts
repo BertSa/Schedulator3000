@@ -6,12 +6,12 @@ import { IPasswordChangeDto } from '../models/PasswordChange';
 import { useSessionStorage } from '../hooks/useStorage';
 import { Nullable } from '../models/Nullable';
 
-interface SessionStorageUser {
+interface ISessionStorageUser {
   type: 'employee' | 'manager';
   user: Employee | Manager;
 }
 
-interface ProviderAuth {
+interface IProviderAuth {
   updatePassword: (passwordChange: IPasswordChangeDto) => Promise<void>;
   signUpManager: (manager: Manager) => Promise<void>;
   signInManager: (email: string, password: string) => Promise<void>;
@@ -24,11 +24,11 @@ interface ProviderAuth {
   getEmployee: () => Employee;
 }
 
-const authContext: React.Context<ProviderAuth> = createContext({} as ProviderAuth);
+const authContext: React.Context<IProviderAuth> = createContext({} as IProviderAuth);
 
-function useProvideAuth(): ProviderAuth {
+function useProvideAuth(): IProviderAuth {
   const { enqueueSnackbar } = useSnackbar();
-  const [sessionStorageUser, setSessionStorageUser, removeSessionStorageUser] = useSessionStorage<Nullable<SessionStorageUser>>('user', null);
+  const [sessionStorageUser, setSessionStorageUser, removeSessionStorageUser] = useSessionStorage<Nullable<ISessionStorageUser>>('user', null);
   const [user, setUser] = useState<Nullable<Manager | Employee>>(() => {
     if (sessionStorageUser) {
       if (sessionStorageUser.type === 'manager') {

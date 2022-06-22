@@ -5,7 +5,7 @@ import React from 'react';
 import { FieldErrors } from 'react-hook-form';
 import { RegisterOptions } from 'react-hook-form/dist/types/validator';
 
-interface FieldInputProps {
+interface IFieldInputProps {
   label: string;
   name: string;
   type: React.InputHTMLAttributes<unknown>['type'];
@@ -18,7 +18,7 @@ interface FieldInputProps {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export function FieldInput(props: FieldInputProps) {
+export function FieldInput(props: IFieldInputProps) {
   const { register, errors, label, name, type, validation, autoComplete, defaultValue, disabled } = props;
   return (
     <TextField

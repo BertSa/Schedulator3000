@@ -26,12 +26,12 @@ import { AvailabilityDay } from '../../../models/AvailabilityDay';
 import { getTimeInHourMinutesAMPM } from '../../../utilities/DateUtilities';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
 import AvailabilitiesTableToolbar from './AvailabilitiesTableToolbar';
-import AvailabilityForm, { AvailabilityFormFieldValue } from './AvailabilityForm';
+import AvailabilityForm, { IAvailabilityFormFieldValue } from './AvailabilityForm';
 import { IAvailabilities } from '../../../models/IAvailabilities';
 
 export type SelectedItemType = Nullable<{ day:number, availability:Nullable<AvailabilityDay> }>;
-interface AvailiabilityTableColumnWeekProps { onClick: () => void, isSelected: boolean, day:AvailabilityDay }
-export function AvailiabilityTableColumnWeek({ onClick, isSelected, day }: AvailiabilityTableColumnWeekProps) {
+interface IAvailabilityTableColumnWeekProps { onClick: () => void, isSelected: boolean, day:AvailabilityDay }
+export function AvailabilityTableColumnWeek({ onClick, isSelected, day }: IAvailabilityTableColumnWeekProps) {
   const { palette: { primary } } = useTheme();
   const mySx: SxProps<Theme> = {
     cursor: 'pointer',
@@ -136,7 +136,7 @@ export default function AvailabilitiesTable() {
       return;
     }
 
-    const submit : SubmitHandler<AvailabilityFormFieldValue> = (data) => {
+    const submit : SubmitHandler<IAvailabilityFormFieldValue> = (data) => {
       closeDialog();
       updateSelected({
         start: data.start,
@@ -159,7 +159,7 @@ export default function AvailabilitiesTable() {
       return;
     }
 
-    const submit : SubmitHandler<AvailabilityFormFieldValue> = (data) => {
+    const submit : SubmitHandler<IAvailabilityFormFieldValue> = (data) => {
       closeDialog();
       updateSelected({
         start: data.start,
@@ -194,37 +194,37 @@ export default function AvailabilitiesTable() {
     return (
       <TableBody>
         <TableRow className="myRow">
-          <AvailiabilityTableColumnWeek
+          <AvailabilityTableColumnWeek
             isSelected={selectedItem?.day === 0}
             onClick={() => setSelectedByDay(0, availabilities.sunday)}
             day={availabilities.sunday}
           />
-          <AvailiabilityTableColumnWeek
+          <AvailabilityTableColumnWeek
             isSelected={selectedItem?.day === 1}
             onClick={() => setSelectedByDay(1, availabilities.monday)}
             day={availabilities.monday}
           />
-          <AvailiabilityTableColumnWeek
+          <AvailabilityTableColumnWeek
             isSelected={selectedItem?.day === 2}
             onClick={() => setSelectedByDay(2, availabilities.tuesday)}
             day={availabilities.tuesday}
           />
-          <AvailiabilityTableColumnWeek
+          <AvailabilityTableColumnWeek
             isSelected={selectedItem?.day === 3}
             onClick={() => setSelectedByDay(3, availabilities.wednesday)}
             day={availabilities.wednesday}
           />
-          <AvailiabilityTableColumnWeek
+          <AvailabilityTableColumnWeek
             isSelected={selectedItem?.day === 4}
             onClick={() => setSelectedByDay(4, availabilities.thursday)}
             day={availabilities.thursday}
           />
-          <AvailiabilityTableColumnWeek
+          <AvailabilityTableColumnWeek
             isSelected={selectedItem?.day === 5}
             onClick={() => setSelectedByDay(5, availabilities.friday)}
             day={availabilities.friday}
           />
-          <AvailiabilityTableColumnWeek
+          <AvailabilityTableColumnWeek
             isSelected={selectedItem?.day === 6}
             onClick={() => setSelectedByDay(6, availabilities.saturday)}
             day={availabilities.saturday}

@@ -12,7 +12,7 @@ import ScheduleTableToolbar from './ScheduleTableToolbar';
 import { IVacationRequest } from '../../../../models/IVacationRequest';
 import useCurrentWeek, { ICurrentWeek } from '../../../../hooks/useCurrentWeek';
 import { Nullable } from '../../../../models/Nullable';
-import { ShiftFormFieldValue } from '../ShiftForm/ShiftForm';
+import { IShiftFormFieldValue } from '../ShiftForm/ShiftForm';
 import ShiftFormCreate from '../ShiftForm/ShiftFormCreate';
 import ShiftFormEdit from '../ShiftForm/ShiftFormEdit';
 import useAsync from '../../../../hooks/useAsync';
@@ -25,7 +25,7 @@ import { IShift } from '../../../../models/IShift';
 
 export type SelectedItemType = Nullable<{ employee: Employee; day: number; shift: Nullable<IShift> }>;
 
-interface RowDataType {
+interface IRowDataType {
   employee: Employee;
   weekShifts: Nullable<IShift>[];
   requests: IVacationRequest[];
@@ -108,7 +108,7 @@ export default function ScheduleTable() {
     }
 
     const dayOfWeek: Date = currentWeek.getDayOfWeek(selectedItem.day);
-    const selectedValue: ShiftFormFieldValue = {
+    const selectedValue: IShiftFormFieldValue = {
       employeeId: selectedItem.employee.id,
       start: dayOfWeek,
       end: dayOfWeek,
@@ -137,7 +137,7 @@ export default function ScheduleTable() {
       return;
     }
 
-    const selectedValue: ShiftFormFieldValue = {
+    const selectedValue: IShiftFormFieldValue = {
       shiftId: selectedItem.shift.id,
       employeeId: selectedItem.employee.id,
       start: selectedItem.shift.startTime,
@@ -180,7 +180,7 @@ export default function ScheduleTable() {
   };
 
   function ScheduleTableBody() {
-    const [rowData, setRowData] = useState<RowDataType[]>([]);
+    const [rowData, setRowData] = useState<IRowDataType[]>([]);
 
     useEffect(() => {
       if (!loading && employees.length !== 0) {

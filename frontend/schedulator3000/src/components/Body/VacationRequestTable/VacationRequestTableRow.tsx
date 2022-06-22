@@ -3,13 +3,13 @@ import React from 'react';
 import VacationRequestStatusIcon from './VacationRequestStatusIcon';
 import { IVacationRequest } from '../../../models/IVacationRequest';
 
-interface VacationRequestTableRowProps {
+interface IVacationRequestTableRowProps {
   request: IVacationRequest;
   isSelected: boolean;
   onClick: VoidFunction;
 }
 
-export default function VacationRequestTableRow({ request, isSelected, onClick }: VacationRequestTableRowProps) {
+export default function VacationRequestTableRow({ request, isSelected, onClick }: IVacationRequestTableRowProps) {
   return (
     <TableRow
       selected={isSelected}

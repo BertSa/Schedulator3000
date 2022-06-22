@@ -7,20 +7,20 @@ import { IVacationRequest } from '../../../../models/IVacationRequest';
 import { VacationRequestType } from '../../../../enums/VacationRequestType';
 import { DateRange } from '../../../../models/DateRange';
 
-export interface VacationRequestFormFieldValue {
+export interface IVacationRequestFormFieldValue {
   startEnd: DateRange;
   reason: string;
   type: VacationRequestType | string;
 }
 
-interface VacationRequestFormProps {
-  submit: SubmitHandler<VacationRequestFormFieldValue>;
+interface IVacationRequestFormProps {
+  submit: SubmitHandler<IVacationRequestFormFieldValue>;
   onCancel: VoidFunction;
   vacationRequest?: IVacationRequest;
 }
 
-export default function VacationRequestForm({ submit, onCancel, vacationRequest }: VacationRequestFormProps) {
-  const { register, handleSubmit, formState: { errors }, control } = useForm<VacationRequestFormFieldValue>({
+export default function VacationRequestForm({ submit, onCancel, vacationRequest }: IVacationRequestFormProps) {
+  const { register, handleSubmit, formState: { errors }, control } = useForm<IVacationRequestFormFieldValue>({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     defaultValues: {

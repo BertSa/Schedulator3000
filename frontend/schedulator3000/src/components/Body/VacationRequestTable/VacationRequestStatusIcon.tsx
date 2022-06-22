@@ -3,11 +3,11 @@ import { Cancel, CheckCircle, FlagCircle, Help, Timer } from '@mui/icons-materia
 import React from 'react';
 import { VacationRequestStatus } from '../../../enums/VacationRequestStatus';
 
-interface VacationRequestStatusIconProps {
+interface IVacationRequestStatusIconProps {
   status: VacationRequestStatus;
 }
 
-export default function VacationRequestStatusIcon({ status }: VacationRequestStatusIconProps) {
+export default function VacationRequestStatusIcon({ status }: IVacationRequestStatusIconProps) {
   switch (status.toUpperCase()) {
     case VacationRequestStatus.Rejected:
       return (

@@ -4,7 +4,7 @@ import React from 'react';
 import { addDays, format } from 'date-fns';
 import { SelectedItemType } from './ScheduleTable';
 
-interface ScheduleTableToolbarProps {
+interface IScheduleTableToolbarProps {
   currentWeek: Date;
   selectedItem: SelectedItemType;
   actionsDisabled: boolean;
@@ -22,7 +22,7 @@ export default function ScheduleTableToolbar({
   selectedItem,
   actionsDisabled,
   actions: { prev, next, create, edit, remove },
-}: ScheduleTableToolbarProps) {
+}: IScheduleTableToolbarProps) {
   const getDateOfDay = (day: number) => format(addDays(new Date(currentWeek), day), 'yyyy-MM-dd');
 
   const toolbarSx: SxProps<Theme> = {

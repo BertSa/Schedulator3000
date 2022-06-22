@@ -7,24 +7,24 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { preferences } from '../../../utilities/DateUtilities';
 import { AvailabilityDay } from '../../../models/AvailabilityDay';
 
-export interface AvailabilityFormFieldValue {
+export interface IAvailabilityFormFieldValue {
   start: Date;
   end: Date;
 }
 
-interface ScheduleTableAvailabilityFormProps {
-  submit: SubmitHandler<AvailabilityFormFieldValue>;
+interface IScheduleTableAvailabilityFormProps {
+  submit: SubmitHandler<IAvailabilityFormFieldValue>;
   onClose: VoidFunction;
   availability?: AvailabilityDay;
 }
 
-export default function AvailabilityForm({ submit, onClose, availability }: ScheduleTableAvailabilityFormProps) {
+export default function AvailabilityForm({ submit, onClose, availability }: IScheduleTableAvailabilityFormProps) {
   const {
     getValues,
     handleSubmit,
     formState: { errors },
     control,
-  } = useForm<AvailabilityFormFieldValue>({
+  } = useForm<IAvailabilityFormFieldValue>({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     defaultValues: {

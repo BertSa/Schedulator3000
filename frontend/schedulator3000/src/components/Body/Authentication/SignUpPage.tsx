@@ -7,7 +7,7 @@ import { FieldInput } from '../../shared/FormFields';
 import { regex } from '../../../utilities/utilities';
 import { Manager } from '../../../models/User';
 
-interface SignUpFieldValues {
+interface ISignUpFieldValues {
   email: string;
   companyName: string;
   phone: string;
@@ -23,15 +23,13 @@ export default function SignUpPage() {
     handleSubmit,
     getValues,
     formState: { errors },
-  } = useForm<SignUpFieldValues>({
+  } = useForm<ISignUpFieldValues>({
     mode: 'onSubmit',
   });
 
-  const connect: SubmitHandler<SignUpFieldValues> = ({ confirmPassword, ...data }, event?: BaseSyntheticEvent) => {
+  const connect: SubmitHandler<ISignUpFieldValues> = ({ confirmPassword, ...data }, event?: BaseSyntheticEvent) => {
     event?.preventDefault();
-    const manager: Manager = {
-      ...data,
-    } as Manager;
+    const manager: Manager = data as Manager;
 
     auth.signUpManager(manager).then(() => history.push('/manager'));
   };
@@ -51,11 +49,6 @@ export default function SignUpPage() {
       </Typography>
       <Grid
         container
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          width: '100%',
-        }}
         columnSpacing={2}
         padding={2}
         marginTop={2}
@@ -63,6 +56,11 @@ export default function SignUpPage() {
         justifyContent="center"
         onSubmit={handleSubmit(connect)}
         noValidate
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          width: '100%',
+        }}
       >
         <Grid item xs={12}>
           <FieldInput
@@ -149,10 +147,10 @@ export default function SignUpPage() {
         </Grid>
         <Grid
           container
-          sx={{ marginTop: 2 }}
           display="flex"
           alignItems="center"
           justifyContent="end"
+          sx={{ marginTop: 2 }}
         >
           <Typography fontSize="smaller">
             {'You already have an account? '}

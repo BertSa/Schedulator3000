@@ -5,14 +5,14 @@ import { Employee, EmployeeFormType, Manager } from '../../../../../models/User'
 import EmployeeForm from './EmployeeForm';
 import { IManagerService } from '../../../../../hooks/use-services/useProvideManagerService';
 
-interface EmployeeFormRegisterProps {
+interface IEmployeeFormRegisterProps {
   user: Manager;
   managerService: IManagerService;
   callback: (employee: Employee) => void;
   onCancel: VoidFunction;
 }
 
-export default function EmployeeFormRegister({ user, managerService, callback, onCancel }: EmployeeFormRegisterProps): React.ReactElement {
+export default function EmployeeFormRegister({ user, managerService, callback, onCancel }: IEmployeeFormRegisterProps): React.ReactElement {
   const submit: SubmitHandler<EmployeeFormType> = (data, event) => {
     event?.preventDefault();
     managerService.addEmployee(user.email, data).then(callback);

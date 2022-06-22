@@ -25,7 +25,7 @@ export function useProvideShiftService(): IShiftService {
     const { response, body } = await http.post(`${PATH}/${userType}`, data);
 
     if (response.ok) {
-      return Promise.resolve<IShift[]>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -45,7 +45,7 @@ export function useProvideShiftService(): IShiftService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<IShift>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -61,7 +61,7 @@ export function useProvideShiftService(): IShiftService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<IShift>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
