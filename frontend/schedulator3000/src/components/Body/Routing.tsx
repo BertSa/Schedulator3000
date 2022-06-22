@@ -32,15 +32,24 @@ function ConditionalRoute({ condition, redirectPath, component: C, ...rest }:
     />
   );
 }
+ConditionalRoute.defaultProps = {
+  exact: false,
+};
 
 export function RouteAdmin(props: IConditionalRouteProps) {
   const isManager = useAuth().isManager();
   return <ConditionalRoute condition={isManager} redirectPath="/" {...props} />;
 }
+RouteAdmin.defaultProps = {
+  exact: false,
+};
 export function RouteEmployee(props: IConditionalRouteProps) {
   const isEmployee = useAuth().isEmployee();
   return <ConditionalRoute condition={isEmployee} redirectPath="/" {...props} />;
 }
+RouteEmployee.defaultProps = {
+  exact: false,
+};
 
 export function RouteUnAuthenticated(props: IConditionalRouteProps) {
   const auth = useAuth();
@@ -48,6 +57,9 @@ export function RouteUnAuthenticated(props: IConditionalRouteProps) {
 
   return <ConditionalRoute condition={isUnAuthenticated} redirectPath={auth.isManager() ? '/manager' : '/schedule'} {...props} />;
 }
+RouteUnAuthenticated.defaultProps = {
+  exact: false,
+};
 
 export default function Routing() {
   return (
