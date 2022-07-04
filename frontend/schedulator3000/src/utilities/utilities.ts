@@ -32,3 +32,7 @@ export function stringToColor(string: string) {
     .slice(1);
   return `#${s}`;
 }
+
+export function setNull(arg:any) {
+  return () => arg(null);
+}

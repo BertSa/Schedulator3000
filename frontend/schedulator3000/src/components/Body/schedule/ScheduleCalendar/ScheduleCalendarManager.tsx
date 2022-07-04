@@ -6,7 +6,7 @@ import { Container, Paper, useTheme } from '@mui/material';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../../models/User';
 import { useAuth } from '../../../../contexts/AuthContext';
-import { stringToColor } from '../../../../utilities/utilities';
+import { setNull, stringToColor } from '../../../../utilities/utilities';
 import { useDialog } from '../../../../hooks/useDialog';
 import { useServices } from '../../../../hooks/use-services/useServices';
 import { IRequestDtoShiftsFromTo } from '../../../../models/IRequestDtoShiftsFromTo';
@@ -23,6 +23,7 @@ import ErrorBoundary from '../../../shared/ErrorBoundary';
 import { DNDCalendar, getDefaultDayProps } from './ScheduleCalendar2';
 import { localizer } from '../../../../utilities/DateUtilities';
 import ContextMenu from './ContextMenu';
+import useNullableState from '../../../../hooks/useNullableState';
 
 export type ResourceType = {
   employeeId: number,
@@ -39,18 +40,18 @@ function ScheduleCalendar() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [events, setEvents] = useState<IShiftEvent[]>([]);
   const [openDialog, closeDialog] = useDialog();
-  const [contextMenu, setContextMenu] = React.useState<Nullable<IContextMenuStates>>(null);
+  const [contextMenu, setContextMenu] = useNullableState<IContextMenuStates>();
   const { managerService, shiftService } = useServices();
   const { palette: { grey, secondary } } = useTheme();
-  const user = useAuth().getManager();
+  const manager = useAuth().getManager();
 
   useEffect(() => {
     const body: IRequestDtoShiftsFromTo = {
-      userEmail: user.email,
+      userEmail: manager.email,
       from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
       to: format(currentWeek.getNextWeek(), 'yyyy-MM-dd'),
     };
-    managerService.getEmployees(user.email ?? '').then(
+    managerService.getEmployees(manager.email ?? '').then(
       (list) => {
         setEmployees(list);
         shiftService.getShiftsManager(body).then(
@@ -85,12 +86,12 @@ function ScheduleCalendar() {
       setContextMenu(null);
       setEmployees([]);
     };
-  }, [user.email]);
+  }, [manager.email]);
 
   useDebounce(
     () => {
       const body: IRequestDtoShiftsFromTo = {
-        userEmail: user.email,
+        userEmail: manager.email,
         from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
         to: format(currentWeek.getNextWeek(), 'yyyy-MM-dd'),
       };
@@ -160,7 +161,7 @@ function ScheduleCalendar() {
         employees={employees}
         closeDialog={closeDialog}
         selected={selectedValue}
-        manager={user}
+        manager={manager}
         callback={callback}
       />,
     );
@@ -200,7 +201,7 @@ function ScheduleCalendar() {
         employees={employees}
         closeDialog={closeDialog}
         selected={selectedValue}
-        manager={user}
+        manager={manager}
         callbackDelete={callbackDelete}
         callbackUpdate={callbackUpdate}
       />,
@@ -208,15 +209,16 @@ function ScheduleCalendar() {
   };
 
   const deleteAction = () => {
-    shiftService.deleteShift(contextMenu?.shiftEvent?.resourceId as number)
-      .then(() => setEvents((current) => current.filter((shift) => shift.resourceId !== contextMenu?.shiftEvent?.resourceId)));
+    const id:number = contextMenu?.shiftEvent?.resourceId as number;
+    shiftService.deleteShift(id)
+      .then(() => setEvents((current) => current.filter((shift) => shift.resourceId !== id)));
   };
 
-  const onEventResize: withDragAndDropProps<IShiftEvent, ResourceType>['onEventResize'] = (data) => editAction(data.event);
-  const onEventDrop: withDragAndDropProps<IShiftEvent, ResourceType>['onEventDrop'] = (data) => editAction(data.event);
+  const onEventResize: withDragAndDropProps<IShiftEvent, ResourceType>['onEventResize'] = ({ event }) => editAction(event);
+  const onEventDrop: withDragAndDropProps<IShiftEvent, ResourceType>['onEventDrop'] = ({ event }) => editAction(event);
 
   const handleSelect: CalendarProps['onSelectSlot'] = ({ start, end }: SlotInfo): void => createAction(start, end);
-  const handleContextMenu = (event: React.MouseEvent, shiftEvent: IShiftEvent | null) => {
+  const handleContextMenu = (event: React.MouseEvent, shiftEvent: Nullable<IShiftEvent>) => {
     event.preventDefault();
     setContextMenu(
       contextMenu === null
@@ -228,7 +230,7 @@ function ScheduleCalendar() {
         : null,
     );
   };
-  const handleClose = () => setContextMenu(null);
+  const handleClose = setNull(setContextMenu);
 
   const eventPropGetter = (event: Event) => {
     const employee = employees.find((emp) => emp.id === event.resource.employeeId);

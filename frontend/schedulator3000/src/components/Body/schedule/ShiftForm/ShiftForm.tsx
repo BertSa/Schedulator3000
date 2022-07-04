@@ -69,7 +69,7 @@ export default function ShiftForm({ submit, employees, onClose, selected, title 
               validate: (value: number) => (value !== -1 ? undefined : 'Please select an employee'),
             })}
             helperText={errors.employeeId ?? ' '}
-            error={!!errors.employeeId}
+            error={Boolean(errors.employeeId)}
           >
             <MenuItem hidden aria-hidden value={-1} />
             {employees.map((user) => (
@@ -95,7 +95,7 @@ export default function ShiftForm({ submit, employees, onClose, selected, title 
                 minutesStep={preferences.calendar.step}
                 showToolbar
                 shouldDisableTime={(timeValue, clockType) => clockType === 'minutes' && timeValue % preferences.calendar.step !== 0}
-                renderInput={(props) => <TextField {...props} helperText={errors.start ?? ' '} error={!!errors.start} />}
+                renderInput={(props) => <TextField {...props} helperText={errors.start ?? ' '} error={Boolean(errors.start)} />}
                 {...field}
                 {...fieldState}
                 {...formState}
@@ -120,7 +120,7 @@ export default function ShiftForm({ submit, employees, onClose, selected, title 
                 minutesStep={preferences.calendar.step}
                 showToolbar
                 shouldDisableTime={(timeValue, clockType) => clockType === 'minutes' && timeValue % preferences.calendar.step !== 0}
-                renderInput={(props) => <TextField helperText={errors.end?.message ?? ' '} error={!!errors.end} {...props} />}
+                renderInput={(props) => <TextField helperText={errors.end?.message ?? ' '} error={Boolean(errors.end)} {...props} />}
                 {...field}
                 {...fieldState}
                 {...formState}

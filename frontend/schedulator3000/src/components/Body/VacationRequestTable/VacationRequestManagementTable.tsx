@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Container, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { IVacationRequest } from '../../../models/IVacationRequest';
 import { useServices } from '../../../hooks/use-services/useServices';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Employee, Manager } from '../../../models/User';
 import VacationRequestManagementTableToolbar from './VacationRequestManagementTableToolbar';
-import { Nullable } from '../../../models/Nullable';
 import VacationRequestManagementTableRow from './VacationRequestManagementTableRow';
 import useAsync from '../../../hooks/useAsync';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
 import VacationRequestFormEdit from './form/VacationRequestFormEdit';
 import { useDialog } from '../../../hooks/useDialog';
 import { VacationRequestUpdateStatus } from '../../../enums/VacationRequestUpdateStatus';
+import useNullableState from '../../../hooks/useNullableState';
 
 function VacationRequestManagementTableBodySkeleton() {
   return (
@@ -46,7 +46,7 @@ export default function VacationRequestManagementTable() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [vacationRequests, setVacationRequests] = useState<IVacationRequest[]>([]);
   const { managerService, vacationRequestService } = useServices();
-  const [selectedVacationRequest, setSelectedVacationRequest] = useState<Nullable<IVacationRequest>>(null);
+  const [selectedVacationRequest, setSelectedVacationRequest] = useNullableState<IVacationRequest>();
   const manager: Manager = useAuth().getManager();
   const [openDialog, closeDialog] = useDialog();
 
@@ -59,11 +59,6 @@ export default function VacationRequestManagementTable() {
       }),
     [manager.email],
   );
-
-  useEffect(() => () => {
-    // setVacationRequests([]);
-    // setEmployees([]);
-  }, []);
 
   function updateRequest(status: VacationRequestUpdateStatus): void {
     if (!selectedVacationRequest) {

@@ -18,9 +18,8 @@ export default function SignInPage() {
     mode: 'onSubmit',
   });
 
-  const connect: SubmitHandler<FieldValues> = (data, event?: BaseSyntheticEvent) => {
+  const connect: SubmitHandler<FieldValues> = ({ email, password }, event?: BaseSyntheticEvent) => {
     event?.preventDefault();
-    const { email, password } = data;
 
     if (tab === 0) {
       auth.signInEmployee(email, password).then(() => history.push('/'));

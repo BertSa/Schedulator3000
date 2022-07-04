@@ -11,6 +11,7 @@ import VacationRequestManagementTable from './VacationRequestTable/VacationReque
 import ScheduleCalendarEmployee from './schedule/ScheduleCalendar/ScheduleCalendarEmployee';
 import VacationRequestTable from './VacationRequestTable/VacationRequestTable';
 import AvailabilitiesTable from './AvailiabilityTable/AvailabilitiesTable';
+import NewEmployeePage from './NewEmployeePage/NewEmployeePage';
 
 interface IConditionalRouteProps {
   component: any,
@@ -36,22 +37,33 @@ ConditionalRoute.defaultProps = {
   exact: false,
 };
 
-export function RouteAdmin(props: IConditionalRouteProps) {
+function RouteAdmin(props: IConditionalRouteProps) {
   const isManager = useAuth().isManager();
   return <ConditionalRoute condition={isManager} redirectPath="/" {...props} />;
 }
 RouteAdmin.defaultProps = {
   exact: false,
 };
-export function RouteEmployee(props: IConditionalRouteProps) {
-  const isEmployee = useAuth().isEmployee();
-  return <ConditionalRoute condition={isEmployee} redirectPath="/" {...props} />;
+function RouteEmployee(props: IConditionalRouteProps) {
+  const auth = useAuth();
+  const isEmployee = !auth.isNewEmployee() && auth.isEmployee();
+  const redirectPath:string = auth.isNewEmployee() ? 'welcome' : '/';
+
+  return <ConditionalRoute condition={isEmployee} redirectPath={redirectPath} {...props} />;
 }
 RouteEmployee.defaultProps = {
   exact: false,
 };
 
-export function RouteUnAuthenticated(props: IConditionalRouteProps) {
+function RouteNewEmployee(props: IConditionalRouteProps) {
+  const isEmployee = useAuth().isNewEmployee();
+  return <ConditionalRoute condition={isEmployee} redirectPath="/" {...props} />;
+}
+RouteNewEmployee.defaultProps = {
+  exact: false,
+};
+
+function RouteUnAuthenticated(props: IConditionalRouteProps) {
   const auth = useAuth();
   const isUnAuthenticated = !auth.isAuthenticated();
 
@@ -73,6 +85,8 @@ export default function Routing() {
       <RouteEmployee path="/schedule" component={ScheduleCalendarEmployee} />
       <RouteEmployee path="/vacation-requests" component={VacationRequestTable} />
       <RouteEmployee path="/availabilities" component={AvailabilitiesTable} />
+
+      <RouteNewEmployee path="/welcome" component={NewEmployeePage} />
 
       <RouteUnAuthenticated path="/register" component={SignUpPage} />
       <RouteUnAuthenticated exact path="/" component={SignInPage} />

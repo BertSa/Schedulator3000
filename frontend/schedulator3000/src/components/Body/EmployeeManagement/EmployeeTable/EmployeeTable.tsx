@@ -10,6 +10,7 @@ import EmployeeFormEdit from './EmployeeForm/EmployeeFormEdit';
 import { Nullable } from '../../../../models/Nullable';
 import useAsync from '../../../../hooks/useAsync';
 import TableBodyEmpty from '../../../shared/TableBodyEmpty';
+import useNullableState from '../../../../hooks/useNullableState';
 
 function EmployeeTableBodySkeleton() {
   return (
@@ -53,7 +54,7 @@ function ActiveMessage({ isActive }: { isActive: Nullable<boolean> }) {
 
 export default function EmployeeTable() {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<Nullable<Employee>>(null);
+  const [selectedEmployee, setSelectedEmployee] = useNullableState<Employee>();
   const { managerService, employeeService } = useServices();
   const [openDialog, closeDialog] = useDialog();
   const manager = useAuth().getManager();
@@ -67,9 +68,8 @@ export default function EmployeeTable() {
     [manager.email],
   );
 
-  function handleClick(event: React.MouseEvent<unknown>, employee: Employee) {
-    return setSelectedEmployee((selected) => (selected?.id === employee.id ? null : employee));
-  }
+  const handleClick = (event: React.MouseEvent<unknown>, employee: Employee) =>
+    setSelectedEmployee((selected) => (selected?.id === employee.id ? null : employee));
 
   const createAction = () => {
     const callback = (employee: Employee) => {

@@ -20,6 +20,7 @@ interface IProviderAuth {
   isAuthenticated: () => boolean;
   isManager: () => boolean;
   isEmployee: () => boolean;
+  isNewEmployee: () => boolean;
   getManager: () => Manager;
   getEmployee: () => Employee;
 }
@@ -41,9 +42,9 @@ function useProvideAuth(): IProviderAuth {
     return null;
   });
 
-  const isAuthenticated = (): boolean => !!user;
-  const isManager = useCallback(() => !!user && user instanceof Manager, [user]);
-  const isEmployee = useCallback(() => !!user && user instanceof Employee, [user]);
+  const isAuthenticated = (): boolean => Boolean(user);
+  const isManager = useCallback(() => Boolean(user) && user instanceof Manager, [user]);
+  const isEmployee = useCallback(() => Boolean(user) && user instanceof Employee, [user]);
 
   useEffect(() => {
     if (user) {
@@ -123,6 +124,8 @@ function useProvideAuth(): IProviderAuth {
     throw new Error('You are not an employee!');
   };
 
+  const isNewEmployee = useCallback(() => isEmployee() && getEmployee().active === null, [user]);
+
   const updatePassword = async (passwordChange: IPasswordChangeDto): Promise<void> => {
     if (!isAuthenticated()) {
       return Promise.reject();
@@ -161,6 +164,7 @@ function useProvideAuth(): IProviderAuth {
     isAuthenticated,
     isManager,
     isEmployee,
+    isNewEmployee,
     getManager,
     getEmployee,
   };

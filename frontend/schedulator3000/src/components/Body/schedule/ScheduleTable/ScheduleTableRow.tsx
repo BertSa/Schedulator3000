@@ -1,7 +1,7 @@
 import { differenceInMinutes, format, hoursToMinutes, isSameDay, minutesToHours, parseISO } from 'date-fns';
 import { Box, IconButton, Skeleton, TableCell, TableRow } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import React, { useState } from 'react';
+import React from 'react';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../../models/User';
 import { IVacationRequest } from '../../../../models/IVacationRequest';
@@ -18,6 +18,7 @@ import { AvailabilityDay } from '../../../../models/AvailabilityDay';
 import { getTimeInHourMinutesAMPM } from '../../../../utilities/DateUtilities';
 import { IAvailabilities } from '../../../../models/IAvailabilities';
 import { IShift } from '../../../../models/IShift';
+import useNullableState from '../../../../hooks/useNullableState';
 
 interface IAvailabilityRowProps {
   availability?: AvailabilityDay;
@@ -55,7 +56,6 @@ interface IEmployeeWeekRowProps {
   setSelected: React.Dispatch<React.SetStateAction<SelectedItemType>>;
   previousWeek: Date;
 }
-
 export default function ScheduleTableRow({
   selectedItem,
   employee,
@@ -66,8 +66,8 @@ export default function ScheduleTableRow({
   previousWeek,
 }: IEmployeeWeekRowProps) {
   const [open, toggle] = useToggle();
-  const [note, setNote] = useState<Nullable<INote>>(null);
-  const [availabilities, setAvailabilities] = useState<Nullable<IAvailabilities>>(null);
+  const [note, setNote] = useNullableState<INote>();
+  const [availabilities, setAvailabilities] = useNullableState<IAvailabilities>();
   const { noteService, availabilitiesService } = useServices();
 
   useUpdateEffect(() => {

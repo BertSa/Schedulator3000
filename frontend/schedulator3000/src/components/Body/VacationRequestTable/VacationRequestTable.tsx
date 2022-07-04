@@ -8,12 +8,12 @@ import VacationRequestTableToolbar from './VacationRequestTableToolbar';
 import { useDialog } from '../../../hooks/useDialog';
 import VacationRequestFormCreate from './form/VacationRequestFormCreate';
 import VacationRequestFormEdit from './form/VacationRequestFormEdit';
-import { Nullable } from '../../../models/Nullable';
 import VacationRequestTableRow from './VacationRequestTableRow';
 import useAsync from '../../../hooks/useAsync';
 import TableBodyEmpty from '../../shared/TableBodyEmpty';
 import DialogWarningDelete from '../../shared/DialogWarningDelete';
 import { VacationRequestUpdateStatus } from '../../../enums/VacationRequestUpdateStatus';
+import useNullableState from '../../../hooks/useNullableState';
 
 function VacationRequestTableRowSkeleton() {
   return (
@@ -46,7 +46,7 @@ function VacationRequestTableRowSkeleton() {
 
 export default function VacationRequestTable() {
   const [vacationRequests, setVacationRequests] = useState<IVacationRequest[]>([]);
-  const [selectedVacationRequest, setSelectedVacationRequest] = useState<Nullable<IVacationRequest>>(null);
+  const [selectedVacationRequest, setSelectedVacationRequest] = useNullableState<IVacationRequest>();
   const { vacationRequestService } = useServices();
   const [openDialog, closeDialog] = useDialog();
   const employee: Employee = useAuth().getEmployee();

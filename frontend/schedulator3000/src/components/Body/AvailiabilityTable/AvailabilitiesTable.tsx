@@ -28,6 +28,7 @@ import TableBodyEmpty from '../../shared/TableBodyEmpty';
 import AvailabilitiesTableToolbar from './AvailabilitiesTableToolbar';
 import AvailabilityForm, { IAvailabilityFormFieldValue } from './AvailabilityForm';
 import { IAvailabilities } from '../../../models/IAvailabilities';
+import { setNull } from '../../../utilities/utilities';
 
 export type SelectedItemType = Nullable<{ day:number, availability:Nullable<AvailabilityDay> }>;
 interface IAvailabilityTableColumnWeekProps { onClick: () => void, isSelected: boolean, day:AvailabilityDay }
@@ -138,10 +139,7 @@ export default function AvailabilitiesTable() {
 
     const submit : SubmitHandler<IAvailabilityFormFieldValue> = (data) => {
       closeDialog();
-      updateSelected({
-        start: data.start,
-        end: data.end,
-      });
+      updateSelected(data);
     };
 
     openDialog(
@@ -152,7 +150,7 @@ export default function AvailabilitiesTable() {
     );
   };
 
-  const removeAction = () => updateSelected(null);
+  const removeAction = setNull(updateSelected);
 
   const editAction = () => {
     if (!selectedItem) {
@@ -161,10 +159,7 @@ export default function AvailabilitiesTable() {
 
     const submit : SubmitHandler<IAvailabilityFormFieldValue> = (data) => {
       closeDialog();
-      updateSelected({
-        start: data.start,
-        end: data.end,
-      });
+      updateSelected(data);
     };
 
     openDialog(

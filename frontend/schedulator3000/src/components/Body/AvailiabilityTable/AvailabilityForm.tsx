@@ -59,7 +59,7 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
               minutesStep={preferences.calendar.step}
               showToolbar
               shouldDisableTime={(timeValue, clockType) => clockType === 'minutes' && timeValue % preferences.calendar.step !== 0}
-              renderInput={(props) => <TextField {...props} helperText={errors.start ?? ' '} error={!!errors.start} />}
+              renderInput={(props) => <TextField {...props} helperText={errors.start ?? ' '} error={Boolean(errors.start)} />}
               {...field}
               {...fieldState}
               {...formState}
@@ -87,7 +87,7 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
               renderInput={(props) => (
                 <TextField
                   helperText={errors.end?.message ?? ' '}
-                  error={!!errors.end}
+                  error={Boolean(errors.end)}
                   {...props}
                 />
               )}

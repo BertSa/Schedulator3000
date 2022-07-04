@@ -28,7 +28,7 @@ export function FieldInput(props: IFieldInputProps) {
       fullWidth
       autoComplete={autoComplete}
       {...register(name, validation)}
-      error={!!errors[name]}
+      error={Boolean(errors[name])}
       helperText={errors[name]?.message ?? ' '}
       defaultValue={defaultValue}
       disabled={disabled ?? false}

@@ -19,8 +19,7 @@ export default function NewEmployeePage() {
   const { updatePassword } = useAuth();
   const history = useHistory();
 
-  const submit: SubmitHandler<IPasswordChangeFieldValues> = (data) => {
-    const { currentPassword, newPassword, confirmationPassword } = data;
+  const submit: SubmitHandler<IPasswordChangeFieldValues> = ({ currentPassword, newPassword, confirmationPassword }) => {
     if (newPassword !== confirmationPassword) {
       return;
     }

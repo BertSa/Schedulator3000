@@ -27,11 +27,9 @@ export default function SignUpPage() {
     mode: 'onSubmit',
   });
 
-  const connect: SubmitHandler<ISignUpFieldValues> = ({ confirmPassword, ...data }, event?: BaseSyntheticEvent) => {
+  const connect: SubmitHandler<ISignUpFieldValues> = ({ confirmPassword, ...manager }, event?: BaseSyntheticEvent) => {
     event?.preventDefault();
-    const manager: Manager = data as Manager;
-
-    auth.signUpManager(manager).then(() => history.push('/manager'));
+    auth.signUpManager(manager as Manager).then(() => history.push('/manager'));
   };
 
   return (

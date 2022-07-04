@@ -45,7 +45,7 @@ export default function VacationRequestForm({ submit, onCancel, vacationRequest 
         <TextField
           select
           label="Type"
-          error={!!errors.type}
+          error={Boolean(errors.type)}
           autoComplete=""
           fullWidth
           defaultValue={vacationRequest?.type ?? ''}
@@ -90,7 +90,7 @@ export default function VacationRequestForm({ submit, onCancel, vacationRequest 
           autoComplete=""
           fullWidth
           helperText={errors.reason?.message ?? ' '}
-          error={!!errors.reason}
+          error={Boolean(errors.reason)}
           {...register('reason', {
             required: 'Reason is required',
           })}
