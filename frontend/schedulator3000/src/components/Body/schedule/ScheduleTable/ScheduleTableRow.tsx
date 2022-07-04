@@ -5,7 +5,6 @@ import React from 'react';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../../models/User';
 import { IVacationRequest } from '../../../../models/IVacationRequest';
-import useToggle from '../../../../hooks/useToggle';
 import { SelectedItemType } from './ScheduleTable';
 import ScheduleTableColumnWeek from './ScheduleTableColumnWeek';
 import { Nullable } from '../../../../models/Nullable';
@@ -19,6 +18,7 @@ import { getTimeInHourMinutesAMPM } from '../../../../utilities/DateUtilities';
 import { IAvailabilities } from '../../../../models/IAvailabilities';
 import { IShift } from '../../../../models/IShift';
 import useNullableState from '../../../../hooks/useNullableState';
+import { useToggleBool } from '../../../../hooks/useToggle';
 
 interface IAvailabilityRowProps {
   availability?: AvailabilityDay;
@@ -65,7 +65,7 @@ export default function ScheduleTableRow({
   setSelected,
   previousWeek,
 }: IEmployeeWeekRowProps) {
-  const [open, toggle] = useToggle();
+  const [open, toggle] = useToggleBool();
   const [note, setNote] = useNullableState<INote>();
   const [availabilities, setAvailabilities] = useNullableState<IAvailabilities>();
   const { noteService, availabilitiesService } = useServices();

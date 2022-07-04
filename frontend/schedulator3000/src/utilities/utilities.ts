@@ -15,9 +15,9 @@ export function stringToColor(string: string) {
   }
 
   const color = ((hash >> 24) & 0xFF).toString(16)
-        + ((hash >> 16) & 0xFF).toString(16)
-        + ((hash >> 8) & 0xFF).toString(16)
-        + (hash & 0xFF).toString(16);
+    + ((hash >> 16) & 0xFF).toString(16)
+    + ((hash >> 8) & 0xFF).toString(16)
+    + (hash & 0xFF).toString(16);
 
   const num = parseInt(color, 16);
   const amt = Math.round(2.55 * -10);
@@ -26,13 +26,13 @@ export function stringToColor(string: string) {
   const B = (num & 0x0000FF) + amt;
 
   const s: string = (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000
-        + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100
-        + (B < 255 ? B < 1 ? 0 : B : 255))
+    + (G < 255 ? G < 1 ? 0 : G : 255) * 0x100
+    + (B < 255 ? B < 1 ? 0 : B : 255))
     .toString(16)
     .slice(1);
   return `#${s}`;
 }
 
-export function setNull(arg:any) {
+export function setNull(arg: any) {
   return () => arg(null);
 }

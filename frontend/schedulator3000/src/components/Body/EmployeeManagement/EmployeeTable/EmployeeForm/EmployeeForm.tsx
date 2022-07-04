@@ -1,9 +1,10 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler } from 'react-hook-form';
 import { Button, Grid } from '@mui/material';
 import React from 'react';
 import { FieldInput } from '../../../../shared/FormFields';
 import { regex } from '../../../../../utilities/utilities';
 import { Employee, EmployeeFormType } from '../../../../../models/User';
+import Form from '../../../../shared/Form';
 
 interface IEmployeeFormProps {
   submit: SubmitHandler<EmployeeFormType>;
@@ -13,35 +14,23 @@ interface IEmployeeFormProps {
 }
 
 export default function EmployeeForm({ submit, emailDisabled, onCancel, employee }: IEmployeeFormProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<EmployeeFormType>({
-    mode: 'onSubmit',
-    reValidateMode: 'onSubmit',
-    defaultValues: {
-      email: employee?.email ?? '',
-      firstName: employee?.firstName ?? '',
-      lastName: employee?.lastName ?? '',
-      phone: employee?.phone ?? '',
-      role: employee?.role ?? '',
-    },
-  });
-
   return (
-    <Grid
-      container
-      component="form"
+    <Form
+      onSubmit={submit}
       spacing={2}
       padding={2}
-      onSubmit={handleSubmit(submit)}
-      noValidate
+      formProps={{
+        defaultValues: {
+          email: employee?.email ?? '',
+          firstName: employee?.firstName ?? '',
+          lastName: employee?.lastName ?? '',
+          phone: employee?.phone ?? '',
+          role: employee?.role ?? '',
+        },
+      }}
     >
       <Grid item xs={12} sm={6}>
         <FieldInput
-          register={register}
-          errors={errors}
           name="firstName"
           label="First Name"
           autoComplete="given-name"
@@ -57,8 +46,6 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
       </Grid>
       <Grid item xs={12} sm={6}>
         <FieldInput
-          register={register}
-          errors={errors}
           name="lastName"
           label="Last Name"
           type="text"
@@ -78,8 +65,6 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
           name="email"
           type="email"
           autoComplete="email"
-          register={register}
-          errors={errors}
           disabled={emailDisabled}
           validation={{
             required: 'This field is required',
@@ -92,8 +77,6 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
       </Grid>
       <Grid item xs={12}>
         <FieldInput
-          register={register}
-          errors={errors}
           name="phone"
           label="Phone Number"
           type="tel"
@@ -109,8 +92,6 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
       </Grid>
       <Grid item xs={12}>
         <FieldInput
-          register={register}
-          errors={errors}
           name="role"
           label="Role"
           type="text"
@@ -132,7 +113,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
           Cancel
         </Button>
       </Grid>
-    </Grid>
+    </Form>
   );
 }
 

@@ -1,11 +1,20 @@
+/* eslint-disable no-nested-ternary */
 import { useState } from 'react';
 
-export default function useToggle(defaultValue: boolean = false): [value: boolean, toggle: (val?: any) => void] {
-  const [value, setValue] = useState(defaultValue);
+type OneOf<TFirst, TSecond> = TFirst | TSecond;
 
-  function toggleValue(val?: any) {
-    setValue((currentValue) => (typeof val === 'boolean' ? val : !currentValue));
-  }
+export function useToggle<TFirst, TSecond, TOptions extends [TFirst, TSecond]>(initialValue: OneOf<TFirst, TSecond>, options:TOptions):
+[OneOf<TFirst, TSecond>, ((value?: OneOf<TFirst, TSecond>) => void)] {
+  const [state, setState] = useState<OneOf<TFirst, TSecond>>(initialValue);
 
-  return [value, toggleValue];
+  const toggle = (value?: OneOf<TFirst, TSecond>) => setState(
+    (current: OneOf<TFirst, TSecond>) =>
+      (value !== undefined && options.includes(value)) ? value
+        : current === options[0] ? options[1] : options[0],
+  );
+  return [state, toggle];
+}
+
+export function useToggleBool(initialValue = false) : [boolean, ((value?:boolean) => void)] {
+  return useToggle<true, false, [true, false]>(initialValue, [true, false]);
 }

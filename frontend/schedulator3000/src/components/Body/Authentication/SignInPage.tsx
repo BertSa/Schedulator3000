@@ -1,22 +1,17 @@
 import { Button, Container, Grid, Link, Tab, Tabs, Typography } from '@mui/material';
-import React, { BaseSyntheticEvent, useState } from 'react';
+import React, { BaseSyntheticEvent } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import { FieldValues, SubmitHandler } from 'react-hook-form';
 import { useAuth } from '../../../contexts/AuthContext';
 import { FieldInput } from '../../shared/FormFields';
 import { regex } from '../../../utilities/utilities';
+import { useToggle } from '../../../hooks/useToggle';
+import Form from '../../shared/Form';
 
 export default function SignInPage() {
-  const [tab, setTab] = useState<number>(0);
+  const [tab, toggleTab] = useToggle(0, [0, 1]);
   const history = useHistory();
   const auth = useAuth();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    mode: 'onSubmit',
-  });
 
   const connect: SubmitHandler<FieldValues> = ({ email, password }, event?: BaseSyntheticEvent) => {
     event?.preventDefault();
@@ -38,14 +33,10 @@ export default function SignInPage() {
         alignItems: 'center',
       }}
     >
-      <Grid
-        container
-        columnSpacing={2}
-        rowSpacing={2}
+      <Form
+        spacing={2}
         padding={2}
-        component="form"
-        onSubmit={handleSubmit(connect)}
-        noValidate
+        onSubmit={connect}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -57,7 +48,7 @@ export default function SignInPage() {
         </Typography>
         <Tabs
           value={tab}
-          onChange={(event: React.SyntheticEvent, value: number) => setTab(value)}
+          onChange={(event: React.SyntheticEvent, value: number) => toggleTab(value)}
           indicatorColor="primary"
           textColor="primary"
           variant="fullWidth"
@@ -73,8 +64,6 @@ export default function SignInPage() {
           name="email"
           type="email"
           autoComplete="email"
-          register={register}
-          errors={errors}
           validation={{
             required: 'This field is required',
             pattern: {
@@ -88,8 +77,6 @@ export default function SignInPage() {
           name="password"
           type="password"
           autoComplete="current-password"
-          register={register}
-          errors={errors}
           validation={{
             required: 'This field is required',
           }}
@@ -114,7 +101,7 @@ export default function SignInPage() {
             </Typography>
           </Grid>
         </Grid>
-      </Grid>
+      </Form>
     </Container>
   );
 }

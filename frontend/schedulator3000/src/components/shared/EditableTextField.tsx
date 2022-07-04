@@ -1,11 +1,11 @@
 import React, { MouseEventHandler, useState } from 'react';
 import { IconButton, InputAdornment, TextField, Tooltip } from '@mui/material';
 import { Check, Edit } from '@mui/icons-material';
-import useToggle from '../../hooks/useToggle';
+import { useToggleBool } from '../../hooks/useToggle';
 
 interface IEditableTextFieldProps { defaultValue: string, onConfirm: (value: string) => void, textHelper:string }
 export default function EditableTextField({ defaultValue, onConfirm, textHelper }: IEditableTextFieldProps) {
-  const [editMode, toggleEditMode] = useToggle(false);
+  const [editMode, toggleEditMode] = useToggleBool();
   const [value, setValue] = useState<string>(defaultValue);
   const [previous, setPrevious] = useState<string>(defaultValue);
 

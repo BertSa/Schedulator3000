@@ -1,21 +1,13 @@
 import { Button, Container, Grid } from '@mui/material';
 import React from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FieldInput } from '../../shared/FormFields';
 import { useAuth } from '../../../contexts/AuthContext';
 import { IPasswordChangeDto, IPasswordChangeFieldValues } from '../../../models/PasswordChange';
+import Form from '../../shared/Form';
 
 export default function NewEmployeePage() {
-  const {
-    getValues,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IPasswordChangeFieldValues>({
-    mode: 'onSubmit',
-    reValidateMode: 'onSubmit',
-  });
   const { updatePassword } = useAuth();
   const history = useHistory();
 
@@ -42,11 +34,9 @@ export default function NewEmployeePage() {
         alignItems: 'center',
       }}
     >
-      <Grid container component="form" spacing={2} onSubmit={handleSubmit(submit)} noValidate>
+      <Form onSubmit={submit}>
         <Grid item xs={12} sm={6}>
           <FieldInput
-            register={register}
-            errors={errors}
             name="currentPassword"
             label="Current Password"
             autoComplete="current-password"
@@ -58,8 +48,6 @@ export default function NewEmployeePage() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <FieldInput
-            register={register}
-            errors={errors}
             name="newPassword"
             label="New Password"
             autoComplete="new-password"
@@ -71,16 +59,14 @@ export default function NewEmployeePage() {
         </Grid>
         <Grid item xs={12}>
           <FieldInput
-            register={register}
-            errors={errors}
             name="confirmationPassword"
             label="Confirm New Password"
             autoComplete="current-password"
             type="password"
-            validation={{
+            validation={(getValues:Function) => ({
               required: 'This Field is required!',
               validate: (value) => value === getValues().newPassword || 'Passwords do not match!',
-            }}
+            })}
           />
         </Grid>
         <Grid item xs={12} justifyContent="center">
@@ -88,7 +74,7 @@ export default function NewEmployeePage() {
             Submit
           </Button>
         </Grid>
-      </Grid>
+      </Form>
     </Container>
   );
 }

@@ -1,8 +1,7 @@
-import PropTypes from 'prop-types';
-
-import { TextField } from '@mui/material';
 import React from 'react';
-import { FieldErrors } from 'react-hook-form';
+import PropTypes from 'prop-types';
+import { TextField } from '@mui/material';
+import { useFormContext } from 'react-hook-form';
 import { RegisterOptions } from 'react-hook-form/dist/types/validator';
 
 interface IFieldInputProps {
@@ -11,27 +10,31 @@ interface IFieldInputProps {
   type: React.InputHTMLAttributes<unknown>['type'];
   autoComplete?: React.InputHTMLAttributes<unknown>['autoComplete'];
   defaultValue?: string;
-  register: Function;
-  errors: FieldErrors;
-  validation: RegisterOptions;
+  validation: RegisterOptions | ((getValues: Function) => RegisterOptions);
   disabled?: boolean;
 }
 
 // eslint-disable-next-line import/prefer-default-export
 export function FieldInput(props: IFieldInputProps) {
-  const { register, errors, label, name, type, validation, autoComplete, defaultValue, disabled } = props;
+  const { label, name, type, autoComplete, defaultValue, disabled } = props;
+  let { validation } = props;
+  const { register, formState: { errors }, getValues } = useFormContext();
+
+  if (typeof validation === 'function') {
+    validation = validation(getValues) as RegisterOptions;
+  }
+
   return (
     <TextField
       type={type}
       label={label}
-      name={name}
       fullWidth
       autoComplete={autoComplete}
       {...register(name, validation)}
       error={Boolean(errors[name])}
       helperText={errors[name]?.message ?? ' '}
       defaultValue={defaultValue}
-      disabled={disabled ?? false}
+      disabled={Boolean(disabled)}
     />
   );
 }
@@ -40,7 +43,6 @@ FieldInput.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  register: PropTypes.func.isRequired,
   autoComplete: PropTypes.string,
   defaultValue: PropTypes.string,
 };
