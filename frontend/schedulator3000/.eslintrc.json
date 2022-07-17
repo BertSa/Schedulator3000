@@ -48,6 +48,7 @@
         "tabWidth": 2
       }
     ],
+    "no-array-index-key": 0,
     "no-async-promise-executor": 0,
     "no-case-declarations": 2,
     "no-class-assign": 2,
@@ -125,7 +126,7 @@
       }
     ],
     "react/jsx-props-no-spreading": 0,
-    "react/no-array-index-key": 1,
+    "react/no-array-index-key": 0,
     "react/no-unstable-nested-components": 0,
     "react/require-default-props": 1,
     "require-yield": 2,

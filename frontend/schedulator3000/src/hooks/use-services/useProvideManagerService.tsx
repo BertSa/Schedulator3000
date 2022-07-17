@@ -2,7 +2,7 @@ import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useDialog } from '../useDialog';
 import { Employee, EmployeeFormType } from '../../models/User';
-import DialogWarningDelete from '../../components/shared/DialogWarningDelete';
+import DialogWarningDelete from '../../components/DialogWarningDelete';
 import { http } from './useServices';
 
 export interface IManagerService {

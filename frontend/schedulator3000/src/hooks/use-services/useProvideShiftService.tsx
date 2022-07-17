@@ -3,7 +3,7 @@ import React from 'react';
 import { useDialog } from '../useDialog';
 import { IRequestDtoShiftsFromTo } from '../../models/IRequestDtoShiftsFromTo';
 import { ShiftWithoutId } from '../../models/ShiftWithoutId';
-import DialogWarningDelete from '../../components/shared/DialogWarningDelete';
+import DialogWarningDelete from '../../components/DialogWarningDelete';
 import { http } from './useServices';
 import { IShift } from '../../models/IShift';
 

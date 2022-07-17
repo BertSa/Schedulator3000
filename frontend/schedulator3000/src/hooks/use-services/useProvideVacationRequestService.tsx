@@ -3,7 +3,7 @@ import React from 'react';
 import { IVacationRequest } from '../../models/IVacationRequest';
 import { http } from './useServices';
 import { useDialog } from '../useDialog';
-import DialogWarningDelete from '../../components/shared/DialogWarningDelete';
+import DialogWarningDelete from '../../components/DialogWarningDelete';
 import { VacationRequestUpdateStatus } from '../../enums/VacationRequestUpdateStatus';
 import { VacationRequestCreate } from '../../models/VacationRequestCreate';
 import { VacationRequestUpdate } from '../../models/VacationRequestUpdate';
