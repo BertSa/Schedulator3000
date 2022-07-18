@@ -8,8 +8,8 @@ import Form from '../../../../components/Form';
 
 interface IEmployeeFormProps {
   submit: SubmitHandler<EmployeeFormType>;
-  emailDisabled?: boolean;
   onCancel: VoidFunction;
+  emailDisabled?: boolean;
   employee?: Employee;
 }
 
@@ -38,7 +38,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
           validation={{
             required: 'Ce champ est obligatoire!',
             pattern: {
-              value: /^[a-zA-Z]+$/,
+              value: regex.name,
               message: 'This field must contain only letters!',
             },
           }}
@@ -53,7 +53,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
           validation={{
             required: 'This field is required!',
             pattern: {
-              value: /^[a-zA-Z]+$/,
+              value: regex.name,
               message: 'The last name must contain only letters!',
             },
           }}
@@ -99,7 +99,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
           validation={{
             required: 'This field is required!',
             pattern: {
-              value: /^[a-zA-Z]+$/,
+              value: regex.name,
               message: 'The role must contain only letters!',
             },
           }}

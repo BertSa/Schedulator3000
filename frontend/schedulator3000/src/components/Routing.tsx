@@ -6,9 +6,8 @@ import NotFoundPage from './NotFoundPage';
 import EmployeeManagement from '../features/EmployeeManagement';
 import ScheduleCalendarManager from '../features/schedule/ScheduleCalendar/ScheduleCalendarManager';
 import ScheduleTable from '../features/schedule/ScheduleTable/ScheduleTable';
-import VacationRequestManagementTable from '../features/vacation-request/VacationRequestManagementTable';
 import ScheduleCalendarEmployee from '../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee';
-import VacationRequestTable from '../features/vacation-request/VacationRequestTable';
+import VacationRequestTable from '../features/vacation-request/VacationRequest/VacationRequestTable';
 import AvailabilitiesTable from '../features/availiability/AvailabilitiesTable';
 import NewEmployeePage from '../features/authentication/NewEmployeePage';
 import {
@@ -17,6 +16,7 @@ import {
   RouteNewEmployee,
   RouteUnAuthenticated,
 } from './ConditionalRouting/ConditionalRoute';
+import VacationRequestManagement from '../features/vacation-request/VacationRequestManagement';
 
 export default function Routing() {
   return (
@@ -24,7 +24,7 @@ export default function Routing() {
       <RouteAdmin path="/manager/employees" component={EmployeeManagement} />
       <RouteAdmin path="/manager/schedulev2" component={ScheduleCalendarManager} />
       <RouteAdmin path="/manager/schedule" component={ScheduleTable} />
-      <RouteAdmin path="/manager/vacation-requests" component={VacationRequestManagementTable} />
+      <RouteAdmin path="/manager/vacation-requests" component={VacationRequestManagement} />
       <RouteAdmin exact path="/manager" component={() => <Redirect to="/manager/vacation-requests" />} />
 
       <RouteEmployee path="/schedule" component={ScheduleCalendarEmployee} />

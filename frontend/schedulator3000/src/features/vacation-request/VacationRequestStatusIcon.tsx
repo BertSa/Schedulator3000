@@ -7,37 +7,37 @@ interface IVacationRequestStatusIconProps {
   status: VacationRequestStatus;
 }
 
+function UnknownIcon() {
+  return (
+    <Tooltip title="Unknown">
+      <Help color="warning" />
+    </Tooltip>
+  );
+}
+
+const VacationRequestStatusIcons = {
+  [VacationRequestStatus.Rejected]: (
+    <Tooltip title="Rejected">
+      <FlagCircle color="error" />
+    </Tooltip>
+  ),
+  [VacationRequestStatus.Approved]: (
+    <Tooltip title="Approved">
+      <CheckCircle color="success" />
+    </Tooltip>
+  ),
+  [VacationRequestStatus.Cancelled]: (
+    <Tooltip title="Cancelled">
+      <Cancel color="warning" />
+    </Tooltip>
+  ),
+  [VacationRequestStatus.Pending]: (
+    <Tooltip title="Pending">
+      <Timer color="info" />
+    </Tooltip>
+  ),
+};
+
 export default function VacationRequestStatusIcon({ status }: IVacationRequestStatusIconProps) {
-  switch (status.toUpperCase()) {
-    case VacationRequestStatus.Rejected:
-      return (
-        <Tooltip title="Rejected">
-          <FlagCircle color="error" />
-        </Tooltip>
-      );
-    case VacationRequestStatus.Approved:
-      return (
-        <Tooltip title="Approved">
-          <CheckCircle color="success" />
-        </Tooltip>
-      );
-    case VacationRequestStatus.Cancelled:
-      return (
-        <Tooltip title="Cancelled">
-          <Cancel color="warning" />
-        </Tooltip>
-      );
-    case VacationRequestStatus.Pending:
-      return (
-        <Tooltip title="Pending">
-          <Timer color="info" />
-        </Tooltip>
-      );
-    default:
-      return (
-        <Tooltip title="Unknown">
-          <Help color="warning" />
-        </Tooltip>
-      );
-  }
+  return VacationRequestStatusIcons[status] ?? <UnknownIcon />;
 }

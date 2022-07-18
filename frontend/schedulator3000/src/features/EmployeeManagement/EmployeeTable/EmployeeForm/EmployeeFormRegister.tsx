@@ -3,24 +3,32 @@ import { SubmitHandler } from 'react-hook-form';
 import { Typography } from '@mui/material';
 import { Employee, EmployeeFormType, Manager } from '../../../../models/User';
 import EmployeeForm from './EmployeeForm';
-import { IManagerService } from '../../../../hooks/use-services/useProvideManagerService';
+import { useServices } from '../../../../hooks/use-services/useServices';
 
 interface IEmployeeFormRegisterProps {
   user: Manager;
-  managerService: IManagerService;
-  callback: (employee: Employee) => void;
+  onFinish: (employee: Employee) => void;
   onCancel: VoidFunction;
 }
 
-export default function EmployeeFormRegister({ user, managerService, callback, onCancel }: IEmployeeFormRegisterProps): React.ReactElement {
+export default function EmployeeFormRegister({ user, onFinish, onCancel }: IEmployeeFormRegisterProps): React.ReactElement {
+  const { managerService } = useServices();
+
   const submit: SubmitHandler<EmployeeFormType> = (data, event) => {
     event?.preventDefault();
-    managerService.addEmployee(user.email, data).then(callback);
+    managerService.addEmployee(user.email, data).then(onFinish);
   };
 
   return (
     <>
-      <Typography variant="h5" component="h5" sx={{ marginTop: 2, marginBottom: 3 }} alignSelf="center">Register New Employee</Typography>
+      <Typography
+        variant="h5"
+        component="h5"
+        alignSelf="center"
+        sx={{ marginTop: 2, marginBottom: 3 }}
+      >
+        Register New Employee
+      </Typography>
       <EmployeeForm submit={submit} onCancel={onCancel} />
     </>
   );

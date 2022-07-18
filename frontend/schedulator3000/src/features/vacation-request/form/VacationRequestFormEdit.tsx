@@ -7,14 +7,14 @@ import { VacationRequestType } from '../../../enums/VacationRequestType';
 import { VacationRequestUpdate } from '../../../models/VacationRequestUpdate';
 
 interface IVacationRequestFormEditProps {
-  callback: (vacationRequest: IVacationRequest) => void;
+  onFinish: (vacationRequest: IVacationRequest) => void;
   onCancel: VoidFunction;
   vacationRequestService: IVacationRequestService;
   vacationRequest: IVacationRequest;
 }
 
 export default function VacationRequestFormEdit({
-  callback,
+  onFinish,
   onCancel,
   vacationRequestService,
   vacationRequest,
@@ -29,7 +29,7 @@ export default function VacationRequestFormEdit({
       type: data.type as VacationRequestType,
     };
 
-    vacationRequestService.update(body).then(callback);
+    vacationRequestService.update(body).then(onFinish);
   };
 
   return <VacationRequestForm submit={submit} onCancel={onCancel} vacationRequest={vacationRequest} />;

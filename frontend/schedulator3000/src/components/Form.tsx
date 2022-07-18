@@ -4,8 +4,11 @@ import { Grid } from '@mui/material';
 import { PropsOf } from '@emotion/react';
 import { UseFormProps } from 'react-hook-form/dist/types';
 
-export default function Form<T>({ children, onSubmit, formProps, ...props }:
-PropsWithChildren<{ onSubmit:SubmitHandler<T> }> & Omit<PropsOf<typeof Grid>, 'onSubmit'> & { formProps?: UseFormProps<T> }) {
+type IFormProps<T> =
+  PropsWithChildren<{ onSubmit:SubmitHandler<T>, formProps?: UseFormProps<T> }>
+  & Omit<PropsOf<typeof Grid>, 'onSubmit'>;
+
+export default function Form<T>({ children, onSubmit, formProps, ...props }:IFormProps<T>) {
   const methods = useForm<T>({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -15,7 +18,14 @@ PropsWithChildren<{ onSubmit:SubmitHandler<T> }> & Omit<PropsOf<typeof Grid>, 'o
   return (
     <FormProvider {...methods}>
       {/* @ts-ignore */}
-      <Grid container component="form" spacing={2} onSubmit={methods.handleSubmit(onSubmit)} noValidate {...props}>
+      <Grid
+        {...props}
+        container
+        component="form"
+        spacing={2}
+        onSubmit={methods.handleSubmit(onSubmit)}
+        noValidate
+      >
         {children}
       </Grid>
     </FormProvider>

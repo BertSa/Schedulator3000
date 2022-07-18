@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from '@mui/material';
 import React from 'react';
-import VacationRequestStatusIcon from './VacationRequestStatusIcon';
-import { IVacationRequest } from '../../models/IVacationRequest';
+import VacationRequestStatusIcon from '../VacationRequestStatusIcon';
+import { IVacationRequest } from '../../../models/IVacationRequest';
 
 interface IVacationRequestTableRowProps {
   request: IVacationRequest;

@@ -6,11 +6,12 @@ import { parseISO, startOfToday } from 'date-fns';
 import { IVacationRequest } from '../../../models/IVacationRequest';
 import { VacationRequestType } from '../../../enums/VacationRequestType';
 import { DateRange } from '../../../models/DateRange';
+import { OneOf } from '../../../models/OneOf';
 
 export interface IVacationRequestFormFieldValue {
   startEnd: DateRange;
   reason: string;
-  type: VacationRequestType | string;
+  type: OneOf<VacationRequestType, string>;
 }
 
 interface IVacationRequestFormProps {
@@ -97,7 +98,13 @@ export default function VacationRequestForm({ submit, onCancel, vacationRequest 
         />
       </Grid>
       <Grid item alignSelf="center" marginX="auto">
-        <Button type="submit" color="primary" variant="contained">Submit</Button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+        >
+          Submit
+        </Button>
         <Button
           type="button"
           variant="text"

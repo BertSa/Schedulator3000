@@ -19,9 +19,7 @@ export default function SignInPage() {
     if (tab === 0) {
       auth.signInEmployee(email, password).then(() => history.push('/'));
     } else if (tab === 1) {
-      auth.signInManager(email, password).then(() => {
-        history.push('/manager/vacation-requests');
-      });
+      auth.signInManager(email, password).then(() => history.push('/manager/employees'));
     }
   };
 

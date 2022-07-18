@@ -9,7 +9,7 @@ import { VacationRequestCreate } from '../../../models/VacationRequestCreate';
 
 interface IVacationRequestFormCreateProps {
   vacationRequestService: IVacationRequestService;
-  callback: (vacationRequest: IVacationRequest) => void;
+  onFinish: (vacationRequest: IVacationRequest) => void;
   onCancel: VoidFunction;
   employee: Employee;
 }
@@ -17,7 +17,7 @@ interface IVacationRequestFormCreateProps {
 export default function VacationRequestFormCreate({
   vacationRequestService,
   onCancel,
-  callback,
+  onFinish,
   employee,
 }: IVacationRequestFormCreateProps) {
   const submit: SubmitHandler<IVacationRequestFormFieldValue> = (data, event): void => {
@@ -30,7 +30,7 @@ export default function VacationRequestFormCreate({
       type: data.type as VacationRequestType,
     };
 
-    vacationRequestService.create(body).then(callback);
+    vacationRequestService.create(body).then(onFinish);
   };
 
   return <VacationRequestForm submit={submit} onCancel={onCancel} />;

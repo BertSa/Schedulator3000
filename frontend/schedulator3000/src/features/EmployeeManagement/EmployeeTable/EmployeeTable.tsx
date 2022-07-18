@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { Employee } from '../../../models/User';
 import { useDialog } from '../../../hooks/useDialog';
 import { useServices } from '../../../hooks/use-services/useServices';
@@ -7,50 +7,9 @@ import { useAuth } from '../../../contexts/AuthContext';
 import EmployeeTableToolbar from './EmployeeTableToolbar';
 import EmployeeFormRegister from './EmployeeForm/EmployeeFormRegister';
 import EmployeeFormEdit from './EmployeeForm/EmployeeFormEdit';
-import { Nullable } from '../../../models/Nullable';
 import useAsync from '../../../hooks/useAsync';
-import TableBodyEmpty from '../../../components/TableBodyEmpty';
 import useNullableState from '../../../hooks/useNullableState';
-
-function EmployeeTableBodySkeleton() {
-  return (
-    <TableBody>
-      <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-        <TableCell component="th" scope="row" width="5%">
-          <Skeleton />
-        </TableCell>
-        <TableCell width="10%">
-          <Skeleton />
-        </TableCell>
-        <TableCell width="10%">
-          <Skeleton />
-        </TableCell>
-        <TableCell>
-          <Skeleton />
-        </TableCell>
-        <TableCell width="15%">
-          <Skeleton />
-        </TableCell>
-        <TableCell width="10%">
-          <Skeleton />
-        </TableCell>
-      </TableRow>
-    </TableBody>
-  );
-}
-
-function ActiveMessage({ isActive }: { isActive: Nullable<boolean> }) {
-  if (isActive === null) {
-    return <span>Never logged in before</span>;
-  }
-
-  // Will probably be removed in the future
-  if (!isActive) {
-    return <span>Fired</span>;
-  }
-
-  return <span>Active</span>;
-}
+import EmployeeTableBody from './EmployeeTableBody';
 
 export default function EmployeeTable() {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -68,16 +27,16 @@ export default function EmployeeTable() {
     [manager.email],
   );
 
-  const handleClick = (event: React.MouseEvent<unknown>, employee: Employee) =>
+  const handleClick = (employee: Employee) =>
     setSelectedEmployee((selected) => (selected === employee.id ? null : employee.id));
 
   const createAction = () => {
-    const callback = (employee: Employee) => {
+    const onFinish = (employee: Employee) => {
       setEmployees((current) => [...current, employee]);
       closeDialog();
     };
 
-    openDialog(<EmployeeFormRegister user={manager} callback={callback} managerService={managerService} onCancel={closeDialog} />);
+    openDialog(<EmployeeFormRegister user={manager} onFinish={onFinish} onCancel={closeDialog} />);
   };
 
   const editAction = () => {
@@ -85,7 +44,7 @@ export default function EmployeeTable() {
       return;
     }
 
-    const callback = (employee: Employee) => {
+    const onFinish = (employee: Employee) => {
       setEmployees((current) => [...current.filter((emp) => emp.id !== employee.id), employee]);
       closeDialog();
     };
@@ -96,7 +55,7 @@ export default function EmployeeTable() {
     openDialog(
       <EmployeeFormEdit
         employee={employee}
-        callback={callback}
+        onFinish={onFinish}
         employeeService={employeeService}
         onCancel={closeDialog}
       />,
@@ -106,48 +65,11 @@ export default function EmployeeTable() {
   const fireAction = () => {
     if (selectedEmployee) {
       managerService.fireEmployee(selectedEmployee, manager.email).then(() => {
-        setEmployees(employees.filter((employee) => employee.id !== selectedEmployee));
+        setEmployees((emp) => emp.filter((employee) => employee.id !== selectedEmployee));
         setSelectedEmployee(null);
       });
     }
   };
-
-  function EmployeeTableBody() {
-    if (loading) {
-      return <EmployeeTableBodySkeleton />;
-    }
-
-    if (employees.length === 0) {
-      return <TableBodyEmpty colSpan={6} message="No employees" />;
-    }
-
-    return (
-      <TableBody>
-        {employees.map((employee) => (
-          <TableRow
-            key={employee.id}
-            hover
-            selected={selectedEmployee === employee.id}
-            onClick={(event) => handleClick(event, employee)}
-            sx={{
-              cursor: 'pointer',
-              '&:last-child td, &:last-child th': { border: 0 },
-            }}
-          >
-            <TableCell component="th" scope="row" width="5%">
-              {employee.id}
-            </TableCell>
-            <TableCell width="10%">{employee.firstName}</TableCell>
-            <TableCell width="10%">{employee.lastName}</TableCell>
-            <TableCell>{employee.email}</TableCell>
-            <TableCell width="15%">{employee.phone}</TableCell>
-            <TableCell width="10%">{employee.role}</TableCell>
-            <TableCell width="10%"><ActiveMessage isActive={employee.active} /></TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    );
-  }
 
   return (
     <TableContainer component={Paper}>
@@ -171,7 +93,12 @@ export default function EmployeeTable() {
             <TableCell width="10%">Active</TableCell>
           </TableRow>
         </TableHead>
-        <EmployeeTableBody />
+        <EmployeeTableBody
+          loading={loading}
+          employees={employees}
+          selectedEmployee={selectedEmployee}
+          onClick={handleClick}
+        />
       </Table>
     </TableContainer>
   );

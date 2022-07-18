@@ -8,31 +8,23 @@ interface IFieldInputProps {
   label: string;
   name: string;
   type: React.InputHTMLAttributes<unknown>['type'];
+  validation: RegisterOptions | ((getValues: Function) => RegisterOptions);
   autoComplete?: React.InputHTMLAttributes<unknown>['autoComplete'];
   defaultValue?: string;
-  validation: RegisterOptions | ((getValues: Function) => RegisterOptions);
   disabled?: boolean;
 }
 
-export default function FieldInput(props: IFieldInputProps) {
-  const { label, name, type, autoComplete, defaultValue, disabled } = props;
-  let { validation } = props;
+export default function FieldInput({ name, disabled, validation, ...props }: IFieldInputProps) {
   const { register, formState: { errors }, getValues } = useFormContext();
-
-  if (typeof validation === 'function') {
-    validation = validation(getValues) as RegisterOptions;
-  }
+  const val = typeof validation === 'function' ? validation(getValues) as RegisterOptions : validation;
 
   return (
     <TextField
-      type={type}
-      label={label}
+      {...props}
       fullWidth
-      autoComplete={autoComplete}
-      {...register(name, validation)}
+      {...register(name, val)}
       error={Boolean(errors[name])}
       helperText={errors[name]?.message ?? ' '}
-      defaultValue={defaultValue}
       disabled={Boolean(disabled)}
     />
   );

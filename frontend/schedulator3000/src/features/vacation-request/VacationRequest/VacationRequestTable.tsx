@@ -1,48 +1,18 @@
 import React, { useState } from 'react';
-import { Container, Icon, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { IVacationRequest } from '../../models/IVacationRequest';
-import { useServices } from '../../hooks/use-services/useServices';
-import { useAuth } from '../../contexts/AuthContext';
-import { Employee } from '../../models/User';
+import { Container, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { IVacationRequest } from '../../../models/IVacationRequest';
+import { useServices } from '../../../hooks/use-services/useServices';
+import { useAuth } from '../../../contexts/AuthContext';
+import { Employee } from '../../../models/User';
 import VacationRequestTableToolbar from './VacationRequestTableToolbar';
-import { useDialog } from '../../hooks/useDialog';
-import VacationRequestFormCreate from './form/VacationRequestFormCreate';
-import VacationRequestFormEdit from './form/VacationRequestFormEdit';
-import VacationRequestTableRow from './VacationRequestTableRow';
-import useAsync from '../../hooks/useAsync';
-import TableBodyEmpty from '../../components/TableBodyEmpty';
-import DialogWarningDelete from '../../components/DialogWarningDelete';
-import { VacationRequestUpdateStatus } from '../../enums/VacationRequestUpdateStatus';
-import useNullableState from '../../hooks/useNullableState';
-
-function VacationRequestTableRowSkeleton() {
-  return (
-    <TableBody>
-      <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-        <TableCell component="th" scope="row" width="5%">
-          <Skeleton />
-        </TableCell>
-        <TableCell width="10%">
-          <Skeleton />
-        </TableCell>
-        <TableCell width="10%">
-          <Skeleton />
-        </TableCell>
-        <TableCell width="10%">
-          <Skeleton />
-        </TableCell>
-        <TableCell>
-          <Skeleton />
-        </TableCell>
-        <TableCell align="center" width="10%">
-          <Icon>
-            <Skeleton variant="circular" />
-          </Icon>
-        </TableCell>
-      </TableRow>
-    </TableBody>
-  );
-}
+import { useDialog } from '../../../hooks/useDialog';
+import VacationRequestFormCreate from '../form/VacationRequestFormCreate';
+import VacationRequestFormEdit from '../form/VacationRequestFormEdit';
+import useAsync from '../../../hooks/useAsync';
+import DialogWarningDelete from '../../../components/DialogWarningDelete';
+import { VacationRequestUpdateStatus } from '../../../enums/VacationRequestUpdateStatus';
+import useNullableState from '../../../hooks/useNullableState';
+import VacationRequestTableBody from './VacationRequestTableBody';
 
 export default function VacationRequestTable() {
   const [vacationRequests, setVacationRequests] = useState<IVacationRequest[]>([]);
@@ -60,16 +30,18 @@ export default function VacationRequestTable() {
     [employee.email],
   );
 
-  const callback = (vacationRequest: IVacationRequest): void => {
+  const onFinish = (vacationRequest: IVacationRequest): void => {
     closeDialog();
     setVacationRequests((current) => [...current.filter((value) => value.id !== vacationRequest.id), vacationRequest]);
   };
-
+  const onRowClick = (vacationRequest: IVacationRequest): void => {
+    setSelectedVacationRequest((selected) => (selected?.id === vacationRequest.id ? null : vacationRequest));
+  };
   const createAction = (): void =>
     openDialog(
       <VacationRequestFormCreate
         vacationRequestService={vacationRequestService}
-        callback={callback}
+        onFinish={onFinish}
         onCancel={closeDialog}
         employee={employee}
       />,
@@ -83,7 +55,7 @@ export default function VacationRequestTable() {
     openDialog(
       <VacationRequestFormEdit
         vacationRequestService={vacationRequestService}
-        callback={callback}
+        onFinish={onFinish}
         onCancel={closeDialog}
         vacationRequest={selectedVacationRequest}
       />,
@@ -127,33 +99,6 @@ export default function VacationRequestTable() {
     });
   };
 
-  function VacationRequestTableBody() {
-    if (loading) {
-      return <VacationRequestTableRowSkeleton />;
-    }
-
-    if (vacationRequests.length === 0) {
-      return <TableBodyEmpty colSpan={6} message="No vacation requests" />;
-    }
-
-    function handleRowClick(vacationRequest: IVacationRequest): void {
-      setSelectedVacationRequest((selected) => (selected?.id === vacationRequest.id ? null : vacationRequest));
-    }
-
-    return (
-      <TableBody>
-        {vacationRequests.map((request) => (
-          <VacationRequestTableRow
-            key={request.id}
-            request={request}
-            isSelected={selectedVacationRequest?.id === request.id}
-            onClick={() => handleRowClick(request)}
-          />
-        ))}
-      </TableBody>
-    );
-  }
-
   return (
     <Container maxWidth="lg">
       <TableContainer component={Paper}>
@@ -179,7 +124,12 @@ export default function VacationRequestTable() {
               </TableCell>
             </TableRow>
           </TableHead>
-          <VacationRequestTableBody />
+          <VacationRequestTableBody
+            vacationRequests={vacationRequests}
+            selectedVacationRequest={selectedVacationRequest}
+            loading={loading}
+            onRowClick={onRowClick}
+          />
         </Table>
       </TableContainer>
     </Container>
