@@ -1,6 +1,6 @@
 {
   "name": "schedulator3000",
-  "version": "v1.0.2",
+  "version": "v1.1.0",
   "proxy": "http://localhost:8781/api",
   "private": true,
   "dependencies": {
@@ -8,7 +8,7 @@
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.6.2",
-    "@mui/lab": "^5.0.0-alpha.73",
+    "@mui/lab": "^5.0.0-alpha.91",
     "@mui/material": "^5.5.1",
     "@popperjs/core": "^2.11.5",
     "@testing-library/jest-dom": "^5.16.4",
