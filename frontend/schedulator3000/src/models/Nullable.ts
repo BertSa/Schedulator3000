@@ -1,1 +1,3 @@
-export type Nullable<T> = T | null;
+import { OneOf } from './OneOf';
+
+export type Nullable<T> = OneOf<T, null>;

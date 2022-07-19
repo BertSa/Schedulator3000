@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack';
 import { http } from './useServices';
-import { IAvailabilities } from '../../models/IAvailabilities';
+import { IAvailabilities } from '../../features/availiability/models/IAvailabilities';
 
 export interface IAvailabilitiesService {
   update: (emailEmployee:string, body: IAvailabilities) => Promise<IAvailabilities>;

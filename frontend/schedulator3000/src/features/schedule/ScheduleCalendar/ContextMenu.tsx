@@ -5,11 +5,12 @@ import ListItemText from '@mui/material/ListItemText';
 import React from 'react';
 import { Nullable } from '../../../models/Nullable';
 import { IContextMenuStates } from './ScheduleCalendarManager';
-import { IShiftEvent } from '../../../models/IShiftEvent';
+import { IShiftEvent } from '../models/IShiftEvent';
 
 export default function ContextMenu({ contextMenu, handleClose, actions: { editAction, deleteAction } }:
 {
-  contextMenu: Nullable<IContextMenuStates>, handleClose: VoidFunction, actions: {
+  contextMenu: Nullable<IContextMenuStates>,
+  handleClose: VoidFunction, actions: {
     editAction: (selectedValue: IShiftEvent) => void,
     deleteAction: VoidFunction,
   }

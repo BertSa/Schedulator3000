@@ -3,17 +3,18 @@ import { addDays, format, parseISO } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Container, Paper, useTheme } from '@mui/material';
 import { useServices } from '../../../hooks/use-services/useServices';
-import { IRequestDtoShiftsFromTo } from '../../../models/IRequestDtoShiftsFromTo';
+import { IRequestDtoShiftsFromTo } from '../models/IRequestDtoShiftsFromTo';
 import { isBetween, localizer } from '../../../utilities/DateUtilities';
-import { IShiftEvent } from '../../../models/IShiftEvent';
+import { IShiftEvent } from '../models/IShiftEvent';
 import { useAuth } from '../../../contexts/AuthContext';
 import useCurrentWeek from '../../../hooks/useCurrentWeek';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../../vacation-request/models/IVacationRequest';
 import useDebounce from '../../../hooks/useDebounce';
 import ScheduleCalendarToolbar from './ScheduleCalendarToolbar';
 import { VacationRequestStatus } from '../../../enums/VacationRequestStatus';
 import ErrorBoundary from '../../../components/ErrorBoundary';
-import { getDefaultDayProps, MyCalendar } from './ScheduleCalendar2';
+import { BigCalendar } from '../lib/BigCalendar';
+import getDefaultDayProps from './GetDefaultDayProps';
 
 function ScheduleCalendar() {
   const user = useAuth().getEmployee();
@@ -114,7 +115,7 @@ function ScheduleCalendar() {
 
   return (
     <Container component={Paper} sx={{ padding: 4 }}>
-      <MyCalendar
+      <BigCalendar
         events={events}
         localizer={localizer}
         showAllEvents={false}

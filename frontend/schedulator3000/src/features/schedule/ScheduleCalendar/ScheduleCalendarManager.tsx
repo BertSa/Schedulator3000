@@ -6,11 +6,10 @@ import { Container, Paper, useTheme } from '@mui/material';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../models/User';
 import { useAuth } from '../../../contexts/AuthContext';
-import { setNull, stringToColor } from '../../../utilities/utilities';
 import { useDialog } from '../../../hooks/useDialog';
 import { useServices } from '../../../hooks/use-services/useServices';
-import { IRequestDtoShiftsFromTo } from '../../../models/IRequestDtoShiftsFromTo';
-import { IShiftEvent } from '../../../models/IShiftEvent';
+import { IRequestDtoShiftsFromTo } from '../models/IRequestDtoShiftsFromTo';
+import { IShiftEvent } from '../models/IShiftEvent';
 import ScheduleCalendarToolbar from './ScheduleCalendarToolbar';
 import useCurrentWeek from '../../../hooks/useCurrentWeek';
 import { Nullable } from '../../../models/Nullable';
@@ -18,12 +17,15 @@ import { IShiftFormFieldValue } from '../ShiftForm/ShiftForm';
 import ShiftFormCreate from '../ShiftForm/ShiftFormCreate';
 import ShiftFormEdit from '../ShiftForm/ShiftFormEdit';
 import useDebounce from '../../../hooks/useDebounce';
-import { IShift } from '../../../models/IShift';
+import { IShift } from '../models/IShift';
 import ErrorBoundary from '../../../components/ErrorBoundary';
-import { DNDCalendar, getDefaultDayProps } from './ScheduleCalendar2';
 import { localizer } from '../../../utilities/DateUtilities';
 import ContextMenu from './ContextMenu';
 import useNullableState from '../../../hooks/useNullableState';
+import setNull from '../../../utilities/setNull';
+import stringToHexColor from '../../../utilities/stringToHexColor';
+import { DragAndDropBigCalendar } from '../lib/BigCalendar';
+import getDefaultDayProps from './GetDefaultDayProps';
 
 export type ResourceType = {
   employeeId: number,
@@ -237,7 +239,7 @@ function ScheduleCalendar() {
     const fullName = `${employee?.lastName} ${employee?.firstName}`;
     const eventProps = {
       style: {
-        backgroundColor: stringToColor(fullName),
+        backgroundColor: stringToHexColor(fullName),
         color: '#fff',
         border: 'none',
       },
@@ -253,7 +255,7 @@ function ScheduleCalendar() {
   return (
     <>
       <Container component={Paper} sx={{ padding: 4 }} maxWidth="lg">
-        <DNDCalendar
+        <DragAndDropBigCalendar
           events={events}
           localizer={localizer}
           showMultiDayTimes

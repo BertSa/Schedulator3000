@@ -1,4 +1,4 @@
-import { Nullable } from './Nullable';
+import { Nullable } from '../../../models/Nullable';
 
 export type AvailabilityDay = Nullable< {
   start: Date,

@@ -1,5 +1,5 @@
-import { VacationRequestStatus } from '../enums/VacationRequestStatus';
-import { VacationRequestType } from '../enums/VacationRequestType';
+import { VacationRequestStatus } from '../../../enums/VacationRequestStatus';
+import { VacationRequestType } from '../../../enums/VacationRequestType';
 
 export interface IVacationRequest {
   id: number;

@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { addDays, addWeeks, startOfWeek, subWeeks } from 'date-fns';
 import { NavigateAction } from 'react-big-calendar';
 import { isBetween } from '../utilities/DateUtilities';
+import { NoParamFunction } from '../models/NoParamFunction';
 
 export interface ICurrentWeek {
   value: Date;
   next: VoidFunction;
   previous: VoidFunction;
-  getPreviousWeek: () => Date;
-  getNextWeek: () => Date;
+  getPreviousWeek: NoParamFunction<Date>;
+  getNextWeek: NoParamFunction<Date>;
   getDayOfWeek: (day: number) => Date;
   isDuringWeek: (date: Date) => boolean;
   thisWeek: VoidFunction;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TableCell, TableRow } from '@mui/material';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../models/IVacationRequest';
 import { Employee } from '../../../models/User';
 import VacationRequestStatusIcon from '../VacationRequestStatusIcon';
 

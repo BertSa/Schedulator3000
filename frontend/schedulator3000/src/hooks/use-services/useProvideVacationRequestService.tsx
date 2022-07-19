@@ -1,12 +1,12 @@
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import { IVacationRequest } from '../../models/IVacationRequest';
+import { IVacationRequest } from '../../features/vacation-request/models/IVacationRequest';
 import { http } from './useServices';
 import { useDialog } from '../useDialog';
 import DialogWarningDelete from '../../components/DialogWarningDelete';
 import { VacationRequestUpdateStatus } from '../../enums/VacationRequestUpdateStatus';
-import { VacationRequestCreate } from '../../models/VacationRequestCreate';
-import { VacationRequestUpdate } from '../../models/VacationRequestUpdate';
+import { VacationRequestCreate } from '../../features/vacation-request/models/VacationRequestCreate';
+import { VacationRequestUpdate } from '../../features/vacation-request/models/VacationRequestUpdate';
 
 export interface IVacationRequestService {
   create: (body: VacationRequestCreate) => Promise<IVacationRequest>;

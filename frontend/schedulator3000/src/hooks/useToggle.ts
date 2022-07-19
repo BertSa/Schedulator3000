@@ -1,7 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { useState } from 'react';
-
-type OneOf<TFirst, TSecond> = TFirst | TSecond;
+import { OneOf } from '../models/OneOf';
 
 export function useToggle<TFirst, TSecond, TOptions extends [TFirst, TSecond]>(initialValue: OneOf<TFirst, TSecond>, options:TOptions):
 [OneOf<TFirst, TSecond>, ((value?: OneOf<TFirst, TSecond>) => void)] {

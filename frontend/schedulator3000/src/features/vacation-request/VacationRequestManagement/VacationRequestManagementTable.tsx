@@ -1,15 +1,15 @@
 import React from 'react';
 import { Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../models/IVacationRequest';
 import { useServices } from '../../../hooks/use-services/useServices';
 import { Employee } from '../../../models/User';
 import VacationRequestManagementTableToolbar from './VacationRequestManagementTableToolbar';
 import VacationRequestFormEdit from '../form/VacationRequestFormEdit';
 import { useDialog } from '../../../hooks/useDialog';
 import { VacationRequestUpdateStatus } from '../../../enums/VacationRequestUpdateStatus';
-import useNullableState from '../../../hooks/useNullableState';
 import VacationRequestManagementTableBody from './VacationRequestManagementTableBody';
 import { SetState } from '../../../models/SetState';
+import useSelected from '../../../hooks/useSelected';
 
 interface IVacationRequestManagementTableProps {
   loading:boolean,
@@ -20,17 +20,17 @@ interface IVacationRequestManagementTableProps {
 
 export default function VacationRequestManagementTable({ loading, employees, vacationRequests, setVacationRequests } :
 IVacationRequestManagementTableProps) {
-  const [selectedVacationRequestId, setSelectedVacationRequestId] = useNullableState<number>();
+  const selectedVacationRequest = useSelected(vacationRequests, 'id');
   const [openDialog, closeDialog] = useDialog();
   const { vacationRequestService } = useServices();
 
   function updateRequest(status: VacationRequestUpdateStatus): void {
-    if (!selectedVacationRequestId) {
+    if (!selectedVacationRequest.selected) {
       return;
     }
-    vacationRequestService.updateStatus(selectedVacationRequestId, status).then((response) => {
-      setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequestId), response]);
-      setSelectedVacationRequestId(response.id);
+    vacationRequestService.updateStatus(selectedVacationRequest.selected, status).then((response) => {
+      setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequest.selected), response]);
+      selectedVacationRequest.select(response);
     });
   }
 
@@ -38,7 +38,7 @@ IVacationRequestManagementTableProps) {
   const rejectAction = (): void => updateRequest(VacationRequestUpdateStatus.Reject);
 
   const editAction = (): void => {
-    if (!selectedVacationRequestId) {
+    if (!selectedVacationRequest) {
       return;
     }
 
@@ -47,7 +47,7 @@ IVacationRequestManagementTableProps) {
       setVacationRequests((current) => [...current.filter((value) => value.id !== vacationRequest.id), vacationRequest]);
     };
 
-    const vr = vacationRequests.find((value) => value.id === selectedVacationRequestId);
+    const vr = selectedVacationRequest.value();
 
     if (!vr) {
       return;
@@ -55,7 +55,6 @@ IVacationRequestManagementTableProps) {
 
     openDialog(
       <VacationRequestFormEdit
-        vacationRequestService={vacationRequestService}
         onFinish={onFinish}
         onCancel={closeDialog}
         vacationRequest={vr}
@@ -64,24 +63,20 @@ IVacationRequestManagementTableProps) {
   };
 
   const deleteAction = async (): Promise<void> => {
-    if (!selectedVacationRequestId) {
+    if (!selectedVacationRequest.selected) {
       return;
     }
 
-    vacationRequestService.deleteById(selectedVacationRequestId).then(() => {
-      setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequestId)]);
-      setSelectedVacationRequestId(null);
+    vacationRequestService.deleteById(selectedVacationRequest.selected).then(() => {
+      setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequest.selected)]);
+      selectedVacationRequest.clear();
     });
-  };
-
-  const onRowClick = (vacationRequest: IVacationRequest): void => {
-    setSelectedVacationRequestId((selected) => (selected === vacationRequest.id ? null : vacationRequest.id));
   };
 
   return (
     <TableContainer component={Paper}>
       <VacationRequestManagementTableToolbar
-        selectedVacationRequest={vacationRequests.find((value) => value.id === selectedVacationRequestId) ?? null}
+        selectedVacationRequest={selectedVacationRequest.value()}
         actions={{
           approve: approveAction,
           reject: rejectAction,
@@ -107,8 +102,8 @@ IVacationRequestManagementTableProps) {
           loading={loading}
           employees={employees}
           vacationRequests={vacationRequests}
-          selectedVacationRequestId={selectedVacationRequestId}
-          onClick={onRowClick}
+          selectedVacationRequestId={selectedVacationRequest.selected}
+          onClick={selectedVacationRequest.select}
         />
       </Table>
     </TableContainer>

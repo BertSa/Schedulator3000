@@ -1,11 +1,11 @@
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useDialog } from '../useDialog';
-import { IRequestDtoShiftsFromTo } from '../../models/IRequestDtoShiftsFromTo';
-import { ShiftWithoutId } from '../../models/ShiftWithoutId';
+import { IRequestDtoShiftsFromTo } from '../../features/schedule/models/IRequestDtoShiftsFromTo';
+import { ShiftWithoutId } from '../../features/schedule/models/ShiftWithoutId';
 import DialogWarningDelete from '../../components/DialogWarningDelete';
 import { http } from './useServices';
-import { IShift } from '../../models/IShift';
+import { IShift } from '../../features/schedule/models/IShift';
 
 const PATH = '/shifts';
 

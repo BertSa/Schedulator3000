@@ -1,13 +1,13 @@
 import { Typography } from '@mui/material';
 import React from 'react';
-import { IVacationRequest } from '../../models/IVacationRequest';
+import { Nullable } from '../../models/Nullable';
 
 export default function VacationRequestTableToolbarTitle(
-  { selectedVacationRequest }: { selectedVacationRequest: IVacationRequest | null }) {
+  { selectedVacationRequest }: { selectedVacationRequest: Nullable<number> }) {
   if (selectedVacationRequest) {
     return (
       <Typography id="tableTitle" component="div" variant="subtitle1" color="inherit">
-        {`#${selectedVacationRequest.id} selected`}
+        {`#${selectedVacationRequest} selected`}
       </Typography>
     );
   }

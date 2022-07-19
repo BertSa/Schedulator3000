@@ -6,10 +6,10 @@ import { Employee } from '../../../models/User';
 import { isBetween } from '../../../utilities/DateUtilities';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useServices } from '../../../hooks/use-services/useServices';
-import { IRequestDtoShiftsFromTo } from '../../../models/IRequestDtoShiftsFromTo';
+import { IRequestDtoShiftsFromTo } from '../models/IRequestDtoShiftsFromTo';
 import { useDialog } from '../../../hooks/useDialog';
 import ScheduleTableToolbar from './ScheduleTableToolbar';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../../vacation-request/models/IVacationRequest';
 import useCurrentWeek, { ICurrentWeek } from '../../../hooks/useCurrentWeek';
 import { Nullable } from '../../../models/Nullable';
 import { IShiftFormFieldValue } from '../ShiftForm/ShiftForm';
@@ -21,7 +21,7 @@ import useAsyncDebounce from '../../../hooks/useAsyncDebounce';
 import useDebounce from '../../../hooks/useDebounce';
 import TableBodyEmpty from '../../../components/TableBodyEmpty';
 import ScheduleTableRow from './ScheduleTableRow';
-import { IShift } from '../../../models/IShift';
+import { IShift } from '../models/IShift';
 
 export type SelectedItemType = Nullable<{ employee: Employee; day: number; shift: Nullable<IShift> }>;
 

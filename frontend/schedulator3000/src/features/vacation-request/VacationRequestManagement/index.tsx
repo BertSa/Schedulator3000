@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container } from '@mui/material';
 import VacationRequestManagementTable from './VacationRequestManagementTable';
 import { Employee, Manager } from '../../../models/User';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../models/IVacationRequest';
 import { useServices } from '../../../hooks/use-services/useServices';
 import { useAuth } from '../../../contexts/AuthContext';
 import useAsync from '../../../hooks/useAsync';

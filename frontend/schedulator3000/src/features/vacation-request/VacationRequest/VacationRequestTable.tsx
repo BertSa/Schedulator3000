@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import { Container, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../models/IVacationRequest';
 import { useServices } from '../../../hooks/use-services/useServices';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Employee } from '../../../models/User';
 import VacationRequestTableToolbar from './VacationRequestTableToolbar';
-import { useDialog } from '../../../hooks/useDialog';
-import VacationRequestFormCreate from '../form/VacationRequestFormCreate';
-import VacationRequestFormEdit from '../form/VacationRequestFormEdit';
 import useAsync from '../../../hooks/useAsync';
-import DialogWarningDelete from '../../../components/DialogWarningDelete';
-import { VacationRequestUpdateStatus } from '../../../enums/VacationRequestUpdateStatus';
 import useNullableState from '../../../hooks/useNullableState';
 import VacationRequestTableBody from './VacationRequestTableBody';
+import { NoParamFunction } from '../../../models/NoParamFunction';
+
+export interface IActions {
+  create: VoidFunction,
+  edit: VoidFunction,
+  cancel: NoParamFunction<Promise<void>>,
+  delete: NoParamFunction<Promise<void>>,
+}
 
 export default function VacationRequestTable() {
   const [vacationRequests, setVacationRequests] = useState<IVacationRequest[]>([]);
-  const [selectedVacationRequest, setSelectedVacationRequest] = useNullableState<IVacationRequest>();
+  const [selectedVacationRequestId, setSelectedVacationRequest] = useNullableState<number>();
   const { vacationRequestService } = useServices();
-  const [openDialog, closeDialog] = useDialog();
   const employee: Employee = useAuth().getEmployee();
 
   const { loading } = useAsync(
@@ -30,86 +32,18 @@ export default function VacationRequestTable() {
     [employee.email],
   );
 
-  const onFinish = (vacationRequest: IVacationRequest): void => {
-    closeDialog();
-    setVacationRequests((current) => [...current.filter((value) => value.id !== vacationRequest.id), vacationRequest]);
-  };
   const onRowClick = (vacationRequest: IVacationRequest): void => {
-    setSelectedVacationRequest((selected) => (selected?.id === vacationRequest.id ? null : vacationRequest));
-  };
-  const createAction = (): void =>
-    openDialog(
-      <VacationRequestFormCreate
-        vacationRequestService={vacationRequestService}
-        onFinish={onFinish}
-        onCancel={closeDialog}
-        employee={employee}
-      />,
-    );
-
-  const editAction = (): void => {
-    if (!selectedVacationRequest) {
-      return;
-    }
-
-    openDialog(
-      <VacationRequestFormEdit
-        vacationRequestService={vacationRequestService}
-        onFinish={onFinish}
-        onCancel={closeDialog}
-        vacationRequest={selectedVacationRequest}
-      />,
-    );
-  };
-
-  const cancelAction = async (): Promise<void> => {
-    if (!selectedVacationRequest) {
-      return;
-    }
-
-    const canceledByDialog = await new Promise<boolean>((resolve) => {
-      openDialog(
-        <DialogWarningDelete
-          text="Are you sure you want to cancel this vacation request?"
-          title="Cancel vacation request"
-          closeDialog={closeDialog}
-          resolve={resolve}
-        />,
-      );
-    });
-
-    if (canceledByDialog) {
-      return;
-    }
-
-    vacationRequestService.updateStatus(selectedVacationRequest.id, VacationRequestUpdateStatus.Cancel).then((response) => {
-      setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequest.id), response]);
-      setSelectedVacationRequest(response);
-    });
-  };
-
-  const deleteAction = async (): Promise<void> => {
-    if (!selectedVacationRequest) {
-      return;
-    }
-
-    vacationRequestService.deleteById(selectedVacationRequest.id).then(() => {
-      setVacationRequests((current) => [...current.filter((v) => v.id !== selectedVacationRequest.id)]);
-      setSelectedVacationRequest(null);
-    });
+    setSelectedVacationRequest((selected) => (selected === vacationRequest.id ? null : vacationRequest.id));
   };
 
   return (
     <Container maxWidth="lg">
       <TableContainer component={Paper}>
         <VacationRequestTableToolbar
-          selected={selectedVacationRequest}
-          actions={{
-            create: createAction,
-            edit: editAction,
-            cancel: cancelAction,
-            del: deleteAction,
-          }}
+          vacationRequests={vacationRequests}
+          setVacationRequests={setVacationRequests}
+          selectedVacationRequestId={selectedVacationRequestId}
+          setSelectedVacationRequestId={setSelectedVacationRequest}
         />
         <Table aria-label="collapsible table">
           <TableHead>
@@ -126,7 +60,7 @@ export default function VacationRequestTable() {
           </TableHead>
           <VacationRequestTableBody
             vacationRequests={vacationRequests}
-            selectedVacationRequest={selectedVacationRequest}
+            selectedVacationRequest={selectedVacationRequestId}
             loading={loading}
             onRowClick={onRowClick}
           />

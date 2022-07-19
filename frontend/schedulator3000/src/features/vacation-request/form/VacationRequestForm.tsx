@@ -3,7 +3,7 @@ import { Box, Button, Grid, MenuItem, TextField } from '@mui/material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import React from 'react';
 import { parseISO, startOfToday } from 'date-fns';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../models/IVacationRequest';
 import { VacationRequestType } from '../../../enums/VacationRequestType';
 import { DateRange } from '../../../models/DateRange';
 import { OneOf } from '../../../models/OneOf';

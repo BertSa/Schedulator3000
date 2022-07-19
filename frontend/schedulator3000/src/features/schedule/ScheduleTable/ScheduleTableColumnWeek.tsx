@@ -1,12 +1,12 @@
 import { alpha, SxProps, TableCell, Theme } from '@mui/material';
 import { addDays, parseISO } from 'date-fns';
 import React from 'react';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../../vacation-request/models/IVacationRequest';
 import { Nullable } from '../../../models/Nullable';
 import { ICurrentWeek } from '../../../hooks/useCurrentWeek';
 import { getTimeInHourMinutesAMPM, isBetween } from '../../../utilities/DateUtilities';
 import { VacationRequestStatus } from '../../../enums/VacationRequestStatus';
-import { IShift } from '../../../models/IShift';
+import { IShift } from '../models/IShift';
 
 interface IEmployeeWeekColumnProps {
   index: number;

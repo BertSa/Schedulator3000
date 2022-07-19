@@ -4,7 +4,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import FieldInput from '../../components/FormFields';
 import { useAuth } from '../../contexts/AuthContext';
-import { IPasswordChangeDto, IPasswordChangeFieldValues } from '../../models/PasswordChange';
+import { IPasswordChangeDto, IPasswordChangeFieldValues } from './models/PasswordChange';
 import Form from '../../components/Form';
 
 export default function NewEmployeePage() {

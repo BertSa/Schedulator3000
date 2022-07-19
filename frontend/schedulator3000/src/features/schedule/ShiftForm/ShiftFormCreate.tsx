@@ -1,11 +1,11 @@
 import { UnpackNestedValue } from 'react-hook-form';
 import React from 'react';
 import { zonedTimeToUtc } from 'date-fns-tz';
-import { ShiftWithoutId } from '../../../models/ShiftWithoutId';
+import { ShiftWithoutId } from '../models/ShiftWithoutId';
 import ShiftForm, { IShiftFormFieldValue } from './ShiftForm';
 import { IShiftService } from '../../../hooks/use-services/useProvideShiftService';
 import { Employee, Manager } from '../../../models/User';
-import { IShift } from '../../../models/IShift';
+import { IShift } from '../models/IShift';
 
 interface IScheduleCreateShiftProps {
   shiftService: IShiftService;

@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { Box, IconButton, Menu } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
-import { setNull } from '../../utilities/utilities';
 import useNullableState from '../../hooks/useNullableState';
 import IterateLinks from './IterateLinks';
 import HamburgerMenuLink from './HamburgerMenuLink';
+import setNull from '../../utilities/setNull';
 
 export default function HamburgerMenu() {
   const [anchorElNav, setAnchorElNav] = useNullableState<HTMLElement>();

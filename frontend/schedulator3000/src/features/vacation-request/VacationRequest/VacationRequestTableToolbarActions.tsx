@@ -2,12 +2,14 @@ import { Add, CancelRounded, Delete, Edit } from '@mui/icons-material';
 import React from 'react';
 import VacationRequestTableToolbarAction from '../VacationRequestTableToolbarAction';
 import { VacationRequestStatus } from '../../../enums/VacationRequestStatus';
-import { IVacationRequestTableToolbarProps } from './VacationRequestTableToolbar';
+import { IActions } from './VacationRequestTable';
+import { IVacationRequest } from '../models/IVacationRequest';
+import { Nullable } from '../../../models/Nullable';
 
 export default function VacationRequestTableToolbarActions({
   selected,
-  actions: { create, edit, cancel, del },
-}: IVacationRequestTableToolbarProps) {
+  actions: { create, edit, cancel, delete: del },
+}: { selected: Nullable<IVacationRequest>, actions: IActions }) {
   if (selected) {
     return (
       <div>

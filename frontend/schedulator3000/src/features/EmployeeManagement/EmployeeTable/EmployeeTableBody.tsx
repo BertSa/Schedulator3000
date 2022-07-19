@@ -1,16 +1,16 @@
 import React from 'react';
 import { TableBody, TableCell, TableRow } from '@mui/material';
 import { Employee } from '../../../models/User';
-import { Nullable } from '../../../models/Nullable';
 import EmployeeTableBodySkeleton from './EmployeeTableBodySkeleton';
 import TableBodyEmpty from '../../../components/TableBodyEmpty';
 import ActiveMessage from './ActiveMessage';
+import { ISelected } from '../../../hooks/useSelected';
 
 export default function EmployeeTableBody({ loading, employees, selectedEmployee, onClick }:
 {
   loading: boolean,
   employees: Employee[],
-  selectedEmployee: Nullable<number>,
+  selectedEmployee: ISelected<Employee, 'id', number>,
   onClick: (employee: Employee) => void
 }) {
   if (loading) {
@@ -27,7 +27,7 @@ export default function EmployeeTableBody({ loading, employees, selectedEmployee
         <TableRow
           key={employee.id}
           hover
-          selected={selectedEmployee === employee.id}
+          selected={selectedEmployee.selected === employee.id}
           onClick={() => onClick(employee)}
           sx={{
             cursor: 'pointer',

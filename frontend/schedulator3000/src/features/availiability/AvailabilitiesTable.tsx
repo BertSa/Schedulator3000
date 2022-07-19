@@ -22,13 +22,13 @@ import useAsync from '../../hooks/useAsync';
 import { useDialog } from '../../hooks/useDialog';
 import ScheduleTableBodySkeleton from '../schedule/ScheduleTable/ScheduleTableBodySkeleton';
 import { useServices } from '../../hooks/use-services/useServices';
-import { AvailabilityDay } from '../../models/AvailabilityDay';
+import { AvailabilityDay } from './models/AvailabilityDay';
 import { getTimeInHourMinutesAMPM } from '../../utilities/DateUtilities';
 import TableBodyEmpty from '../../components/TableBodyEmpty';
 import AvailabilitiesTableToolbar from './AvailabilitiesTableToolbar';
 import AvailabilityForm, { IAvailabilityFormFieldValue } from './AvailabilityForm';
-import { IAvailabilities } from '../../models/IAvailabilities';
-import { setNull } from '../../utilities/utilities';
+import { IAvailabilities } from './models/IAvailabilities';
+import setNull from '../../utilities/setNull';
 
 export type SelectedItemType = Nullable<{ day:number, availability:Nullable<AvailabilityDay> }>;
 interface IAvailabilityTableColumnWeekProps { onClick: () => void, isSelected: boolean, day:AvailabilityDay }

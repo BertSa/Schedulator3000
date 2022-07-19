@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect } from 'react'
 import { useSnackbar } from 'notistack';
 import { Employee, Manager } from '../models/User';
 import { http } from '../hooks/use-services/useServices';
-import { IPasswordChangeDto } from '../models/PasswordChange';
+import { IPasswordChangeDto } from '../features/authentication/models/PasswordChange';
 import { useSessionStorage } from '../hooks/useStorage';
 import { Nullable } from '../models/Nullable';
 import { OneOf } from '../models/OneOf';

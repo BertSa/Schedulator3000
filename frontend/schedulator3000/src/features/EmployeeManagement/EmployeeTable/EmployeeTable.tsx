@@ -8,12 +8,12 @@ import EmployeeTableToolbar from './EmployeeTableToolbar';
 import EmployeeFormRegister from './EmployeeForm/EmployeeFormRegister';
 import EmployeeFormEdit from './EmployeeForm/EmployeeFormEdit';
 import useAsync from '../../../hooks/useAsync';
-import useNullableState from '../../../hooks/useNullableState';
 import EmployeeTableBody from './EmployeeTableBody';
+import useSelected from '../../../hooks/useSelected';
 
 export default function EmployeeTable() {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useNullableState<number>();
+  const selectedEmployee = useSelected(employees, 'id');
   const { managerService, employeeService } = useServices();
   const [openDialog, closeDialog] = useDialog();
   const manager = useAuth().getManager();
@@ -26,9 +26,6 @@ export default function EmployeeTable() {
       }),
     [manager.email],
   );
-
-  const handleClick = (employee: Employee) =>
-    setSelectedEmployee((selected) => (selected === employee.id ? null : employee.id));
 
   const createAction = () => {
     const onFinish = (employee: Employee) => {
@@ -48,7 +45,7 @@ export default function EmployeeTable() {
       setEmployees((current) => [...current.filter((emp) => emp.id !== employee.id), employee]);
       closeDialog();
     };
-    const employee = employees.find((emp) => emp.id === selectedEmployee);
+    const employee = selectedEmployee.value();
     if (!employee) {
       return;
     }
@@ -63,10 +60,10 @@ export default function EmployeeTable() {
   };
 
   const fireAction = () => {
-    if (selectedEmployee) {
-      managerService.fireEmployee(selectedEmployee, manager.email).then(() => {
-        setEmployees((emp) => emp.filter((employee) => employee.id !== selectedEmployee));
-        setSelectedEmployee(null);
+    if (selectedEmployee.selected) {
+      managerService.fireEmployee(selectedEmployee.selected, manager.email).then(() => {
+        setEmployees((emp) => emp.filter((employee) => employee.id !== selectedEmployee.selected));
+        selectedEmployee.clear();
       });
     }
   };
@@ -74,7 +71,7 @@ export default function EmployeeTable() {
   return (
     <TableContainer component={Paper}>
       <EmployeeTableToolbar
-        selected={employees.find((emp) => emp.id === selectedEmployee) ?? null}
+        selected={selectedEmployee.value()}
         actions={{
           create: createAction,
           edit: editAction,
@@ -97,7 +94,7 @@ export default function EmployeeTable() {
           loading={loading}
           employees={employees}
           selectedEmployee={selectedEmployee}
-          onClick={handleClick}
+          onClick={selectedEmployee.select}
         />
       </Table>
     </TableContainer>

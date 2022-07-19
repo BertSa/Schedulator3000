@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack';
 import { http } from './useServices';
-import { INote } from '../../models/INote';
+import { INote } from '../../features/EmployeeManagement/models/INote';
 
 export interface INoteService {
   update: (emailEmployee:string, body: INote) => Promise<INote>;

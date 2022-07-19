@@ -5,7 +5,7 @@ import React from 'react';
 import { startOfToday } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { preferences } from '../../utilities/DateUtilities';
-import { AvailabilityDay } from '../../models/AvailabilityDay';
+import { AvailabilityDay } from './models/AvailabilityDay';
 
 export interface IAvailabilityFormFieldValue {
   start: Date;

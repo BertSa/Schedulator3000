@@ -1,6 +1,6 @@
 import { TableBody } from '@mui/material';
 import React from 'react';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../models/IVacationRequest';
 import { Nullable } from '../../../models/Nullable';
 import VacationRequestTableRowSkeleton from './VacationRequestTableRowSkeleton';
 import TableBodyEmpty from '../../../components/TableBodyEmpty';
@@ -9,7 +9,7 @@ import VacationRequestTableRow from './VacationRequestTableRow';
 interface IVacationRequestTableBodyProps {
   loading: boolean,
   vacationRequests: IVacationRequest[],
-  selectedVacationRequest: Nullable<IVacationRequest>,
+  selectedVacationRequest: Nullable<number>,
   onRowClick: (request: IVacationRequest) => void
 }
 
@@ -29,7 +29,7 @@ export default function VacationRequestTableBody(
         <VacationRequestTableRow
           key={request.id}
           request={request}
-          isSelected={selectedVacationRequest?.id === request.id}
+          isSelected={selectedVacationRequest === request.id}
           onClick={() => onRowClick(request)}
         />
       ))}

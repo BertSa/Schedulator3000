@@ -1,6 +1,6 @@
 import { alpha, SxProps, Theme, Toolbar } from '@mui/material';
 import React from 'react';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../models/IVacationRequest';
 import { Nullable } from '../../../models/Nullable';
 import VacationRequestTableToolbarTitle from '../VacationRequestTableToolbarTitle';
 import VacationRequestManagementTableToolbarActions from './VacationRequestManagementTableToolbarActions';
@@ -30,7 +30,7 @@ export default function VacationRequestManagementTableToolbar({
 
   return (
     <Toolbar sx={toolbarSx}>
-      <VacationRequestTableToolbarTitle selectedVacationRequest={selectedVacationRequest} />
+      <VacationRequestTableToolbarTitle selectedVacationRequest={selectedVacationRequest?.id ?? null} />
       <VacationRequestManagementTableToolbarActions selectedVacationRequest={selectedVacationRequest} actions={actions} />
     </Toolbar>
   );

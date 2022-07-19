@@ -1,6 +1,6 @@
 import { TableBody } from '@mui/material';
 import React from 'react';
-import { IVacationRequest } from '../../../models/IVacationRequest';
+import { IVacationRequest } from '../models/IVacationRequest';
 import { Nullable } from '../../../models/Nullable';
 import { Employee } from '../../../models/User';
 import VacationRequestManagementTableBodySkeleton from './VacationRequestManagementTableBodySkeleton';
