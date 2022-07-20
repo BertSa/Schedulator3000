@@ -65,3 +65,11 @@ tbody > tr.myRow:last-child td, tbody > tr.myRow:last-child th {
 .rbc-day-slot .rbc-timeslot-group:last-child {
     border-color: aquamarine!important;
 }
+
+.cap {
+    text-transform: lowercase;
+}
+
+.cap:first-letter {
+    text-transform: uppercase;
+}

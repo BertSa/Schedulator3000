@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack';
 import { http } from './useServices';
-import { INote } from '../../models/INote';
+import { INote } from '../../features/EmployeeManagement/models/INote';
 
 export interface INoteService {
   update: (emailEmployee:string, body: INote) => Promise<INote>;
@@ -18,7 +18,7 @@ export function useProvideNoteService(): INoteService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<INote>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -31,7 +31,7 @@ export function useProvideNoteService(): INoteService {
     const { response, body } = await http.get(`/notes/${emailEmployee}`);
 
     if (response.ok) {
-      return Promise.resolve<INote>(body);
+      return body;
     }
     return Promise.reject(body.message);
   }

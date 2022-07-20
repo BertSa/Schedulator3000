@@ -17,10 +17,6 @@ export function isBetween(date: Date, start: Date, end: Date): boolean {
   return (isSameDay(dateToCheck, dateStart) || isAfter(dateToCheck, dateStart)) && isBefore(dateToCheck, dateEnd);
 }
 
-export function getCurrentTimezoneDate(date: Date) {
-  return new Date(new Date(date).getTime() - new Date(date).getTimezoneOffset() * 60000);
-}
-
 // TODO: Add preference of manager in the backend
 export const preferences = Object.freeze({
   calendar: {

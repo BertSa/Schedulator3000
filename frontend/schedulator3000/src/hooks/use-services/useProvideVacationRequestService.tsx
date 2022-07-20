@@ -1,21 +1,19 @@
 import { useSnackbar } from 'notistack';
 import React from 'react';
-import {
-  VacationRequest,
-  VacationRequestCreate,
-  VacationRequestUpdate,
-  VacationRequestUpdateStatus,
-} from '../../models/VacationRequest';
+import { IVacationRequest } from '../../features/vacation-request/models/IVacationRequest';
 import { http } from './useServices';
 import { useDialog } from '../useDialog';
 import DialogWarningDelete from '../../components/DialogWarningDelete';
+import { VacationRequestUpdateStatus } from '../../enums/VacationRequestUpdateStatus';
+import { VacationRequestCreate } from '../../features/vacation-request/models/VacationRequestCreate';
+import { VacationRequestUpdate } from '../../features/vacation-request/models/VacationRequestUpdate';
 
 export interface IVacationRequestService {
-  create: (body: VacationRequestCreate) => Promise<VacationRequest>;
-  updateStatus: (id: number, status: VacationRequestUpdateStatus) => Promise<VacationRequest>;
-  getAllByEmployeeEmail: (email: string) => Promise<VacationRequest[]>;
-  getAllByManagerEmail: (email: string) => Promise<VacationRequest[]>;
-  update: (body: VacationRequestUpdate) => Promise<VacationRequest>;
+  create: (body: VacationRequestCreate) => Promise<IVacationRequest>;
+  updateStatus: (id: number, status: VacationRequestUpdateStatus) => Promise<IVacationRequest>;
+  getAllByEmployeeEmail: (email: string) => Promise<IVacationRequest[]>;
+  getAllByManagerEmail: (email: string) => Promise<IVacationRequest[]>;
+  update: (body: VacationRequestUpdate) => Promise<IVacationRequest>;
   deleteById: (id: number) => Promise<void>;
 }
 
@@ -23,7 +21,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
   const { enqueueSnackbar } = useSnackbar();
   const [openDialog, closeDialog] = useDialog();
 
-  async function create(data: VacationRequestCreate): Promise<VacationRequest> {
+  async function create(data: VacationRequestCreate): Promise<IVacationRequest> {
     const { response, body } = await http.post('/vacation-requests', data);
 
     if (response.ok) {
@@ -31,7 +29,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<VacationRequest>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -40,7 +38,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
     return Promise.reject(body.message);
   }
 
-  async function update(data: VacationRequestUpdate): Promise<VacationRequest> {
+  async function update(data: VacationRequestUpdate): Promise<IVacationRequest> {
     const { response, body } = await http.put(`/vacation-requests/${data.id}`, data);
 
     if (response.ok) {
@@ -48,7 +46,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<VacationRequest>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -91,7 +89,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
     return Promise.resolve();
   }
 
-  async function updateStatus(id: number, status: VacationRequestUpdateStatus): Promise<VacationRequest> {
+  async function updateStatus(id: number, status: VacationRequestUpdateStatus): Promise<IVacationRequest> {
     const { response, body } = await http.put(`/vacation-requests/${id}/${status}`);
 
     if (response.ok) {
@@ -99,7 +97,7 @@ export function useProvideVacationRequestService(): IVacationRequestService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<VacationRequest>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -108,10 +106,10 @@ export function useProvideVacationRequestService(): IVacationRequestService {
     return Promise.reject(body.message);
   }
 
-  async function getAllByEmail(endpoint: string, email: string): Promise<VacationRequest[]> {
+  async function getAllByEmail(endpoint: string, email: string): Promise<IVacationRequest[]> {
     const { response, body } = await http.get(`/vacation-requests/${endpoint}/${email}`);
     if (response.ok) {
-      return Promise.resolve<VacationRequest[]>(body);
+      return body;
     }
 
     return Promise.reject(body.message);

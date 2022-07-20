@@ -1,4 +1,3 @@
-import React, { createContext, PropsWithChildren, useContext } from 'react';
 import { IManagerService, useProvideManagerService } from './useProvideManagerService';
 import { IVacationRequestService, useProvideVacationRequestService } from './useProvideVacationRequestService';
 import { IShiftService, useProvideShiftService } from './useProvideShiftService';
@@ -15,7 +14,7 @@ export interface IProviderServices {
   availabilitiesService: IAvailabilitiesService;
 }
 
-function useProvideServices(): IProviderServices {
+export function useServices(): IProviderServices {
   return {
     managerService: useProvideManagerService(),
     employeeService: useProvideEmployeeService(),
@@ -24,15 +23,6 @@ function useProvideServices(): IProviderServices {
     noteService: useProvideNoteService(),
     availabilitiesService: useProvideAvailabilitiesService(),
   };
-}
-
-const serviceContext: React.Context<IProviderServices> = createContext({} as IProviderServices);
-
-export const useServices = () => useContext(serviceContext);
-
-export function ServicesProvider({ children }: PropsWithChildren<{}>) {
-  const services = useProvideServices();
-  return React.createElement(serviceContext.Provider, { value: services }, children);
 }
 
 async function post(path: string, data?: any): Promise<{ response: Response, body: any }> {
@@ -109,16 +99,16 @@ async function del(path: string): Promise<{ response: Response, body: any }> {
   return { response, body };
 }
 
-interface ResponseBody {
+interface IResponseBody {
   response: Response,
   body: any
 }
 
 export const http: {
-  post: (path: string, data?: any) => Promise<ResponseBody>,
-  put: (path: string, data?: any) => Promise<ResponseBody>,
-  get: (path: string) => Promise<ResponseBody>,
-  del: (path: string) => Promise<ResponseBody>,
+  post: (path: string, data?: any) => Promise<IResponseBody>,
+  put: (path: string, data?: any) => Promise<IResponseBody>,
+  get: (path: string) => Promise<IResponseBody>,
+  del: (path: string) => Promise<IResponseBody>,
 } = {
   post,
   put,

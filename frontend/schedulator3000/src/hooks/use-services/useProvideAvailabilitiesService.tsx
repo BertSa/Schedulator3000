@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack';
 import { http } from './useServices';
-import { IAvailabilities } from '../../models/Availabilities';
+import { IAvailabilities } from '../../features/availiability/models/IAvailabilities';
 
 export interface IAvailabilitiesService {
   update: (emailEmployee:string, body: IAvailabilities) => Promise<IAvailabilities>;
@@ -18,7 +18,7 @@ export function useProvideAvailabilitiesService(): IAvailabilitiesService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<IAvailabilities>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -31,7 +31,7 @@ export function useProvideAvailabilitiesService(): IAvailabilitiesService {
     const { response, body } = await http.get(`/availabilities/${emailEmployee}`);
 
     if (response.ok) {
-      return Promise.resolve<IAvailabilities>(body);
+      return body;
     }
     return Promise.reject(body.message);
   }

@@ -1,18 +1,19 @@
 import { useSnackbar } from 'notistack';
 import React from 'react';
 import { useDialog } from '../useDialog';
-import { RequestDtoShiftsFromTo } from '../../models/ShiftsFromTo';
-import { Shift, ShiftWithoutId } from '../../models/Shift';
+import { IRequestDtoShiftsFromTo } from '../../features/schedule/models/IRequestDtoShiftsFromTo';
+import { ShiftWithoutId } from '../../features/schedule/models/ShiftWithoutId';
 import DialogWarningDelete from '../../components/DialogWarningDelete';
 import { http } from './useServices';
+import { IShift } from '../../features/schedule/models/IShift';
 
 const PATH = '/shifts';
 
 export interface IShiftService {
-  getShiftsManager: (body: RequestDtoShiftsFromTo) => Promise<Shift[]>;
-  getShiftsEmployee: (body: RequestDtoShiftsFromTo) => Promise<Shift[]>;
-  create: (body: ShiftWithoutId) => Promise<Shift>;
-  updateShift: (body: Shift) => Promise<Shift>;
+  getShiftsManager: (body: IRequestDtoShiftsFromTo) => Promise<IShift[]>;
+  getShiftsEmployee: (body: IRequestDtoShiftsFromTo) => Promise<IShift[]>;
+  create: (body: ShiftWithoutId) => Promise<IShift>;
+  updateShift: (body: IShift) => Promise<IShift>;
   deleteShift: (id: number) => Promise<void>;
 }
 
@@ -20,11 +21,11 @@ export function useProvideShiftService(): IShiftService {
   const { enqueueSnackbar } = useSnackbar();
   const [openDialog, closeDialog] = useDialog();
 
-  async function getShifts(userType: string, data: RequestDtoShiftsFromTo): Promise<Shift[]> {
+  async function getShifts(userType: string, data: IRequestDtoShiftsFromTo): Promise<IShift[]> {
     const { response, body } = await http.post(`${PATH}/${userType}`, data);
 
     if (response.ok) {
-      return Promise.resolve<Shift[]>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -33,10 +34,10 @@ export function useProvideShiftService(): IShiftService {
     return Promise.reject(body.message);
   }
 
-  const getShiftsManager = async (body: RequestDtoShiftsFromTo): Promise<Shift[]> => getShifts('manager', body);
-  const getShiftsEmployee = async (body: RequestDtoShiftsFromTo): Promise<Shift[]> => getShifts('employee', body);
+  const getShiftsManager = async (body: IRequestDtoShiftsFromTo): Promise<IShift[]> => getShifts('manager', body);
+  const getShiftsEmployee = async (body: IRequestDtoShiftsFromTo): Promise<IShift[]> => getShifts('employee', body);
 
-  async function create(data: ShiftWithoutId): Promise<Shift> {
+  async function create(data: ShiftWithoutId): Promise<IShift> {
     const { response, body } = await http.post(`${PATH}/manager/create`, data);
 
     if (response.status === 201) {
@@ -44,7 +45,7 @@ export function useProvideShiftService(): IShiftService {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<Shift>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
@@ -53,14 +54,14 @@ export function useProvideShiftService(): IShiftService {
     return Promise.reject(body.message);
   }
 
-  async function updateShift(data: Shift): Promise<Shift> {
+  async function updateShift(data: IShift): Promise<IShift> {
     const { response, body } = await http.put(`${PATH}/manager/update`, data);
     if (response.ok) {
       enqueueSnackbar('Shift Updated!', {
         variant: 'success',
         autoHideDuration: 3000,
       });
-      return Promise.resolve<Shift>(body);
+      return body;
     }
     enqueueSnackbar(body.message, {
       variant: 'error',
