@@ -2,12 +2,11 @@ import { UnpackNestedValue } from 'react-hook-form';
 import React from 'react';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import ShiftForm, { IShiftFormFieldValue } from './ShiftForm';
-import { IShiftService } from '../../../hooks/use-services/useProvideShiftService';
+import useShiftService from '../../../hooks/use-services/useShiftService';
 import { Employee, Manager } from '../../../models/User';
 import { IShift } from '../models/IShift';
 
 interface IScheduleUpdateShiftProps {
-  shiftService: IShiftService;
   employees: Employee[];
   manager: Manager;
   selected: IShiftFormFieldValue;
@@ -17,7 +16,6 @@ interface IScheduleUpdateShiftProps {
 }
 
 export default function ShiftFormEdit({
-  shiftService,
   employees,
   manager,
   selected,
@@ -25,6 +23,8 @@ export default function ShiftFormEdit({
   callbackDelete,
   closeDialog,
 }: IScheduleUpdateShiftProps) {
+  const shiftService = useShiftService();
+
   const submit = (data: UnpackNestedValue<IShiftFormFieldValue>, event?: any) => {
     event?.preventDefault();
     const submitter = event?.nativeEvent.submitter.value;

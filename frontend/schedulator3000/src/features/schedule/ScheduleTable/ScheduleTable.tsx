@@ -5,7 +5,6 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../models/User';
 import { isBetween } from '../../../utilities/DateUtilities';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useServices } from '../../../hooks/use-services/useServices';
 import { IRequestDtoShiftsFromTo } from '../models/IRequestDtoShiftsFromTo';
 import { useDialog } from '../../../hooks/useDialog';
 import ScheduleTableToolbar from './ScheduleTableToolbar';
@@ -22,6 +21,9 @@ import useDebounce from '../../../hooks/useDebounce';
 import TableBodyEmpty from '../../../components/TableBodyEmpty';
 import ScheduleTableRow from './ScheduleTableRow';
 import { IShift } from '../models/IShift';
+import useShiftService from '../../../hooks/use-services/useShiftService';
+import useManagerService from '../../../hooks/use-services/useManagerService';
+import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
 
 export type SelectedItemType = Nullable<{ employee: Employee; day: number; shift: Nullable<IShift> }>;
 
@@ -36,7 +38,9 @@ export default function ScheduleTable() {
   const [shifts, setShifts] = useState<IShift[]>([]);
   const [vacationRequests, setVacationRequests] = useState<IVacationRequest[]>([]);
   const [selectedItem, setSelectedItem] = useState<SelectedItemType>(null);
-  const { managerService, shiftService, vacationRequestService } = useServices();
+  const shiftService = useShiftService();
+  const vacationRequestService = useVacationRequestService();
+  const managerService = useManagerService();
   const currentWeek: ICurrentWeek = useCurrentWeek();
   const [openDialog, closeDialog] = useDialog();
   const manager = useAuth().getManager();
@@ -122,7 +126,6 @@ export default function ScheduleTable() {
 
     openDialog(
       <ShiftFormCreate
-        shiftService={shiftService}
         employees={employees}
         closeDialog={closeDialog}
         selected={selectedValue}
@@ -157,7 +160,6 @@ export default function ScheduleTable() {
 
     openDialog(
       <ShiftFormEdit
-        shiftService={shiftService}
         employees={employees}
         closeDialog={closeDialog}
         selected={selectedValue}

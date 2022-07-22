@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { IVacationRequest } from '../models/IVacationRequest';
-import { useServices } from '../../../hooks/use-services/useServices';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Employee } from '../../../models/User';
 import VacationRequestTableToolbar from './VacationRequestTableToolbar';
@@ -9,6 +8,7 @@ import useAsync from '../../../hooks/useAsync';
 import useNullableState from '../../../hooks/useNullableState';
 import VacationRequestTableBody from './VacationRequestTableBody';
 import { NoParamFunction } from '../../../models/NoParamFunction';
+import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
 
 export interface IActions {
   create: VoidFunction,
@@ -20,7 +20,7 @@ export interface IActions {
 export default function VacationRequestTable() {
   const [vacationRequests, setVacationRequests] = useState<IVacationRequest[]>([]);
   const [selectedVacationRequestId, setSelectedVacationRequest] = useNullableState<number>();
-  const { vacationRequestService } = useServices();
+  const vacationRequestService = useVacationRequestService();
   const employee: Employee = useAuth().getEmployee();
 
   const { loading } = useAsync(

@@ -12,8 +12,8 @@ import { VacationRequestUpdateStatus } from '../../../enums/VacationRequestUpdat
 import { useDialog } from '../../../hooks/useDialog';
 import { Employee } from '../../../models/User';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useServices } from '../../../hooks/use-services/useServices';
 import { SetState } from '../../../models/SetState';
+import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
 
 export interface IVacationRequestTableToolbarProps {
   selectedVacationRequestId: Nullable<number>,
@@ -25,7 +25,7 @@ export interface IVacationRequestTableToolbarProps {
 export default function VacationRequestTableToolbar(props: IVacationRequestTableToolbarProps) {
   const { selectedVacationRequestId, vacationRequests, setVacationRequests, setSelectedVacationRequestId } = props;
   const [openDialog, closeDialog] = useDialog();
-  const { vacationRequestService } = useServices();
+  const vacationRequestService = useVacationRequestService();
   const employee: Employee = useAuth().getEmployee();
 
   const toolbarSx: SxProps<Theme> = {

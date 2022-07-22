@@ -4,9 +4,7 @@ import SignUpPage from '../features/authentication/SignUpPage';
 import SignInPage from '../features/authentication/SignInPage';
 import NotFoundPage from './NotFoundPage';
 import EmployeeManagement from '../features/EmployeeManagement';
-import ScheduleCalendarManager from '../features/schedule/ScheduleCalendar/ScheduleCalendarManager';
 import ScheduleTable from '../features/schedule/ScheduleTable/ScheduleTable';
-import ScheduleCalendarEmployee from '../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee';
 import VacationRequestTable from '../features/vacation-request/VacationRequest/VacationRequestTable';
 import AvailabilitiesTable from '../features/availiability/AvailabilitiesTable';
 import NewEmployeePage from '../features/authentication/NewEmployeePage';
@@ -17,6 +15,9 @@ import {
   RouteUnAuthenticated,
 } from './ConditionalRouting/ConditionalRoute';
 import VacationRequestManagement from '../features/vacation-request/VacationRequestManagement';
+
+const ScheduleCalendarEmployee = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee'));
+const ScheduleCalendarManager = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarManager'));
 
 export default function Routing() {
   return (

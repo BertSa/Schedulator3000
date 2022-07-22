@@ -1,13 +1,14 @@
 import React, { createContext, useCallback, useContext, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { Employee, Manager } from '../models/User';
-import { http } from '../hooks/use-services/useServices';
 import { IPasswordChangeDto } from '../features/authentication/models/PasswordChange';
 import { useSessionStorage } from '../hooks/useStorage';
 import { Nullable } from '../models/Nullable';
 import { OneOf } from '../models/OneOf';
 import { NoParamFunction } from '../models/NoParamFunction';
 import useNullableState from '../hooks/useNullableState';
+import { request } from '../utilities/request';
+import { ErrorType } from '../models/ErrorType';
 
 type TypeOfUser = OneOf<'manager', 'employee'>;
 type UserType = OneOf<Manager, Employee>;
@@ -44,20 +45,36 @@ function useProvideAuth(): IProviderAuth {
   const isEmployee = useCallback(() => isAuthenticated() && userType === 'employee', [user, userType]);
 
   useEffect(() => {
-    if (user) {
-      setSessionStorageUser({ type: isManager() ? 'manager' : 'employee', user });
+    setUser(sessionStorageUser?.user ?? null);
+    setUserType(sessionStorageUser?.type ?? null);
+
+    return () => {
+      setUser(null);
+      setUserType(null);
+    };
+  }, [sessionStorageUser]);
+
+  useEffect(() => {
+    if (user && userType) {
+      setSessionStorageUser({ type: userType, user });
     } else {
       removeSessionStorageUser();
     }
     return () => {
     };
-  }, [user]);
+  }, [user, userType]);
 
   const signUpManager = async (manager:Manager): Promise<void> => {
-    const { response, body } = await http.post('/manager/signup', manager);
+    const result = await request<Manager, ErrorType>(
+      {
+        method: 'POST',
+        url: '/manager/signup',
+        body: manager,
+      },
+    );
 
-    if (response.ok) {
-      setUser(body);
+    if (result.ok) {
+      setUser(result.data);
       setUserType('manager');
       enqueueSnackbar('You are connected!', {
         variant: 'success',
@@ -65,22 +82,29 @@ function useProvideAuth(): IProviderAuth {
       });
       return Promise.resolve();
     }
-    enqueueSnackbar(body.message, {
+    enqueueSnackbar(result.errorData.message, {
       variant: 'error',
       autoHideDuration: 3000,
     });
 
-    return Promise.reject(body.message);
+    return Promise.reject(result.errorData.message);
   };
 
-  const signIn = async (endpoint: string, type: TypeOfUser, email: string, password: string): Promise<void> => {
-    const { response, body } = await http.post(`/${endpoint}/signin`, {
-      email,
-      password,
-    });
+  const signIn = async <T extends UserType>(
+    endpoint: string,
+    type: TypeOfUser,
+    body:{ email: string, password: string },
+  ): Promise<void> => {
+    const result = await request<T, ErrorType>(
+      {
+        method: 'POST',
+        url: `/${endpoint}/signin`,
+        body,
+      },
+    );
 
-    if (response.ok) {
-      setUser(type === 'manager' ? body as Manager : body as Employee);
+    if (result.ok) {
+      setUser(result.data);
       setUserType(type);
       enqueueSnackbar('You are connected!', {
         variant: 'success',
@@ -88,16 +112,22 @@ function useProvideAuth(): IProviderAuth {
       });
       return Promise.resolve();
     }
-    enqueueSnackbar(body.message, {
+    enqueueSnackbar(result.errorData.message, {
       variant: 'error',
       autoHideDuration: 3000,
     });
 
-    return Promise.reject(body.message);
+    return Promise.reject(result.errorData.message);
   };
 
-  const signInManager = async (email: string, password: string): Promise<void> => signIn('manager', 'manager', email, password);
-  const signInEmployee = async (email: string, password: string): Promise<void> => signIn('employees', 'employee', email, password);
+  const signInManager = async (email: string, password: string): Promise<void> => signIn<Manager>('manager', 'manager', {
+    email,
+    password,
+  });
+  const signInEmployee = async (email: string, password: string): Promise<void> => signIn<Employee>('employees', 'employee', {
+    email,
+    password,
+  });
 
   const signOut = (): void => {
     setUser(null);
@@ -131,15 +161,21 @@ function useProvideAuth(): IProviderAuth {
     }
 
     const endpoint: string = isManager() ? 'manager' : 'employees';
-    const data: IPasswordChangeDto = {
+    const body: IPasswordChangeDto = {
       ...passwordChange,
       email: user?.email,
     };
 
-    const { response, body } = await http.post(`/${endpoint}/password/update`, data);
+    const result = await request<Employee, ErrorType>(
+      {
+        method: 'POST',
+        url: `/${endpoint}/password/update`,
+        body,
+      },
+    );
 
-    if (response.status === 200) {
-      setUser(body);
+    if (result.ok) {
+      setUser(result.data);
       setUserType('employee');
       enqueueSnackbar('Password Updated!', {
         variant: 'success',
@@ -147,12 +183,12 @@ function useProvideAuth(): IProviderAuth {
       });
       return Promise.resolve();
     }
-    enqueueSnackbar(body.message, {
+    enqueueSnackbar(result.errorData.message, {
       variant: 'error',
       autoHideDuration: 3000,
     });
 
-    return Promise.reject(body.message);
+    return Promise.reject(result.errorData.message);
   };
 
   return {

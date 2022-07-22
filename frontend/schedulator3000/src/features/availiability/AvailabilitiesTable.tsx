@@ -21,7 +21,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import useAsync from '../../hooks/useAsync';
 import { useDialog } from '../../hooks/useDialog';
 import ScheduleTableBodySkeleton from '../schedule/ScheduleTable/ScheduleTableBodySkeleton';
-import { useServices } from '../../hooks/use-services/useServices';
 import { AvailabilityDay } from './models/AvailabilityDay';
 import { getTimeInHourMinutesAMPM } from '../../utilities/DateUtilities';
 import TableBodyEmpty from '../../components/TableBodyEmpty';
@@ -29,6 +28,7 @@ import AvailabilitiesTableToolbar from './AvailabilitiesTableToolbar';
 import AvailabilityForm, { IAvailabilityFormFieldValue } from './AvailabilityForm';
 import { IAvailabilities } from './models/IAvailabilities';
 import setNull from '../../utilities/setNull';
+import useAvailabilitiesService from '../../hooks/use-services/useAvailabilitiesService';
 
 export type SelectedItemType = Nullable<{ day:number, availability:Nullable<AvailabilityDay> }>;
 interface IAvailabilityTableColumnWeekProps { onClick: () => void, isSelected: boolean, day:AvailabilityDay }
@@ -71,7 +71,7 @@ export default function AvailabilitiesTable() {
     lastModified: startOfToday(),
     id: -1,
   });
-  const { availabilitiesService } = useServices();
+  const availabilitiesService = useAvailabilitiesService();
   const [openDialog, closeDialog] = useDialog();
   const employee = useAuth().getEmployee();
 

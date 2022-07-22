@@ -10,7 +10,7 @@ export default function EmployeeTableBody({ loading, employees, selectedEmployee
 {
   loading: boolean,
   employees: Employee[],
-  selectedEmployee: ISelected<Employee, 'id', number>,
+  selectedEmployee: ISelected<Employee, 'id'>,
   onClick: (employee: Employee) => void
 }) {
   if (loading) {

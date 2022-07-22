@@ -3,16 +3,17 @@ import { SubmitHandler } from 'react-hook-form';
 import { Typography } from '@mui/material';
 import { Employee, EmployeeFormType } from '../../../../models/User';
 import EmployeeForm from './EmployeeForm';
-import { IEmployeeService } from '../../../../hooks/use-services/useProvideEmployeeService';
+import useEmployeeService from '../../../../hooks/use-services/useEmployeeService';
 
 interface IEmployeeFormEditProps {
-  employeeService: IEmployeeService;
   onFinish: (employee: Employee) => void;
   onCancel: VoidFunction;
   employee: Employee;
 }
 
-export default function EmployeeFormEdit({ employeeService, onFinish, onCancel, employee }: IEmployeeFormEditProps): React.ReactElement {
+export default function EmployeeFormEdit({ onFinish, onCancel, employee }: IEmployeeFormEditProps): React.ReactElement {
+  const employeeService = useEmployeeService();
+
   const submit: SubmitHandler<EmployeeFormType> = (data, event) => {
     event?.preventDefault();
     employeeService.updateEmployee(data).then(onFinish);

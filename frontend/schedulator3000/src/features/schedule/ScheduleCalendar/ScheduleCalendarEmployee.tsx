@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { addDays, format, parseISO } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Container, Paper, useTheme } from '@mui/material';
-import { useServices } from '../../../hooks/use-services/useServices';
 import { IRequestDtoShiftsFromTo } from '../models/IRequestDtoShiftsFromTo';
 import { isBetween, localizer } from '../../../utilities/DateUtilities';
 import { IShiftEvent } from '../models/IShiftEvent';
@@ -15,13 +14,16 @@ import { VacationRequestStatus } from '../../../enums/VacationRequestStatus';
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import { BigCalendar } from '../lib/BigCalendar';
 import getDefaultDayProps from './GetDefaultDayProps';
+import useShiftService from '../../../hooks/use-services/useShiftService';
+import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
 
 function ScheduleCalendar() {
   const user = useAuth().getEmployee();
   const currentWeek = useCurrentWeek();
   const [events, setEvents] = useState<IShiftEvent[]>([]);
   const [vacationRequests, setVacationRequests] = useState<IVacationRequest[]>([]);
-  const { shiftService, vacationRequestService } = useServices();
+  const shiftService = useShiftService();
+  const vacationRequestService = useVacationRequestService();
   const { palette: { warning, grey, primary, secondary } } = useTheme();
 
   const eventProps = {

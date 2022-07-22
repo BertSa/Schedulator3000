@@ -5,7 +5,7 @@ import { IVacationRequest } from '../models/IVacationRequest';
 import { Employee } from '../../../models/User';
 import { VacationRequestType } from '../../../enums/VacationRequestType';
 import { VacationRequestCreate } from '../models/VacationRequestCreate';
-import { useServices } from '../../../hooks/use-services/useServices';
+import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
 
 interface IVacationRequestFormCreateProps {
   onFinish: (vacationRequest: IVacationRequest) => void;
@@ -18,7 +18,7 @@ export default function VacationRequestFormCreate({
   onFinish,
   employee,
 }: IVacationRequestFormCreateProps) {
-  const { vacationRequestService } = useServices();
+  const vacationRequestService = useVacationRequestService();
 
   const submit: SubmitHandler<IVacationRequestFormFieldValue> = (data, event): void => {
     event?.preventDefault();

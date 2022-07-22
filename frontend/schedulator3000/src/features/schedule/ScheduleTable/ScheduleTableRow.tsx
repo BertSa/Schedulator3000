@@ -10,7 +10,6 @@ import ScheduleTableColumnWeek from './ScheduleTableColumnWeek';
 import { Nullable } from '../../../models/Nullable';
 import { ICurrentWeek } from '../../../hooks/useCurrentWeek';
 import useUpdateEffect from '../../../hooks/useUpdateEffect';
-import { useServices } from '../../../hooks/use-services/useServices';
 import { INote } from '../../EmployeeManagement/models/INote';
 import EditableTextField from '../../../components/EditableTextField';
 import { AvailabilityDay } from '../../availiability/models/AvailabilityDay';
@@ -19,6 +18,8 @@ import { IAvailabilities } from '../../availiability/models/IAvailabilities';
 import { IShift } from '../models/IShift';
 import useNullableState from '../../../hooks/useNullableState';
 import { useToggleBool } from '../../../hooks/useToggle';
+import useAvailabilitiesService from '../../../hooks/use-services/useAvailabilitiesService';
+import useNoteService from '../../../hooks/use-services/useNoteService';
 
 interface IAvailabilityRowProps {
   availability?: AvailabilityDay;
@@ -68,7 +69,8 @@ export default function ScheduleTableRow({
   const [open, toggle] = useToggleBool();
   const [note, setNote] = useNullableState<INote>();
   const [availabilities, setAvailabilities] = useNullableState<IAvailabilities>();
-  const { noteService, availabilitiesService } = useServices();
+  const availabilitiesService = useAvailabilitiesService();
+  const noteService = useNoteService();
 
   useUpdateEffect(() => {
     noteService.getByEmployeeEmail(employee.email).then(setNote);

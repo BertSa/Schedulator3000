@@ -4,7 +4,7 @@ import VacationRequestForm, { IVacationRequestFormFieldValue } from './VacationR
 import { IVacationRequest } from '../models/IVacationRequest';
 import { VacationRequestType } from '../../../enums/VacationRequestType';
 import { VacationRequestUpdate } from '../models/VacationRequestUpdate';
-import { useServices } from '../../../hooks/use-services/useServices';
+import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
 
 interface IVacationRequestFormEditProps {
   onFinish: (vacationRequest: IVacationRequest) => void;
@@ -17,7 +17,7 @@ export default function VacationRequestFormEdit({
   onCancel,
   vacationRequest,
 }: IVacationRequestFormEditProps) {
-  const { vacationRequestService } = useServices();
+  const vacationRequestService = useVacationRequestService();
 
   const submit: SubmitHandler<IVacationRequestFormFieldValue> = (data, event): void => {
     event?.preventDefault();

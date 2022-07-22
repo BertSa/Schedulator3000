@@ -1,7 +1,6 @@
 import React from 'react';
 import { Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { IVacationRequest } from '../models/IVacationRequest';
-import { useServices } from '../../../hooks/use-services/useServices';
 import { Employee } from '../../../models/User';
 import VacationRequestManagementTableToolbar from './VacationRequestManagementTableToolbar';
 import VacationRequestFormEdit from '../form/VacationRequestFormEdit';
@@ -10,6 +9,7 @@ import { VacationRequestUpdateStatus } from '../../../enums/VacationRequestUpdat
 import VacationRequestManagementTableBody from './VacationRequestManagementTableBody';
 import { SetState } from '../../../models/SetState';
 import useSelected from '../../../hooks/useSelected';
+import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
 
 interface IVacationRequestManagementTableProps {
   loading:boolean,
@@ -22,7 +22,7 @@ export default function VacationRequestManagementTable({ loading, employees, vac
 IVacationRequestManagementTableProps) {
   const selectedVacationRequest = useSelected(vacationRequests, 'id');
   const [openDialog, closeDialog] = useDialog();
-  const { vacationRequestService } = useServices();
+  const vacationRequestService = useVacationRequestService();
 
   function updateRequest(status: VacationRequestUpdateStatus): void {
     if (!selectedVacationRequest.selected) {

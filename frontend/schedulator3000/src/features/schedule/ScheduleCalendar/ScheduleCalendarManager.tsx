@@ -7,7 +7,6 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../models/User';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useDialog } from '../../../hooks/useDialog';
-import { useServices } from '../../../hooks/use-services/useServices';
 import { IRequestDtoShiftsFromTo } from '../models/IRequestDtoShiftsFromTo';
 import { IShiftEvent } from '../models/IShiftEvent';
 import ScheduleCalendarToolbar from './ScheduleCalendarToolbar';
@@ -26,6 +25,8 @@ import setNull from '../../../utilities/setNull';
 import stringToHexColor from '../../../utilities/stringToHexColor';
 import { DragAndDropBigCalendar } from '../lib/BigCalendar';
 import getDefaultDayProps from './GetDefaultDayProps';
+import useManagerService from '../../../hooks/use-services/useManagerService';
+import useShiftService from '../../../hooks/use-services/useShiftService';
 
 export type ResourceType = {
   employeeId: number,
@@ -43,7 +44,8 @@ function ScheduleCalendar() {
   const [events, setEvents] = useState<IShiftEvent[]>([]);
   const [openDialog, closeDialog] = useDialog();
   const [contextMenu, setContextMenu] = useNullableState<IContextMenuStates>();
-  const { managerService, shiftService } = useServices();
+  const shiftService = useShiftService();
+  const managerService = useManagerService();
   const { palette: { grey, secondary } } = useTheme();
   const manager = useAuth().getManager();
 
@@ -159,7 +161,6 @@ function ScheduleCalendar() {
 
     openDialog(
       <ShiftFormCreate
-        shiftService={shiftService}
         employees={employees}
         closeDialog={closeDialog}
         selected={selectedValue}
@@ -199,7 +200,6 @@ function ScheduleCalendar() {
 
     openDialog(
       <ShiftFormEdit
-        shiftService={shiftService}
         employees={employees}
         closeDialog={closeDialog}
         selected={selectedValue}

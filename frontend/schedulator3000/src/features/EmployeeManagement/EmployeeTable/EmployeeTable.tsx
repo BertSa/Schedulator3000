@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { Employee } from '../../../models/User';
 import { useDialog } from '../../../hooks/useDialog';
-import { useServices } from '../../../hooks/use-services/useServices';
 import { useAuth } from '../../../contexts/AuthContext';
 import EmployeeTableToolbar from './EmployeeTableToolbar';
 import EmployeeFormRegister from './EmployeeForm/EmployeeFormRegister';
@@ -10,18 +9,21 @@ import EmployeeFormEdit from './EmployeeForm/EmployeeFormEdit';
 import useAsync from '../../../hooks/useAsync';
 import EmployeeTableBody from './EmployeeTableBody';
 import useSelected from '../../../hooks/useSelected';
+import useManagerService from '../../../hooks/use-services/useManagerService';
+import useArray from '../../../hooks/useArray';
+import { KeyOf } from '../../../models/KeyOf';
 
 export default function EmployeeTable() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const selectedEmployee = useSelected(employees, 'id');
-  const { managerService, employeeService } = useServices();
+  const employees = useArray<Employee, KeyOf<Employee>>('id');
+  const selectedEmployee = useSelected(employees.value, 'id');
+  const managerService = useManagerService();
   const [openDialog, closeDialog] = useDialog();
   const manager = useAuth().getManager();
 
   const { loading } = useAsync(
     () =>
       new Promise<void>(async (resolve, reject) => {
-        await managerService.getEmployees(manager.email).then(setEmployees, reject);
+        await managerService.getEmployees(manager.email).then(employees.setValue, reject);
         resolve();
       }),
     [manager.email],
@@ -29,7 +31,7 @@ export default function EmployeeTable() {
 
   const createAction = () => {
     const onFinish = (employee: Employee) => {
-      setEmployees((current) => [...current, employee]);
+      employees.add(employee);
       closeDialog();
     };
 
@@ -42,7 +44,7 @@ export default function EmployeeTable() {
     }
 
     const onFinish = (employee: Employee) => {
-      setEmployees((current) => [...current.filter((emp) => emp.id !== employee.id), employee]);
+      employees.removeByUniqueIdentifier(employee.id);
       closeDialog();
     };
     const employee = selectedEmployee.value();
@@ -53,7 +55,6 @@ export default function EmployeeTable() {
       <EmployeeFormEdit
         employee={employee}
         onFinish={onFinish}
-        employeeService={employeeService}
         onCancel={closeDialog}
       />,
     );
@@ -62,7 +63,7 @@ export default function EmployeeTable() {
   const fireAction = () => {
     if (selectedEmployee.selected) {
       managerService.fireEmployee(selectedEmployee.selected, manager.email).then(() => {
-        setEmployees((emp) => emp.filter((employee) => employee.id !== selectedEmployee.selected));
+        employees.removeByUniqueIdentifier(selectedEmployee.selected);
         selectedEmployee.clear();
       });
     }
@@ -92,7 +93,7 @@ export default function EmployeeTable() {
         </TableHead>
         <EmployeeTableBody
           loading={loading}
-          employees={employees}
+          employees={employees.value}
           selectedEmployee={selectedEmployee}
           onClick={selectedEmployee.select}
         />

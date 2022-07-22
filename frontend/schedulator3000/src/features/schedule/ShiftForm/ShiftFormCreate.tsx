@@ -3,12 +3,11 @@ import React from 'react';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { ShiftWithoutId } from '../models/ShiftWithoutId';
 import ShiftForm, { IShiftFormFieldValue } from './ShiftForm';
-import { IShiftService } from '../../../hooks/use-services/useProvideShiftService';
+import useShiftService from '../../../hooks/use-services/useShiftService';
 import { Employee, Manager } from '../../../models/User';
 import { IShift } from '../models/IShift';
 
 interface IScheduleCreateShiftProps {
-  shiftService: IShiftService;
   employees: Employee[];
   manager: Manager;
   selected: IShiftFormFieldValue;
@@ -17,13 +16,14 @@ interface IScheduleCreateShiftProps {
 }
 
 export default function ShiftFormCreate({
-  shiftService,
   employees,
   manager,
   selected,
   callback,
   closeDialog,
 }: IScheduleCreateShiftProps) {
+  const shiftService = useShiftService();
+
   const submit = (data: UnpackNestedValue<IShiftFormFieldValue>, event?: React.BaseSyntheticEvent) => {
     event?.preventDefault();
     const { start, end, employeeId } = data;

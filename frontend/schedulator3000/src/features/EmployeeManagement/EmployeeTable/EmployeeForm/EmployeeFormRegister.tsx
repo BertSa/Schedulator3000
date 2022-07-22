@@ -3,7 +3,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { Typography } from '@mui/material';
 import { Employee, EmployeeFormType, Manager } from '../../../../models/User';
 import EmployeeForm from './EmployeeForm';
-import { useServices } from '../../../../hooks/use-services/useServices';
+import useManagerService from '../../../../hooks/use-services/useManagerService';
 
 interface IEmployeeFormRegisterProps {
   user: Manager;
@@ -12,7 +12,7 @@ interface IEmployeeFormRegisterProps {
 }
 
 export default function EmployeeFormRegister({ user, onFinish, onCancel }: IEmployeeFormRegisterProps): React.ReactElement {
-  const { managerService } = useServices();
+  const managerService = useManagerService();
 
   const submit: SubmitHandler<EmployeeFormType> = (data, event) => {
     event?.preventDefault();
