@@ -98,19 +98,10 @@ export default function VacationRequestForm({ submit, onCancel, vacationRequest 
         />
       </Grid>
       <Grid item alignSelf="center" marginX="auto">
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-        >
+        <Button type="submit" variant="contained" color="primary">
           Submit
         </Button>
-        <Button
-          type="button"
-          variant="text"
-          color="primary"
-          onClick={onCancel}
-        >
+        <Button type="button" variant="text" color="primary" onClick={onCancel}>
           Cancel
         </Button>
       </Grid>

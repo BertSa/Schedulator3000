@@ -4,10 +4,13 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import { useTheme } from '@mui/material';
 import { startOfWeek } from 'date-fns';
 import { preferences } from '../../../utilities/DateUtilities';
-import { ResourceType } from '../ScheduleCalendar/ScheduleCalendarManager';
 import { IShiftEvent } from '../models/IShiftEvent';
 
-export function BigCalendar(props: CalendarProps<IShiftEvent, ResourceType>) {
+export interface IResourceType {
+  employeeId: number,
+}
+
+export function BigCalendar(props: CalendarProps<IShiftEvent, IResourceType>) {
   const { palette: { text } } = useTheme();
 
   return (
@@ -37,6 +40,4 @@ export function BigCalendar(props: CalendarProps<IShiftEvent, ResourceType>) {
   );
 }
 
-export const DragAndDropBigCalendar = withDragAndDrop<IShiftEvent, ResourceType>(BigCalendar);
-
-export default {};
+export const DragAndDropBigCalendar = withDragAndDrop<IShiftEvent, IResourceType>((props) => <BigCalendar {...props} />);

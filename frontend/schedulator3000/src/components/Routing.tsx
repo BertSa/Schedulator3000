@@ -4,7 +4,6 @@ import SignUpPage from '../features/authentication/SignUpPage';
 import SignInPage from '../features/authentication/SignInPage';
 import NotFoundPage from './NotFoundPage';
 import EmployeeManagement from '../features/EmployeeManagement';
-import ScheduleTable from '../features/schedule/ScheduleTable/ScheduleTable';
 import VacationRequestTable from '../features/vacation-request/VacationRequest/VacationRequestTable';
 import AvailabilitiesTable from '../features/availiability/AvailabilitiesTable';
 import NewEmployeePage from '../features/authentication/NewEmployeePage';
@@ -17,10 +16,7 @@ import {
 import VacationRequestManagement from '../features/vacation-request/VacationRequestManagement';
 import ScheduleCalendarManager from '../features/schedule/ScheduleCalendar/ScheduleCalendarManager';
 import ScheduleCalendarEmployee from '../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee';
-import { CurrentWeekContextProvider } from '../features/schedule/contexts/CurrentWeekContext';
-import {
-  SelectedScheduleTableCellContextProvider,
-} from '../features/schedule/contexts/SelectedScheduleTableCellContext';
+import ScheduleTable from '../features/schedule/ScheduleTable';
 
 // const ScheduleCalendarEmployee = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee'));
 // const ScheduleCalendarManager = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarManager'));
@@ -30,16 +26,7 @@ export default function Routing() {
     <>
       <RouteAdmin path="/manager/employees" component={EmployeeManagement} />
       <RouteAdmin path="/manager/schedulev2" component={ScheduleCalendarManager} />
-      <RouteAdmin
-        path="/manager/schedule"
-        component={() => (
-          <CurrentWeekContextProvider>
-            <SelectedScheduleTableCellContextProvider>
-              <ScheduleTable />
-            </SelectedScheduleTableCellContextProvider>
-          </CurrentWeekContextProvider>
-        )}
-      />
+      <RouteAdmin path="/manager/schedule" component={ScheduleTable} />
       <RouteAdmin path="/manager/vacation-requests" component={VacationRequestManagement} />
       <RouteAdmin exact path="/manager" component={() => <Redirect to="/manager/vacation-requests" />} />
 

@@ -121,6 +121,7 @@ export default function ScheduleTableToolbar({
     },
     prev: currentWeek.previous,
     next: currentWeek.next,
+    today: currentWeek.thisWeek,
   };
 
   return (

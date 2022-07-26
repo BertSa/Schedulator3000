@@ -16,7 +16,7 @@ import useShiftService from '../../../hooks/use-services/useShiftService';
 import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
 import useOnUnmount from '../../../hooks/useOnUnmount';
 import useOnMount from '../../../hooks/useOnMount';
-import { useCurrentWeek } from '../contexts/CurrentWeekContext';
+import { CurrentWeekContextProvider, useCurrentWeek } from '../contexts/CurrentWeekContext';
 
 function ScheduleCalendar() {
   const shiftService = useShiftService();
@@ -107,7 +107,9 @@ function ScheduleCalendar() {
 export default function ScheduleCalendarEmployee() {
   return (
     <ErrorBoundary>
-      <ScheduleCalendar />
+      <CurrentWeekContextProvider>
+        <ScheduleCalendar />
+      </CurrentWeekContextProvider>
     </ErrorBoundary>
   );
 }

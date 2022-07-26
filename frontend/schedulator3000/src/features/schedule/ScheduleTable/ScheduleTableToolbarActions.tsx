@@ -1,20 +1,8 @@
-import { IconButton, Tooltip } from '@mui/material';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import { Add, ArrowBack, ArrowForward, Delete, Edit, SvgIconComponent } from '@mui/icons-material';
 import React from 'react';
 import { Nullable } from '../../../models/Nullable';
 import { ISelectedScheduleTableCell } from '../contexts/SelectedScheduleTableCellContext';
-
-interface IScheduleTableToolbarActionsProps {
-  selectedItem: Nullable<ISelectedScheduleTableCell>,
-  actionsDisabled: boolean,
-  actions: {
-    remove: VoidFunction,
-    create: VoidFunction,
-    edit: VoidFunction,
-    prev: VoidFunction,
-    next: VoidFunction,
-  },
-}
 
 interface IScheduleTableToolbarActionProps {
   title: string,
@@ -35,10 +23,23 @@ function ScheduleTableToolbarAction({ title, onClick, disabled, icon: Icon }: IS
   );
 }
 
+interface IScheduleTableToolbarActionsProps {
+  selectedItem: Nullable<ISelectedScheduleTableCell>,
+  actionsDisabled: boolean,
+  actions: {
+    remove: VoidFunction,
+    create: VoidFunction,
+    edit: VoidFunction,
+    prev: VoidFunction,
+    next: VoidFunction,
+    today: VoidFunction,
+  },
+}
+
 export default function ScheduleTableToolbarActions({
   selectedItem,
   actionsDisabled,
-  actions: { remove, create, edit, prev, next },
+  actions: { remove, create, edit, prev, next, today },
 }: IScheduleTableToolbarActionsProps) {
   if (selectedItem) {
     return (
@@ -72,6 +73,9 @@ export default function ScheduleTableToolbarActions({
         onClick={prev}
         disabled={actionsDisabled}
       />
+      <Button sx={{ height: '100%' }} color="inherit" onClick={today}>
+        Today
+      </Button>
       <ScheduleTableToolbarAction
         title={actionsDisabled ? 'Add an employee first' : 'Next Week'}
         icon={ArrowForward}

@@ -2,7 +2,7 @@ import { Box, Collapse, IconButton, Skeleton, Table, TableBody, TableCell, Table
 import { KeyboardArrowDown } from '@mui/icons-material';
 import React from 'react';
 
-export default function ScheduleTableBodySkeleton() {
+export default function TableBodySkeleton() {
   return (
     <TableBody>
       <TableRow className="myRow">

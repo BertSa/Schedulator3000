@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { CalendarProps, Event, SlotInfo, stringOrDate } from 'react-big-calendar';
+import { CalendarProps, Components, Event, SlotInfo, stringOrDate } from 'react-big-calendar';
 import { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
 import { format } from 'date-fns';
 import { Container, Paper, useTheme } from '@mui/material';
@@ -8,7 +8,6 @@ import { Employee } from '../../../models/User';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useDialog } from '../../../hooks/useDialog';
 import { IShiftEvent } from '../models/IShiftEvent';
-import ScheduleCalendarToolbar from './ScheduleCalendarToolbar';
 import { Nullable } from '../../../models/Nullable';
 import { IShiftFormFieldValue } from '../ShiftForm/ShiftForm';
 import ShiftFormCreate from '../ShiftForm/ShiftFormCreate';
@@ -21,17 +20,14 @@ import ContextMenu from './ContextMenu';
 import useNullableState from '../../../hooks/useNullableState';
 import setNull from '../../../utilities/setNull';
 import stringToHexColor from '../../../utilities/stringToHexColor';
-import { DragAndDropBigCalendar } from '../lib/BigCalendar';
+import { DragAndDropBigCalendar, IResourceType } from '../lib/BigCalendar';
 import getDefaultDayProps from './GetDefaultDayProps';
 import useManagerService from '../../../hooks/use-services/useManagerService';
 import useShiftService from '../../../hooks/use-services/useShiftService';
 import useOnMount from '../../../hooks/useOnMount';
 import useOnUnmount from '../../../hooks/useOnUnmount';
-import { useCurrentWeek } from '../contexts/CurrentWeekContext';
-
-export type ResourceType = {
-  employeeId: number,
-};
+import { CurrentWeekContextProvider, useCurrentWeek } from '../contexts/CurrentWeekContext';
+import ScheduleCalendarToolbar from './ScheduleCalendarToolbar';
 
 export interface IContextMenuStates {
   mouseX: number;
@@ -179,8 +175,8 @@ function ScheduleCalendar() {
       .then(() => setEvents((current) => current.filter((shift) => shift.resourceId !== id)));
   };
 
-  const onEventResize: withDragAndDropProps<IShiftEvent, ResourceType>['onEventResize'] = ({ event }) => editAction(event);
-  const onEventDrop: withDragAndDropProps<IShiftEvent, ResourceType>['onEventDrop'] = ({ event }) => editAction(event);
+  const onEventResize: withDragAndDropProps<IShiftEvent, IResourceType>['onEventResize'] = ({ event }) => editAction(event);
+  const onEventDrop: withDragAndDropProps<IShiftEvent, IResourceType>['onEventDrop'] = ({ event }) => editAction(event);
 
   const handleSelect: CalendarProps['onSelectSlot'] = ({ start, end }: SlotInfo): void => createAction(start, end);
   const handleContextMenu = (event: React.MouseEvent, shiftEvent: Nullable<IShiftEvent>) => {
@@ -215,6 +211,20 @@ function ScheduleCalendar() {
     return eventProps;
   };
 
+  const components: Components<IShiftEvent, IResourceType> = {
+    toolbar: ({ view, onView, onNavigate }) => (
+      <ScheduleCalendarToolbar date={currentWeek.value} view={view} onView={onView} onNavigate={onNavigate} />
+    ),
+    eventWrapper: ({ event, children }) => (
+      <div onContextMenu={(e) => handleContextMenu(e, event)}>
+        {children}
+      </div>
+    ),
+    timeSlotWrapper: ({ children }) => React.cloneElement(children as any, {
+      onContextMenu: (e: any) => handleContextMenu(e, null),
+    }),
+  };
+
   return (
     <>
       <Container component={Paper} sx={{ padding: 4 }} maxWidth="lg">
@@ -233,19 +243,7 @@ function ScheduleCalendar() {
           onNavigate={(date, view, act) => currentWeek.onNavigate(act)}
           dayPropGetter={(date) => getDefaultDayProps(date, secondary, grey)}
           eventPropGetter={eventPropGetter}
-          components={{
-            toolbar: ({ view, onView, onNavigate }) => (
-              <ScheduleCalendarToolbar date={currentWeek.value} view={view} onView={onView} onNavigate={onNavigate} />
-            ),
-            eventWrapper: ({ event, children }) => (
-              <div onContextMenu={(e) => handleContextMenu(e, event)}>
-                {children}
-              </div>
-            ),
-            timeSlotWrapper: ({ children }) => React.cloneElement(children as any, {
-              onContextMenu: (e: any) => handleContextMenu(e, null),
-            }),
-          }}
+          components={components}
         />
       </Container>
       <ContextMenu
@@ -259,7 +257,9 @@ function ScheduleCalendar() {
 export default function ScheduleCalendarManager() {
   return (
     <ErrorBoundary>
-      <ScheduleCalendar />
+      <CurrentWeekContextProvider>
+        <ScheduleCalendar />
+      </CurrentWeekContextProvider>
     </ErrorBoundary>
   );
 }

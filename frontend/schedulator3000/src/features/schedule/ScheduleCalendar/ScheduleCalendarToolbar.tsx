@@ -1,15 +1,23 @@
-/* eslint-disable no-shadow */
 import { Navigate, NavigateAction, View } from 'react-big-calendar';
 import React from 'react';
 import { Button, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { addDays, format } from 'date-fns';
-import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import { ArrowBack, ArrowForward, SvgIconComponent } from '@mui/icons-material';
+import { OneOf } from '../../../models/OneOf';
 
 interface IScheduleCalendarToolbarProps {
   date: Date;
   view: View;
   onView: (view: View) => void;
   onNavigate: (navigate: NavigateAction, date?: Date) => void;
+}
+
+function NavigationButton({ onClick, iconOrText: Icon }:{ onClick:VoidFunction, iconOrText:OneOf<SvgIconComponent, string> }) {
+  return (
+    <Button sx={{ height: '100%' }} color="inherit" onClick={onClick}>
+      {typeof Icon === 'string' ? Icon : <Icon />}
+    </Button>
+  );
 }
 
 export default function ScheduleCalendarToolbar({
@@ -48,15 +56,9 @@ export default function ScheduleCalendarToolbar({
         </Typography>
       </Grid>
       <Grid item xs={4} display="flex" justifySelf="flex-end" justifyItems="flex-end" justifyContent="flex-end">
-        <Button sx={{ height: '100%' }} color="inherit" onClick={() => onNavigate(Navigate.PREVIOUS)}>
-          <ArrowBack />
-        </Button>
-        <Button sx={{ height: '100%' }} color="inherit" onClick={() => onNavigate(Navigate.TODAY)}>
-          Today
-        </Button>
-        <Button sx={{ height: '100%' }} color="inherit" onClick={() => onNavigate(Navigate.NEXT)}>
-          <ArrowForward />
-        </Button>
+        <NavigationButton iconOrText={ArrowBack} onClick={() => onNavigate(Navigate.PREVIOUS)} />
+        <NavigationButton iconOrText="Today" onClick={() => onNavigate(Navigate.TODAY)} />
+        <NavigationButton iconOrText={ArrowForward} onClick={() => onNavigate(Navigate.NEXT)} />
       </Grid>
     </Grid>
   );

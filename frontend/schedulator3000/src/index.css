@@ -15,29 +15,13 @@ main {
     padding-top: 100px;
 }
 
-.special-day {
-    background-color: #4d4c4c;
-}
-
 tbody > tr.myRow:last-child td, tbody > tr.myRow:last-child th {
     border: 0;
-}
-
-.table-schedule-row-shift:first-child {
-    margin-top: 0 !important;
-}
-
-.table-schedule-row-shift {
-    margin-top: 5px !important;
 }
 
 .rbc-header.rbc-today * > span:after {
     content: " (Today)";
 }
-
-/*.rbc-header.rbc-today *> span{*/
-/*    color: aquamarine!important;*/
-/*}*/
 
 .rbc-allday-cell {
     display: none;

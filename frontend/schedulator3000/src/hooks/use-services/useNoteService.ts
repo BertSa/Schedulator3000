@@ -30,7 +30,7 @@ export default function useNoteService(): INoteService {
   async function getByEmployeeEmail(emailEmployee:string): Promise<INote> {
     const result = await request<INote, ErrorType>(
       {
-        method: 'POST',
+        method: 'GET',
         url: `/notes/${emailEmployee}`,
       },
     );

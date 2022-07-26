@@ -19,7 +19,6 @@ import { differenceInMinutes, hoursToMinutes, minutesToHours, startOfToday } fro
 import { Nullable } from '../../models/Nullable';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDialog } from '../../hooks/useDialog';
-import ScheduleTableBodySkeleton from '../schedule/ScheduleTable/ScheduleTableBodySkeleton';
 import { AvailabilityDay } from './models/AvailabilityDay';
 import { getTimeInHourMinutesAMPM } from '../../utilities/DateUtilities';
 import TableBodyEmpty from '../../components/TableBodyEmpty';
@@ -31,6 +30,7 @@ import useAvailabilitiesService from '../../hooks/use-services/useAvailabilities
 import useAsync from '../../hooks/useAsync';
 import useNullableState from '../../hooks/useNullableState';
 import { dayOfWeekMap } from '../../data/dayOfWeekMap';
+import TableBodySkeleton from '../../components/TableSkeleton';
 
 export interface SelectedAvailabilityTableCell {
   day:number,
@@ -170,7 +170,7 @@ export default function AvailabilitiesTable() {
 
   function ScheduleTableBody() {
     if (loading) {
-      return <ScheduleTableBodySkeleton />;
+      return <TableBodySkeleton />;
     }
 
     if (!availabilities) {
@@ -192,6 +192,7 @@ export default function AvailabilitiesTable() {
               const dayOfWeekMapElement = availabilities[val];
               return (
                 <AvailabilityTableColumnWeek
+                  key={index}
                   isSelected={selectedItem?.day === index}
                   onClick={() => setSelectedByDay(index, dayOfWeekMapElement)}
                   day={dayOfWeekMapElement}
@@ -223,7 +224,7 @@ export default function AvailabilitiesTable() {
             <TableRow>
               {
                 Object.values(dayOfWeekMap).map((val) => (
-                  <TableCell align="center">
+                  <TableCell key={val} align="center">
                     {val}
                   </TableCell>
                 ))

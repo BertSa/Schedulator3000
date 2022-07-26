@@ -1,4 +1,4 @@
-import { Container, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Container, Paper, Table, TableContainer } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { addWeeks, format } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
@@ -14,11 +14,11 @@ import useOnMount from '../../../hooks/useOnMount';
 import useArray from '../../../hooks/useArray';
 import { KeyOf } from '../../../models/KeyOf';
 import ScheduleTableBody from './ScheduleTableBody';
-import { dayOfWeekMap } from '../../../data/dayOfWeekMap';
 import { ICurrentWeek, useCurrentWeek } from '../contexts/CurrentWeekContext';
 import { useSelectedScheduleTableCell } from '../contexts/SelectedScheduleTableCellContext';
+import ScheduleTableHeader from './ScheduleTableHeader';
 
-export default function ScheduleTable() {
+export default function ScheduleTableMain() {
   const shiftService = useShiftService();
   const managerService = useManagerService();
 
@@ -63,38 +63,10 @@ export default function ScheduleTable() {
   return (
     <Container maxWidth="lg">
       <TableContainer component={Paper}>
-        <ScheduleTableToolbar
-          shifts={shifts}
-          employees={employees}
-        />
+        <ScheduleTableToolbar shifts={shifts} employees={employees} />
         <Table aria-label="collapsible table" size="medium">
-          <TableHead>
-            <TableRow>
-              <TableCell width="6.5%" />
-              <TableCell width="15%">Employee</TableCell>
-              {
-                [...new Array(7)].map((value, index) => {
-                  const day = format(currentWeek.getDayOfWeek(index), 'yyyy-MM-dd');
-                  // @ts-ignore
-                  const name = dayOfWeekMap[index.toString()];
-                  return (
-                    <TableCell key={`dow-${index}`} align="center">
-                      {name}
-                      <br />
-                      <small>{day}</small>
-                    </TableCell>
-                  );
-                })
-              }
-              <TableCell align="right" width="7%">
-                Total
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <ScheduleTableBody
-            employees={employees}
-            shifts={shifts}
-          />
+          <ScheduleTableHeader />
+          <ScheduleTableBody employees={employees} shifts={shifts} />
         </Table>
       </TableContainer>
     </Container>
