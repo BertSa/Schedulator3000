@@ -7,14 +7,37 @@ import { Nullable } from '../../../models/Nullable';
 import { IContextMenuStates } from './ScheduleCalendarManager';
 import { IShiftEvent } from '../models/IShiftEvent';
 
-export default function ContextMenu({ contextMenu, handleClose, actions: { editAction, deleteAction } }:
-{
+interface IContextMenuProps {
   contextMenu: Nullable<IContextMenuStates>,
-  handleClose: VoidFunction, actions: {
+  handleClose: VoidFunction,
+  actions: {
     editAction: (selectedValue: IShiftEvent) => void,
     deleteAction: VoidFunction,
-  }
-}) {
+  },
+}
+
+export default function ContextMenu({ contextMenu, handleClose, actions: { editAction, deleteAction } }:IContextMenuProps) {
+  const edit = () => {
+    if (!contextMenu?.shiftEvent) {
+      return;
+    }
+    editAction(contextMenu.shiftEvent);
+    handleClose();
+  };
+
+  const duplicate = () => {
+    if (!contextMenu?.shiftEvent) {
+      return;
+    }
+    editAction(contextMenu.shiftEvent);
+    handleClose();
+  };
+
+  const del = () => {
+    deleteAction();
+    handleClose();
+  };
+
   return (
     <Menu
       open={contextMenu !== null}
@@ -30,39 +53,19 @@ export default function ContextMenu({ contextMenu, handleClose, actions: { editA
           : undefined
       }
     >
-      <MenuItem onClick={() => {
-        if (!contextMenu?.shiftEvent) {
-          return;
-        }
-        editAction(contextMenu.shiftEvent);
-        handleClose();
-      }}
-      >
+      <MenuItem onClick={edit}>
         <ListItemIcon>
           <Edit fontSize="small" />
         </ListItemIcon>
         <ListItemText>Edit</ListItemText>
       </MenuItem>
-      <MenuItem onClick={() => {
-        if (!contextMenu?.shiftEvent) {
-          return;
-        }
-        editAction(contextMenu.shiftEvent);
-        handleClose();
-      }}
-      >
+      <MenuItem onClick={duplicate}>
         <ListItemIcon>
           <ContentCopy fontSize="small" />
         </ListItemIcon>
         <ListItemText>Duplicate</ListItemText>
       </MenuItem>
-      <MenuItem
-        sx={{ alignContent: 'center' }}
-        onClick={() => {
-          deleteAction();
-          handleClose();
-        }}
-      >
+      <MenuItem onClick={del} sx={{ alignContent: 'center' }}>
         <ListItemIcon>
           <Delete fontSize="small" />
         </ListItemIcon>

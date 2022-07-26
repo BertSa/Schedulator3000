@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { CalendarProps, Event, SlotInfo, stringOrDate } from 'react-big-calendar';
 import { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
 import { format } from 'date-fns';
@@ -7,10 +7,8 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../models/User';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useDialog } from '../../../hooks/useDialog';
-import { IRequestDtoShiftsFromTo } from '../models/IRequestDtoShiftsFromTo';
 import { IShiftEvent } from '../models/IShiftEvent';
 import ScheduleCalendarToolbar from './ScheduleCalendarToolbar';
-import useCurrentWeek from '../../../hooks/useCurrentWeek';
 import { Nullable } from '../../../models/Nullable';
 import { IShiftFormFieldValue } from '../ShiftForm/ShiftForm';
 import ShiftFormCreate from '../ShiftForm/ShiftFormCreate';
@@ -27,6 +25,9 @@ import { DragAndDropBigCalendar } from '../lib/BigCalendar';
 import getDefaultDayProps from './GetDefaultDayProps';
 import useManagerService from '../../../hooks/use-services/useManagerService';
 import useShiftService from '../../../hooks/use-services/useShiftService';
+import useOnMount from '../../../hooks/useOnMount';
+import useOnUnmount from '../../../hooks/useOnUnmount';
+import { useCurrentWeek } from '../contexts/CurrentWeekContext';
 
 export type ResourceType = {
   employeeId: number,
@@ -35,99 +36,61 @@ export type ResourceType = {
 export interface IContextMenuStates {
   mouseX: number;
   mouseY: number;
-  shiftEvent: IShiftEvent | null;
+  shiftEvent: Nullable<IShiftEvent>;
 }
 
 function ScheduleCalendar() {
+  const managerService = useManagerService();
+  const shiftService = useShiftService();
+
+  const manager = useAuth().getManager();
   const currentWeek = useCurrentWeek();
+  const [openDialog, closeDialog] = useDialog();
+  const { palette: { grey, secondary } } = useTheme();
+
+  const [contextMenu, setContextMenu] = useNullableState<IContextMenuStates>();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [events, setEvents] = useState<IShiftEvent[]>([]);
-  const [openDialog, closeDialog] = useDialog();
-  const [contextMenu, setContextMenu] = useNullableState<IContextMenuStates>();
-  const shiftService = useShiftService();
-  const managerService = useManagerService();
-  const { palette: { grey, secondary } } = useTheme();
-  const manager = useAuth().getManager();
 
-  useEffect(() => {
-    const body: IRequestDtoShiftsFromTo = {
+  const getShifts = useCallback((emps:Employee[]) => {
+    shiftService.getShiftsManager({
       userEmail: manager.email,
       from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
       to: format(currentWeek.getNextWeek(), 'yyyy-MM-dd'),
-    };
-    managerService.getEmployees(manager.email ?? '').then(
-      (list) => {
-        setEmployees(list);
-        shiftService.getShiftsManager(body).then(
-          (shifts) => {
-            if (shifts.length === 0) {
-              setEvents([]);
-              return;
-            }
-            const map: IShiftEvent[] = shifts.map((shift) => {
-              if (!shift?.id) {
-                return {} as IShiftEvent;
-              }
-              const employee = list.find((emp) => emp.email === shift.emailEmployee);
+    }).then(
+      (shifts) => {
+        setEvents(shifts.map((shift) => {
+          const employee = emps.find((emp) => emp.email === shift.emailEmployee);
 
-              const event: IShiftEvent = {
-                resourceId: shift.id,
-                title: `${employee?.lastName} ${employee?.firstName}`,
-                start: zonedTimeToUtc(shift.startTime, 'UTC'),
-                end: zonedTimeToUtc(shift.endTime, 'UTC'),
-                resource: {
-                  employeeId: employee?.id,
-                },
-              };
-              return event;
-            });
-            setEvents(map);
-          });
+          return {
+            resourceId: shift.id,
+            title: `${employee?.lastName} ${employee?.firstName}`,
+            start: zonedTimeToUtc(shift.startTime, 'UTC'),
+            end: zonedTimeToUtc(shift.endTime, 'UTC'),
+            resource: {
+              employeeId: employee?.id,
+            },
+          } as IShiftEvent;
+        }));
       });
+  }, []);
 
-    return () => {
-      setEvents([]);
-      setContextMenu(null);
-      setEmployees([]);
-    };
-  }, [manager.email]);
+  useOnUnmount(() => {
+    setContextMenu(null);
+    setEvents([]);
+    setEmployees([]);
+  });
+
+  useOnMount(() => {
+    managerService.getEmployees(manager.email)
+      .then((emps) => {
+        setEmployees(emps);
+        getShifts(emps);
+      });
+  });
 
   useDebounce(
-    () => {
-      const body: IRequestDtoShiftsFromTo = {
-        userEmail: manager.email,
-        from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
-        to: format(currentWeek.getNextWeek(), 'yyyy-MM-dd'),
-      };
-      shiftService.getShiftsManager(body).then(
-        (shifts) => {
-          if (shifts.length === 0) {
-            setEvents([]);
-            return;
-          }
-          const map: IShiftEvent[] = shifts.map((shift) => {
-            if (!shift?.id) {
-              return {} as IShiftEvent;
-            }
-            const employee = employees.find((emp) => emp.email === shift.emailEmployee);
-
-            const event: IShiftEvent = {
-              resourceId: shift.id,
-              title: `${employee?.lastName} ${employee?.firstName}`,
-              start: zonedTimeToUtc(shift.startTime, 'UTC'),
-              end: zonedTimeToUtc(shift.endTime, 'UTC'),
-              resource: {
-                employeeId: employee?.id,
-              },
-            };
-            return event;
-          });
-          setEvents(map);
-        });
-      return () => {
-        setEvents([]);
-      };
-    },
+    () => { getShifts(employees); },
     1000,
     [currentWeek.value],
   );
@@ -139,7 +102,7 @@ function ScheduleCalendar() {
       end: end as Date,
     };
 
-    const callback = (shift: IShift) => {
+    const onFinish = (shift: IShift) => {
       const employee = employees.find((emp) => emp.email === shift.emailEmployee);
 
       if (!employee) {
@@ -165,7 +128,7 @@ function ScheduleCalendar() {
         closeDialog={closeDialog}
         selected={selectedValue}
         manager={manager}
-        callback={callback}
+        onFinish={onFinish}
       />,
     );
   };
@@ -285,7 +248,11 @@ function ScheduleCalendar() {
           }}
         />
       </Container>
-      <ContextMenu contextMenu={contextMenu} actions={{ editAction, deleteAction }} handleClose={handleClose} />
+      <ContextMenu
+        contextMenu={contextMenu}
+        actions={{ editAction, deleteAction }}
+        handleClose={handleClose}
+      />
     </>
   );
 }

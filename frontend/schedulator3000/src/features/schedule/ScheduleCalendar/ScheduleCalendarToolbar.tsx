@@ -5,17 +5,19 @@ import { Button, Grid, Tab, Tabs, Typography } from '@mui/material';
 import { addDays, format } from 'date-fns';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 
+interface IScheduleCalendarToolbarProps {
+  date: Date;
+  view: View;
+  onView: (view: View) => void;
+  onNavigate: (navigate: NavigateAction, date?: Date) => void;
+}
+
 export default function ScheduleCalendarToolbar({
   onNavigate,
   onView,
   view,
   date,
-}: {
-  onView: (view: View) => void;
-  view: View;
-  onNavigate: (navigate: NavigateAction, date?: Date) => void;
-  date: Date;
-}) {
+}: IScheduleCalendarToolbarProps) {
   const selectedTab = view === 'work_week' ? 1 : 0;
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     if (newValue === 0) {

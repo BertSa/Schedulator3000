@@ -3,7 +3,6 @@ import useTimeout from './useTimeout';
 
 export default function useAsyncDebounce(callback: any, delay: number = 1000, dependencies: any[] = []) {
   const [loading1, setLoading] = useState(false);
-  const firstRenderRef = useRef(true);
   const [error, setError] = useState<any>(undefined);
   const [value, setValue] = useState<any>(undefined);
 
@@ -24,14 +23,14 @@ export default function useAsyncDebounce(callback: any, delay: number = 1000, de
       .finally(() => setLoading(false));
   }, [callbackRef, ...dependencies]);
 
+  useEffect(() => {
+    callbackMemoized();
+  }, []);
+
   const { reset, clear } = useTimeout(callbackMemoized, delay);
   useEffect(() => {
     reset();
-    if (firstRenderRef.current) {
-      firstRenderRef.current = false;
-    } else {
-      setLoading(true);
-    }
+    setLoading(true);
 
     return () => {
       setLoading(false);

@@ -18,7 +18,6 @@ import { zonedTimeToUtc } from 'date-fns-tz';
 import { differenceInMinutes, hoursToMinutes, minutesToHours, startOfToday } from 'date-fns';
 import { Nullable } from '../../models/Nullable';
 import { useAuth } from '../../contexts/AuthContext';
-import useAsync from '../../hooks/useAsync';
 import { useDialog } from '../../hooks/useDialog';
 import ScheduleTableBodySkeleton from '../schedule/ScheduleTable/ScheduleTableBodySkeleton';
 import { AvailabilityDay } from './models/AvailabilityDay';
@@ -29,9 +28,21 @@ import AvailabilityForm, { IAvailabilityFormFieldValue } from './AvailabilityFor
 import { IAvailabilities } from './models/IAvailabilities';
 import setNull from '../../utilities/setNull';
 import useAvailabilitiesService from '../../hooks/use-services/useAvailabilitiesService';
+import useAsync from '../../hooks/useAsync';
+import useNullableState from '../../hooks/useNullableState';
+import { dayOfWeekMap } from '../../data/dayOfWeekMap';
 
-export type SelectedItemType = Nullable<{ day:number, availability:Nullable<AvailabilityDay> }>;
-interface IAvailabilityTableColumnWeekProps { onClick: () => void, isSelected: boolean, day:AvailabilityDay }
+export interface SelectedAvailabilityTableCell {
+  day:number,
+  availability:Nullable<AvailabilityDay>,
+}
+
+interface IAvailabilityTableColumnWeekProps {
+  onClick: VoidFunction,
+  isSelected: boolean,
+  day:AvailabilityDay
+}
+
 export function AvailabilityTableColumnWeek({ onClick, isSelected, day }: IAvailabilityTableColumnWeekProps) {
   const { palette: { primary } } = useTheme();
   const mySx: SxProps<Theme> = {
@@ -59,7 +70,7 @@ export function AvailabilityTableColumnWeek({ onClick, isSelected, day }: IAvail
 }
 
 export default function AvailabilitiesTable() {
-  const [selectedItem, setSelectedItem] = useState<SelectedItemType>(null);
+  const [selectedItem, setSelectedItem] = useNullableState<SelectedAvailabilityTableCell>();
   const [availabilities, setAvailabilities] = useState<IAvailabilities>({
     monday: null,
     tuesday: null,
@@ -77,10 +88,8 @@ export default function AvailabilitiesTable() {
 
   const { loading } = useAsync(
     () =>
-      new Promise<void>(async (resolve, reject) => {
-        await availabilitiesService.getByEmployeeEmail(employee.email).then(setAvailabilities, reject);
-        resolve();
-      }),
+      availabilitiesService.getByEmployeeEmail(employee.email)
+        .then(setAvailabilities),
     [],
   );
 
@@ -107,28 +116,16 @@ export default function AvailabilitiesTable() {
       return;
     }
 
-    const body = { ...availabilities };
-
-    if (selectedItem.day === 0) {
-      body.sunday = availability;
-    } else if (selectedItem.day === 1) {
-      body.monday = availability;
-    } else if (selectedItem.day === 2) {
-      body.tuesday = availability;
-    } else if (selectedItem.day === 3) {
-      body.wednesday = availability;
-    } else if (selectedItem.day === 4) {
-      body.thursday = availability;
-    } else if (selectedItem.day === 5) {
-      body.friday = availability;
-    } else if (selectedItem.day === 6) {
-      body.saturday = availability;
-    }
+    const body = {
+      ...availabilities,
+      // @ts-ignore
+      [dayOfWeekMap[selectedItem.day]]: availability,
+    };
 
     availabilitiesService.update(employee.email, body).then(((value) => {
       setAvailabilities(value);
       setSelectedItem((current) => current
-        ? { day: current.day, availability } as SelectedItemType : null);
+        ? { day: current.day, availability } as SelectedAvailabilityTableCell : null);
     }));
   }
 
@@ -189,41 +186,19 @@ export default function AvailabilitiesTable() {
     return (
       <TableBody>
         <TableRow className="myRow">
-          <AvailabilityTableColumnWeek
-            isSelected={selectedItem?.day === 0}
-            onClick={() => setSelectedByDay(0, availabilities.sunday)}
-            day={availabilities.sunday}
-          />
-          <AvailabilityTableColumnWeek
-            isSelected={selectedItem?.day === 1}
-            onClick={() => setSelectedByDay(1, availabilities.monday)}
-            day={availabilities.monday}
-          />
-          <AvailabilityTableColumnWeek
-            isSelected={selectedItem?.day === 2}
-            onClick={() => setSelectedByDay(2, availabilities.tuesday)}
-            day={availabilities.tuesday}
-          />
-          <AvailabilityTableColumnWeek
-            isSelected={selectedItem?.day === 3}
-            onClick={() => setSelectedByDay(3, availabilities.wednesday)}
-            day={availabilities.wednesday}
-          />
-          <AvailabilityTableColumnWeek
-            isSelected={selectedItem?.day === 4}
-            onClick={() => setSelectedByDay(4, availabilities.thursday)}
-            day={availabilities.thursday}
-          />
-          <AvailabilityTableColumnWeek
-            isSelected={selectedItem?.day === 5}
-            onClick={() => setSelectedByDay(5, availabilities.friday)}
-            day={availabilities.friday}
-          />
-          <AvailabilityTableColumnWeek
-            isSelected={selectedItem?.day === 6}
-            onClick={() => setSelectedByDay(6, availabilities.saturday)}
-            day={availabilities.saturday}
-          />
+          {
+            Object.values(dayOfWeekMap).map((val, index) => {
+              // @ts-ignore
+              const dayOfWeekMapElement = availabilities[val];
+              return (
+                <AvailabilityTableColumnWeek
+                  isSelected={selectedItem?.day === index}
+                  onClick={() => setSelectedByDay(index, dayOfWeekMapElement)}
+                  day={dayOfWeekMapElement}
+                />
+              );
+            })
+          }
           <TableCell align="right" width="7%">
             <TotalTime />
           </TableCell>
@@ -246,27 +221,13 @@ export default function AvailabilitiesTable() {
         <Table aria-label="collapsible table" size="medium">
           <TableHead>
             <TableRow>
-              <TableCell align="center">
-                Sunday
-              </TableCell>
-              <TableCell align="center">
-                Monday
-              </TableCell>
-              <TableCell align="center">
-                Tuesday
-              </TableCell>
-              <TableCell align="center">
-                Wednesday
-              </TableCell>
-              <TableCell align="center">
-                Thursday
-              </TableCell>
-              <TableCell align="center">
-                Friday
-              </TableCell>
-              <TableCell align="center">
-                Saturday
-              </TableCell>
+              {
+                Object.values(dayOfWeekMap).map((val) => (
+                  <TableCell align="center">
+                    {val}
+                  </TableCell>
+                ))
+              }
               <TableCell align="right" width="7%">
                 Total
               </TableCell>

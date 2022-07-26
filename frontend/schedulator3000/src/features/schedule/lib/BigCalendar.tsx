@@ -37,6 +37,6 @@ export function BigCalendar(props: CalendarProps<IShiftEvent, ResourceType>) {
   );
 }
 
-export const DragAndDropBigCalendar = withDragAndDrop<IShiftEvent, ResourceType>((props) => <BigCalendar {...props} />);
+export const DragAndDropBigCalendar = withDragAndDrop<IShiftEvent, ResourceType>(BigCalendar);
 
 export default {};

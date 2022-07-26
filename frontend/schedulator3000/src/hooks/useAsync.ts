@@ -1,40 +1,45 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { ErrorType } from '../models/ErrorType';
+import { NoParamFunction } from '../models/NoParamFunction';
 
-export default function useAsync(callback: any, dependencies: any[] = []) {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(undefined);
-  const [value, setValue] = useState<any>(undefined);
-
-  const callbackRef = useRef<any>(callback);
+interface IUseAsyncState<T = any> {
+  loading:boolean,
+  value?: T,
+  error?: ErrorType
+}
+export default function useAsync<T = any>(fn: NoParamFunction<Promise<T>>, args: any[]): IUseAsyncState<T> {
+  const [state, set] = useState<IUseAsyncState<T>>({
+    loading: true,
+  });
+  const memoized = useCallback(fn, args);
 
   useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
+    let mounted = true;
+    const promise = memoized();
 
-  const callbackMemoized = useCallback(() => {
-    setLoading(true);
-    setError(undefined);
-    setValue(undefined);
-    callbackRef
-      .current()
-      .then(setValue)
-      .catch(setError)
-      .finally(() => {
-        setLoading(false);
-      });
+    promise.then(
+      (value?: any) => {
+        if (mounted) {
+          set({
+            loading: false,
+            value,
+          });
+        }
+      },
+      (error?: ErrorType) => {
+        if (mounted) {
+          set({
+            loading: false,
+            error,
+          });
+        }
+      },
+    );
+
     return () => {
-      setLoading(false);
-      setError(undefined);
-      setValue(undefined);
+      mounted = false;
     };
-  }, [callbackRef, ...dependencies]);
+  }, [memoized]);
 
-  useEffect(() => {
-    if (typeof callbackMemoized === 'function') {
-      callbackMemoized();
-    }
-    return () => {};
-  }, [callbackMemoized]);
-
-  return { loading, error, value };
+  return state;
 }

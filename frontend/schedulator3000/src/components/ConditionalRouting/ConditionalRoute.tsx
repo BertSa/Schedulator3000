@@ -35,7 +35,7 @@ RouteAdmin.defaultProps = {
 export function RouteEmployee(props: IConditionalRouteProps) {
   const auth = useAuth();
   const isEmployee = !auth.isNewEmployee() && auth.isEmployee();
-  const redirectPath: string = auth.isNewEmployee() ? 'welcome' : '/';
+  const redirectPath: string = auth.isNewEmployee() ? '/welcome' : '/';
 
   return <ConditionalRoute condition={isEmployee} redirectPath={redirectPath} {...props} />;
 }

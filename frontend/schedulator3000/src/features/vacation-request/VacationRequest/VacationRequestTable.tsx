@@ -24,11 +24,7 @@ export default function VacationRequestTable() {
   const employee: Employee = useAuth().getEmployee();
 
   const { loading } = useAsync(
-    () =>
-      new Promise<void>(async (resolve, reject) => {
-        await vacationRequestService.getAllByEmployeeEmail(employee.email).then(setVacationRequests, reject);
-        resolve();
-      }),
+    () => vacationRequestService.getAllByEmployeeEmail(employee.email).then(setVacationRequests),
     [employee.email],
   );
 

@@ -1,30 +1,39 @@
-import { alpha, IconButton, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
-import { Add, ArrowBack, ArrowForward, Delete, Edit } from '@mui/icons-material';
-import React from 'react';
+import { alpha, SxProps, Theme, Toolbar, Typography } from '@mui/material';
+import React, { useMemo } from 'react';
 import { addDays, format } from 'date-fns';
-import { SelectedItemType } from './ScheduleTable';
+import { IShiftFormFieldValue } from '../ShiftForm/ShiftForm';
+import { IShift } from '../models/IShift';
+import ShiftFormEdit from '../ShiftForm/ShiftFormEdit';
+import { useDialog } from '../../../hooks/useDialog';
+import { UseArrayType } from '../../../hooks/useArray';
+import { KeyOf } from '../../../models/KeyOf';
+import { Employee } from '../../../models/User';
+import { useAuth } from '../../../contexts/AuthContext';
+import useShiftService from '../../../hooks/use-services/useShiftService';
+import ShiftFormCreate from '../ShiftForm/ShiftFormCreate';
+import ScheduleTableToolbarActions from './ScheduleTableToolbarActions';
+import { useCurrentWeek } from '../contexts/CurrentWeekContext';
+import { useSelectedScheduleTableCell } from '../contexts/SelectedScheduleTableCellContext';
 
 interface IScheduleTableToolbarProps {
-  currentWeek: Date;
-  selectedItem: SelectedItemType;
-  actionsDisabled: boolean;
-  actions: {
-    prev: VoidFunction;
-    next: VoidFunction;
-    create: VoidFunction;
-    edit: VoidFunction;
-    remove: VoidFunction;
-  };
+  shifts: UseArrayType<IShift, KeyOf<IShift>>;
+  employees: Employee[];
 }
 
 export default function ScheduleTableToolbar({
-  currentWeek,
-  selectedItem,
-  actionsDisabled,
-  actions: { prev, next, create, edit, remove },
+  shifts,
+  employees,
 }: IScheduleTableToolbarProps) {
-  const getDateOfDay = (day: number) => format(addDays(new Date(currentWeek), day), 'yyyy-MM-dd');
+  const shiftService = useShiftService();
 
+  const currentWeek = useCurrentWeek();
+  const [selectedItem, setSelectedItem] = useSelectedScheduleTableCell();
+  const [openDialog, closeDialog] = useDialog();
+  const manager = useAuth().getManager();
+
+  const actionsDisabled = useMemo(() => employees.length === 0, [employees]);
+
+  const getDateOfDay = (day: number) => format(addDays(new Date(currentWeek.value), day), 'yyyy-MM-dd');
   const toolbarSx: SxProps<Theme> = {
     pl: { sm: 2 },
     pr: { xs: 1, sm: 1 },
@@ -33,56 +42,100 @@ export default function ScheduleTableToolbar({
       bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
     }),
   };
+
+  const actions = {
+    create: () => {
+      if (!selectedItem) {
+        return;
+      }
+
+      const dayOfWeek: Date = currentWeek.getDayOfWeek(selectedItem.day);
+
+      const onFinish = (shift: IShift) => {
+        closeDialog();
+        shifts.add(shift);
+        setSelectedItem((current) => current && { ...current, shift });
+      };
+
+      openDialog(
+        <ShiftFormCreate
+          employees={employees}
+          closeDialog={closeDialog}
+          selected={{
+            employeeId: selectedItem.employee.id,
+            start: dayOfWeek,
+            end: dayOfWeek,
+          }}
+          manager={manager}
+          onFinish={onFinish}
+        />,
+      );
+    },
+    edit: () => {
+      if (!selectedItem?.shift) {
+        return;
+      }
+
+      const selectedValue: IShiftFormFieldValue = {
+        shiftId: selectedItem.shift.id,
+        employeeId: selectedItem.employee.id,
+        start: selectedItem.shift.startTime,
+        end: selectedItem.shift.endTime,
+      };
+
+      const callbackDelete = () => {
+        closeDialog();
+        if (selectedValue.shiftId) {
+          shifts.removeByUniqueIdentifier(selectedValue.shiftId);
+        }
+        setSelectedItem(null);
+      };
+
+      const callbackUpdate = (shift: IShift) => {
+        closeDialog();
+        shifts.update(shift);
+      };
+
+      openDialog(
+        <ShiftFormEdit
+          employees={employees}
+          closeDialog={closeDialog}
+          selected={selectedValue}
+          manager={manager}
+          callbackDelete={callbackDelete}
+          callbackUpdate={callbackUpdate}
+        />,
+      );
+    },
+    remove: () => {
+      if (!selectedItem?.shift?.id) {
+        return;
+      }
+
+      shiftService.deleteShift(selectedItem.shift.id).then(() => {
+        if (selectedItem?.shift?.id) {
+          shifts.removeByUniqueIdentifier(selectedItem.shift.id);
+        }
+        setSelectedItem(null);
+      });
+    },
+    prev: currentWeek.previous,
+    next: currentWeek.next,
+  };
+
   return (
     <Toolbar sx={toolbarSx}>
-      <Typography variant="h5" id="tableTitle" component="div">
+      <Typography variant="h5" component="div">
         Schedule
       </Typography>
-      <Typography variant="h6" id="tableTitle" component="div">
-        {selectedItem ? getDateOfDay(selectedItem.day) : format(currentWeek, 'yyyy-MM-dd')}
+      <Typography variant="h6" component="div">
+        {selectedItem ? getDateOfDay(selectedItem.day) : format(currentWeek.value, 'yyyy-MM-dd')}
       </Typography>
-      {selectedItem ? (
-        <div>
-          <Tooltip title="Delete">
-            <span>
-              <IconButton onClick={remove} disabled={!selectedItem.shift}>
-                <Delete />
-              </IconButton>
-            </span>
-          </Tooltip>
-          <Tooltip title="Edit">
-            <span>
-              <IconButton onClick={edit} disabled={!selectedItem.shift}>
-                <Edit />
-              </IconButton>
-            </span>
-          </Tooltip>
-          <Tooltip title="Add">
-            <span>
-              <IconButton onClick={create} disabled={selectedItem.shift !== null}>
-                <Add />
-              </IconButton>
-            </span>
-          </Tooltip>
-        </div>
-      ) : (
-        <div>
-          <Tooltip title={actionsDisabled ? 'Add an employee first' : 'Previous Week'}>
-            <span>
-              <IconButton onClick={prev} disabled={actionsDisabled}>
-                <ArrowBack />
-              </IconButton>
-            </span>
-          </Tooltip>
-          <Tooltip title={actionsDisabled ? 'Add an employee first' : 'Next Week'}>
-            <span>
-              <IconButton onClick={next} disabled={actionsDisabled}>
-                <ArrowForward />
-              </IconButton>
-            </span>
-          </Tooltip>
-        </div>
-      )}
+      <ScheduleTableToolbarActions
+        actionsDisabled={actionsDisabled}
+        actions={actions}
+        selectedItem={selectedItem}
+      />
     </Toolbar>
   );
 }

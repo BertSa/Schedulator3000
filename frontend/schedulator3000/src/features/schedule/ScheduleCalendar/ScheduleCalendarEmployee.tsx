@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { addDays, format, parseISO } from 'date-fns';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Container, Paper, useTheme } from '@mui/material';
-import { IRequestDtoShiftsFromTo } from '../models/IRequestDtoShiftsFromTo';
 import { isBetween, localizer } from '../../../utilities/DateUtilities';
 import { IShiftEvent } from '../models/IShiftEvent';
 import { useAuth } from '../../../contexts/AuthContext';
-import useCurrentWeek from '../../../hooks/useCurrentWeek';
 import { IVacationRequest } from '../../vacation-request/models/IVacationRequest';
 import useDebounce from '../../../hooks/useDebounce';
 import ScheduleCalendarToolbar from './ScheduleCalendarToolbar';
@@ -16,15 +14,20 @@ import { BigCalendar } from '../lib/BigCalendar';
 import getDefaultDayProps from './GetDefaultDayProps';
 import useShiftService from '../../../hooks/use-services/useShiftService';
 import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
+import useOnUnmount from '../../../hooks/useOnUnmount';
+import useOnMount from '../../../hooks/useOnMount';
+import { useCurrentWeek } from '../contexts/CurrentWeekContext';
 
 function ScheduleCalendar() {
-  const user = useAuth().getEmployee();
-  const currentWeek = useCurrentWeek();
-  const [events, setEvents] = useState<IShiftEvent[]>([]);
-  const [vacationRequests, setVacationRequests] = useState<IVacationRequest[]>([]);
   const shiftService = useShiftService();
   const vacationRequestService = useVacationRequestService();
+
+  const user = useAuth().getEmployee();
+  const currentWeek = useCurrentWeek();
   const { palette: { warning, grey, primary, secondary } } = useTheme();
+
+  const [events, setEvents] = useState<IShiftEvent[]>([]);
+  const [vacationRequests, setVacationRequests] = useState<IVacationRequest[]>([]);
 
   const eventProps = {
     style: {
@@ -34,82 +37,48 @@ function ScheduleCalendar() {
     },
   };
 
+  const getShifts = useCallback(() =>
+    shiftService.getShiftsEmployee({
+      userEmail: user.email,
+      from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
+      to: format(currentWeek.getNextWeek(), 'yyyy-MM-dd'),
+    }).then((shifts) =>
+      setEvents(shifts.map((shift) => (
+        {
+          resourceId: shift.id,
+          title: '',
+          start: zonedTimeToUtc(shift.startTime, 'UTC'),
+          end: zonedTimeToUtc(shift.endTime, 'UTC'),
+          resource: {},
+        }
+      )))), []);
+
+  useOnUnmount(() => {
+    setEvents([]);
+    setVacationRequests([]);
+  });
+
+  useOnMount(() => {
+    getShifts().then();
+    vacationRequestService.getAllByEmployeeEmail(user.email).then(setVacationRequests);
+  });
+
   useDebounce(
-    () => {
-      const body: IRequestDtoShiftsFromTo = {
-        userEmail: user.email,
-        from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
-        to: format(currentWeek.getNextWeek(), 'yyyy-MM-dd'),
-      };
-      shiftService.getShiftsEmployee(body).then((shifts) =>
-        setEvents(
-          shifts.length === 0
-            ? []
-            : shifts.map((shift) => ({
-              resourceId: shift.id,
-              title: '',
-              start: zonedTimeToUtc(shift.startTime, 'UTC'),
-              end: zonedTimeToUtc(shift.endTime, 'UTC'),
-              resource: {},
-            })),
-        ));
-      return () => {
-        setEvents([]);
-      };
-    },
+    () => { getShifts().then(); },
     1000,
     [currentWeek.value],
   );
 
-  useEffect(() => {
-    const body: IRequestDtoShiftsFromTo = {
-      userEmail: user.email,
-      from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
-      to: format(currentWeek.getNextWeek(), 'yyyy-MM-dd'),
-    };
-    shiftService.getShiftsEmployee(body).then((shifts) =>
-      setEvents(
-        shifts.length === 0
-          ? []
-          : shifts.map((shift) => ({
-            resourceId: shift.id,
-            title: '',
-            start: zonedTimeToUtc(shift.startTime, 'UTC'),
-            end: zonedTimeToUtc(shift.endTime, 'UTC'),
-            resource: {},
-          })),
-      ),
-    );
-    vacationRequestService.getAllByEmployeeEmail(user.email).then(setVacationRequests);
-
-    return () => {
-      setEvents([]);
-      setVacationRequests([]);
-    };
-  }, [user.email, shiftService]);
-
   const dayPropGetter = (date:Date) => {
-    let dayProp: React.HTMLAttributes<HTMLDivElement> = getDefaultDayProps(date, secondary, grey);
+    const dayProp: React.HTMLAttributes<HTMLDivElement> = getDefaultDayProps(date, secondary, grey);
 
     const vacationRequest = vacationRequests.find((value) =>
       isBetween(date, parseISO(value.startDate.toString()), addDays(parseISO(value.endDate.toString()), 1)),
     );
     if (vacationRequest?.status === VacationRequestStatus.Pending) {
-      dayProp = {
-        ...dayProp,
-        style: {
-          backgroundColor: warning.main + 75,
-          ...dayProp.style,
-        },
-      };
+      dayProp.style!.backgroundColor = warning.main + 75;
     } else if (vacationRequest?.status === VacationRequestStatus.Approved) {
-      dayProp = {
-        ...dayProp,
-        style: {
-          backgroundColor: primary.main + 75,
-          ...dayProp.style,
-        },
-      };
+      dayProp.style!.backgroundColor = primary.main + 75;
     }
 
     return dayProp;

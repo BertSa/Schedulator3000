@@ -11,7 +11,7 @@ interface IScheduleCreateShiftProps {
   employees: Employee[];
   manager: Manager;
   selected: IShiftFormFieldValue;
-  callback: (shift: IShift) => void;
+  onFinish: (shift: IShift) => void;
   closeDialog: VoidFunction;
 }
 
@@ -19,7 +19,7 @@ export default function ShiftFormCreate({
   employees,
   manager,
   selected,
-  callback,
+  onFinish,
   closeDialog,
 }: IScheduleCreateShiftProps) {
   const shiftService = useShiftService();
@@ -46,7 +46,7 @@ export default function ShiftFormCreate({
         startTime: zonedTimeToUtc(shift.startTime, 'UTC'),
         endTime: zonedTimeToUtc(shift.endTime, 'UTC'),
       };
-      callback(newShift);
+      onFinish(newShift);
     });
   };
 

@@ -5,10 +5,8 @@ import React from 'react';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Employee } from '../../../models/User';
 import { IVacationRequest } from '../../vacation-request/models/IVacationRequest';
-import { SelectedItemType } from './ScheduleTable';
 import ScheduleTableColumnWeek from './ScheduleTableColumnWeek';
 import { Nullable } from '../../../models/Nullable';
-import { ICurrentWeek } from '../../../hooks/useCurrentWeek';
 import useUpdateEffect from '../../../hooks/useUpdateEffect';
 import { INote } from '../../EmployeeManagement/models/INote';
 import EditableTextField from '../../../components/EditableTextField';
@@ -20,6 +18,8 @@ import useNullableState from '../../../hooks/useNullableState';
 import { useToggleBool } from '../../../hooks/useToggle';
 import useAvailabilitiesService from '../../../hooks/use-services/useAvailabilitiesService';
 import useNoteService from '../../../hooks/use-services/useNoteService';
+import { ICurrentWeek } from '../contexts/CurrentWeekContext';
+import { useSelectedScheduleTableCell } from '../contexts/SelectedScheduleTableCellContext';
 
 interface IAvailabilityRowProps {
   availability?: AvailabilityDay;
@@ -49,28 +49,26 @@ AvailabilityRow.defaultProps = {
 };
 
 interface IEmployeeWeekRowProps {
-  selectedItem: SelectedItemType;
   employee: Employee;
   shifts: Nullable<IShift>[];
   vacationRequests: IVacationRequest[];
   currentWeek: ICurrentWeek;
-  setSelected: React.Dispatch<React.SetStateAction<SelectedItemType>>;
   previousWeek: Date;
 }
 export default function ScheduleTableRow({
-  selectedItem,
   employee,
   shifts,
   vacationRequests,
   currentWeek,
-  setSelected,
   previousWeek,
 }: IEmployeeWeekRowProps) {
+  const availabilitiesService = useAvailabilitiesService();
+  const noteService = useNoteService();
+
+  const [selected, setSelected] = useSelectedScheduleTableCell();
   const [open, toggle] = useToggleBool();
   const [note, setNote] = useNullableState<INote>();
   const [availabilities, setAvailabilities] = useNullableState<IAvailabilities>();
-  const availabilitiesService = useAvailabilitiesService();
-  const noteService = useNoteService();
 
   useUpdateEffect(() => {
     noteService.getByEmployeeEmail(employee.email).then(setNote);
@@ -107,7 +105,6 @@ export default function ScheduleTableRow({
         </TableCell>
         {shifts.map((shift, key) =>
           isLoadingShifts ? (
-          // eslint-disable-next-line react/no-array-index-key
             <TableCell key={`${employee}:${key}`} align="center" sx={{ ...(open && { border: 0 }) }}>
               <Skeleton />
               -
@@ -115,11 +112,10 @@ export default function ScheduleTableRow({
             </TableCell>
           ) : (
             <ScheduleTableColumnWeek
-            // eslint-disable-next-line react/no-array-index-key
               key={`${employee}:${key}`}
               index={key}
               open={open}
-              isSelected={selectedItem?.day === key && selectedItem?.employee.id === employee.id}
+              isSelected={selected?.day === key && selected?.employee.id === employee.id}
               shift={shift}
               vacations={vacationRequests}
               currentWeek={currentWeek}

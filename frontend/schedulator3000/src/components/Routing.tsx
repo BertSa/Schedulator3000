@@ -15,20 +15,36 @@ import {
   RouteUnAuthenticated,
 } from './ConditionalRouting/ConditionalRoute';
 import VacationRequestManagement from '../features/vacation-request/VacationRequestManagement';
+import ScheduleCalendarManager from '../features/schedule/ScheduleCalendar/ScheduleCalendarManager';
+import ScheduleCalendarEmployee from '../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee';
+import { CurrentWeekContextProvider } from '../features/schedule/contexts/CurrentWeekContext';
+import {
+  SelectedScheduleTableCellContextProvider,
+} from '../features/schedule/contexts/SelectedScheduleTableCellContext';
 
-const ScheduleCalendarEmployee = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee'));
-const ScheduleCalendarManager = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarManager'));
+// const ScheduleCalendarEmployee = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee'));
+// const ScheduleCalendarManager = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarManager'));
 
 export default function Routing() {
   return (
     <>
       <RouteAdmin path="/manager/employees" component={EmployeeManagement} />
       <RouteAdmin path="/manager/schedulev2" component={ScheduleCalendarManager} />
-      <RouteAdmin path="/manager/schedule" component={ScheduleTable} />
+      <RouteAdmin
+        path="/manager/schedule"
+        component={() => (
+          <CurrentWeekContextProvider>
+            <SelectedScheduleTableCellContextProvider>
+              <ScheduleTable />
+            </SelectedScheduleTableCellContextProvider>
+          </CurrentWeekContextProvider>
+        )}
+      />
       <RouteAdmin path="/manager/vacation-requests" component={VacationRequestManagement} />
       <RouteAdmin exact path="/manager" component={() => <Redirect to="/manager/vacation-requests" />} />
 
       <RouteEmployee path="/schedule" component={ScheduleCalendarEmployee} />
+      <RouteEmployee path="/schedule" component={() => <h1>loading...</h1>} />
       <RouteEmployee path="/vacation-requests" component={VacationRequestTable} />
       <RouteEmployee path="/availabilities" component={AvailabilitiesTable} />
 

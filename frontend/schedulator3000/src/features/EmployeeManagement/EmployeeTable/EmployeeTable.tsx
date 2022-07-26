@@ -6,12 +6,12 @@ import { useAuth } from '../../../contexts/AuthContext';
 import EmployeeTableToolbar from './EmployeeTableToolbar';
 import EmployeeFormRegister from './EmployeeForm/EmployeeFormRegister';
 import EmployeeFormEdit from './EmployeeForm/EmployeeFormEdit';
-import useAsync from '../../../hooks/useAsync';
 import EmployeeTableBody from './EmployeeTableBody';
 import useSelected from '../../../hooks/useSelected';
 import useManagerService from '../../../hooks/use-services/useManagerService';
 import useArray from '../../../hooks/useArray';
 import { KeyOf } from '../../../models/KeyOf';
+import useAsync from '../../../hooks/useAsync';
 
 export default function EmployeeTable() {
   const employees = useArray<Employee, KeyOf<Employee>>('id');
@@ -21,11 +21,8 @@ export default function EmployeeTable() {
   const manager = useAuth().getManager();
 
   const { loading } = useAsync(
-    () =>
-      new Promise<void>(async (resolve, reject) => {
-        await managerService.getEmployees(manager.email).then(employees.setValue, reject);
-        resolve();
-      }),
+    () => managerService.getEmployees(manager.email)
+      .then(employees.setValue),
     [manager.email],
   );
 
