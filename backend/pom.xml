@@ -10,7 +10,7 @@
     </parent>
     <groupId>ca.bertsa</groupId>
     <artifactId>Schedulator3000</artifactId>
-    <version>v1.1.0</version>
+    <version>v1.1.1</version>
     <name>Schedulator3000</name>
     <description>Schedulator3000</description>
     <properties>
