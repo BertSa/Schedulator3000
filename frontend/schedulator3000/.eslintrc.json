@@ -1,18 +1,62 @@
 {
+  "env": {
+    "es2021": true,
+    "browser": true,
+    "jest": true
+  },
+  "extends": [
+    "airbnb-typescript",
+    "airbnb"
+  ],
   "parserOptions": {
     "project": "./tsconfig.json",
     "ecmaVersion": "latest",
     "sourceType": "script"
   },
   "rules": {
+    "accessor-pairs": 2,
+    "array-bracket-newline": 2,
+    "arrow-parens": 2,
+    "comma-spacing": 2,
+    "comma-style": 2,
     "constructor-super": 2,
     "for-direction": 2,
+    "function-paren-newline": 0,
     "getter-return": 2,
+    "implicit-arrow-linebreak": 0,
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "import/no-cycle": 0,
+    "import/no-named-as-default": 0,
+    "jsx-quotes": 2,
+    "max-len": [
+      "error",
+      {
+        "code": 140,
+        "ignoreComments": true,
+        "ignoreRegExpLiterals": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreUrls": true,
+        "tabWidth": 2
+      }
+    ],
+    "no-array-index-key": 0,
     "no-async-promise-executor": 0,
     "no-case-declarations": 2,
     "no-class-assign": 2,
     "no-compare-neg-zero": 2,
     "no-cond-assign": 2,
+    "no-confusing-arrow": 0,
+    "no-console": 0,
     "no-const-assign": 2,
     "no-constant-condition": 2,
     "no-control-regex": 2,
@@ -43,8 +87,8 @@
     "no-nonoctal-decimal-escape": 2,
     "no-obj-calls": 2,
     "no-octal": 2,
+    "no-plusplus": 0,
     "no-prototype-builtins": 2,
-    "react/require-default-props": 1,
     "no-redeclare": 2,
     "no-regex-spaces": 2,
     "no-self-assign": 2,
@@ -53,9 +97,10 @@
     "no-sparse-arrays": 2,
     "no-this-before-super": 2,
     "no-undef": 2,
-    "no-unexpected-multiline": 2,
-    "no-unreachable": 2,
     "no-underscore-dangle": 0,
+    "no-unexpected-multiline": 2,
+    "no-unneeded-ternary": 2,
+    "no-unreachable": 2,
     "no-unsafe-finally": 2,
     "no-unsafe-negation": 2,
     "no-unsafe-optional-chaining": 2,
@@ -64,30 +109,12 @@
     "no-useless-backreference": 2,
     "no-useless-catch": 2,
     "no-useless-escape": 2,
-    "react/no-array-index-key": 1,
-    "no-confusing-arrow": 0,
     "no-with": 2,
-    "require-yield": 2,
-    "use-isnan": 2,
-    "valid-typeof": 2,
-    "accessor-pairs": 2,
-    "array-bracket-newline": 2,
-    "arrow-parens": 2,
-    "comma-spacing": 2,
-    "comma-style": 2,
-    "jsx-quotes": 2,
-    "no-unneeded-ternary": 2,
+    "object-curly-newline": 0,
     "prefer-const": 2,
     "prefer-destructuring": 1,
     "prefer-exponentiation-operator": 2,
     "prefer-template": 1,
-    "import/no-cycle": 0,
-    "object-curly-newline": 0,
-    "implicit-arrow-linebreak": 0,
-    "function-paren-newline": 0,
-    "no-plusplus": 0,
-    "react/jsx-props-no-spreading": 0,
-    "react/no-unstable-nested-components": 0,
     "react/jsx-filename-extension": [
       "error",
       {
@@ -99,36 +126,12 @@
         ]
       }
     ],
-    "max-len": [
-      "error",
-      {
-        "code": 140,
-        "ignoreComments": true,
-        "ignoreRegExpLiterals": true,
-        "ignoreStrings": true,
-        "ignoreTemplateLiterals": true,
-        "ignoreUrls": true,
-        "tabWidth": 2
-      }
-    ],
-    "import/extensions": [
-      "error",
-      "ignorePackages",
-      {
-        "js": "never",
-        "jsx": "never",
-        "ts": "never",
-        "tsx": "never"
-      }
-    ]
-  },
-  "env": {
-    "es2021": true,
-    "browser": true,
-    "jest": true
-  },
-  "extends": [
-    "airbnb-typescript",
-    "airbnb"
-  ]
+    "react/jsx-props-no-spreading": 0,
+    "react/no-array-index-key": 0,
+    "react/no-unstable-nested-components": 0,
+    "react/require-default-props": 1,
+    "require-yield": 2,
+    "use-isnan": 2,
+    "valid-typeof": 2
+  }
 }

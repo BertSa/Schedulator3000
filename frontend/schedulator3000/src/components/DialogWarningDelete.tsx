@@ -1,14 +1,15 @@
 import { Button, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import React from 'react';
+import { OneOf } from '../models/OneOf';
 
-interface DialogWarningDeleteProps {
-  resolve: (value: boolean | PromiseLike<boolean>) => void;
+interface IDialogWarningDeleteProps {
+  resolve: (value: OneOf<boolean, PromiseLike<boolean>>) => void;
   closeDialog: VoidFunction;
   title: string;
   text: string;
 }
 
-export default function DialogWarningDelete({ resolve, closeDialog, title, text }: DialogWarningDeleteProps) {
+export default function DialogWarningDelete({ resolve, closeDialog, title, text }: IDialogWarningDeleteProps) {
   return (
     <>
       <DialogTitle id="alert-dialog-title">
@@ -21,19 +22,20 @@ export default function DialogWarningDelete({ resolve, closeDialog, title, text 
       </DialogContent>
       <DialogActions>
         <Button
+          autoFocus
+          variant="contained"
           onClick={() => {
             resolve(false);
             closeDialog();
           }}
-          variant="contained"
-          autoFocus
         >
           Confirm
         </Button>
-        <Button onClick={() => {
-          resolve(true);
-          closeDialog();
-        }}
+        <Button
+          onClick={() => {
+            resolve(true);
+            closeDialog();
+          }}
         >
           Cancel
         </Button>
