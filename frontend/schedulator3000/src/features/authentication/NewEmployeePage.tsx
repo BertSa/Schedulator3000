@@ -2,7 +2,7 @@ import { Button, Container, Grid } from '@mui/material';
 import React from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import FieldInput from '../../components/FormFields';
+import FieldInputWithFormContext from '../../components/FormFields';
 import { useAuth } from '../../contexts/AuthContext';
 import { IPasswordChangeDto, IPasswordChangeFieldValues } from './models/PasswordChange';
 import Form from '../../components/Form';
@@ -36,7 +36,7 @@ export default function NewEmployeePage() {
     >
       <Form onSubmit={submit}>
         <Grid item xs={12} sm={6}>
-          <FieldInput
+          <FieldInputWithFormContext
             name="currentPassword"
             label="Current Password"
             autoComplete="current-password"
@@ -47,7 +47,7 @@ export default function NewEmployeePage() {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <FieldInput
+          <FieldInputWithFormContext
             name="newPassword"
             label="New Password"
             autoComplete="new-password"
@@ -58,7 +58,7 @@ export default function NewEmployeePage() {
           />
         </Grid>
         <Grid item xs={12}>
-          <FieldInput
+          <FieldInputWithFormContext
             name="confirmationPassword"
             label="Confirm New Password"
             autoComplete="current-password"

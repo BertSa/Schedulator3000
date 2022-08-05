@@ -1,7 +1,7 @@
 import { SubmitHandler } from 'react-hook-form';
 import { Button, Grid } from '@mui/material';
 import React from 'react';
-import FieldInput from '../../../../components/FormFields';
+import FieldInputWithFormContext from '../../../../components/FormFields';
 import { regex } from '../../../../utilities/utilities';
 import { Employee, EmployeeFormType } from '../../../../models/User';
 import Form from '../../../../components/Form';
@@ -30,7 +30,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
       }}
     >
       <Grid item xs={12} sm={6}>
-        <FieldInput
+        <FieldInputWithFormContext
           name="firstName"
           label="First Name"
           autoComplete="given-name"
@@ -45,7 +45,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
         />
       </Grid>
       <Grid item xs={12} sm={6}>
-        <FieldInput
+        <FieldInputWithFormContext
           name="lastName"
           label="Last Name"
           type="text"
@@ -60,7 +60,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
         />
       </Grid>
       <Grid item xs={12}>
-        <FieldInput
+        <FieldInputWithFormContext
           label="Email"
           name="email"
           type="email"
@@ -76,7 +76,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
         />
       </Grid>
       <Grid item xs={12}>
-        <FieldInput
+        <FieldInputWithFormContext
           name="phone"
           label="Phone Number"
           type="tel"
@@ -91,7 +91,7 @@ export default function EmployeeForm({ submit, emailDisabled, onCancel, employee
         />
       </Grid>
       <Grid item xs={12}>
-        <FieldInput
+        <FieldInputWithFormContext
           name="role"
           label="Role"
           type="text"

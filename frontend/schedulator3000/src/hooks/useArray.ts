@@ -9,6 +9,7 @@ export interface UseArrayType<T extends {}, Key extends keyof T> {
   update: (val:T) => void,
   removeByUniqueIdentifier: (val:T[Key]) => void,
   removeIndex: (val:number) => void,
+  getBy:(key:Key, item: T[Key]) => T | undefined,
   getAllBy:(key:Key, item: T[Key]) => T[],
 }
 
@@ -22,6 +23,7 @@ export default function useArray<T extends {}, Key extends keyof T>(uniqueIdenti
     clear: useCallback(() => setValue(() => []), []),
     update: useCallback((val: T) => setValue((current) =>
       [...current.filter((v) => v[uniqueIdentifier] !== val[uniqueIdentifier]), val]), []),
+    getBy: useCallback((key, item) => value.find((val) => val[key] === item), [value]),
     getAllBy: useCallback((key, item) => value.filter((val) => val[key] === item), [value]),
     removeByUniqueIdentifier: useCallback(
       (id: T[Key]) => setValue((currents) => currents.filter((val) => val && val[uniqueIdentifier] !== id)),

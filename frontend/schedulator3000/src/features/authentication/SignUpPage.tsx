@@ -3,7 +3,7 @@ import React, { BaseSyntheticEvent } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { SubmitHandler } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
-import FieldInput from '../../components/FormFields';
+import FieldInputWithFormContext from '../../components/FormFields';
 import { regex } from '../../utilities/utilities';
 import { Manager } from '../../models/User';
 import Form from '../../components/Form';
@@ -51,7 +51,7 @@ export default function SignUpPage() {
         }}
       >
         <Grid item xs={12}>
-          <FieldInput
+          <FieldInputWithFormContext
             label="Company Name"
             name="companyName"
             type="text"
@@ -66,7 +66,7 @@ export default function SignUpPage() {
           />
         </Grid>
         <Grid item xs={12}>
-          <FieldInput
+          <FieldInputWithFormContext
             label="Your email"
             name="email"
             type="email"
@@ -81,7 +81,7 @@ export default function SignUpPage() {
           />
         </Grid>
         <Grid item xs={12}>
-          <FieldInput
+          <FieldInputWithFormContext
             name="phone"
             label="Phone Number"
             type="tel"
@@ -96,7 +96,7 @@ export default function SignUpPage() {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <FieldInput
+          <FieldInputWithFormContext
             name="password"
             label="Password"
             autoComplete="new-password"
@@ -107,7 +107,7 @@ export default function SignUpPage() {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <FieldInput
+          <FieldInputWithFormContext
             name="confirmationPassword"
             label="Confirm Password"
             autoComplete="new-password"

@@ -3,7 +3,6 @@ package ca.bertsa.schedulator3000.services;
 import ca.bertsa.schedulator3000.dtos.ConnectionDto;
 import ca.bertsa.schedulator3000.dtos.ManagerDto;
 import ca.bertsa.schedulator3000.exceptions.UserAlreadyExistException;
-import ca.bertsa.schedulator3000.models.Availabilities;
 import ca.bertsa.schedulator3000.models.Employee;
 import ca.bertsa.schedulator3000.models.Manager;
 import ca.bertsa.schedulator3000.repositories.ManagerRepository;
@@ -19,7 +18,6 @@ import java.util.List;
 public class ManagerService {
     private final EmployeeService employeeService;
     private final NoteService noteService;
-    private final AvailabilitiesService availabilitiesService;
     private final ManagerRepository managerRepository;
 
     public List<Employee> getAllEmployee(String emailManager) {
@@ -32,8 +30,6 @@ public class ManagerService {
 
         final Employee employee = employeeService.create(dto, manager);
         noteService.createNoteForEmployee(employee);
-
-        availabilitiesService.createAvailabilitiesForEmployee(employee);
 
         return employee;
     }

@@ -3,7 +3,7 @@ import React, { BaseSyntheticEvent } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { FieldValues, SubmitHandler } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
-import FieldInput from '../../components/FormFields';
+import FieldInputWithFormContext from '../../components/FormFields';
 import { regex } from '../../utilities/utilities';
 import { useToggle } from '../../hooks/useToggle';
 import Form from '../../components/Form';
@@ -59,7 +59,7 @@ export default function SignInPage() {
           <Tab label="Employee" />
           <Tab label="Manager" />
         </Tabs>
-        <FieldInput
+        <FieldInputWithFormContext
           label="Your email"
           name="email"
           type="email"
@@ -72,7 +72,7 @@ export default function SignInPage() {
             },
           }}
         />
-        <FieldInput
+        <FieldInputWithFormContext
           label="Your password"
           name="password"
           type="password"

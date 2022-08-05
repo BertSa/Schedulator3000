@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { TextField } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
 import { RegisterOptions } from 'react-hook-form/dist/types/validator';
+import FieldInput from './FormInput';
 
-interface IFieldInputProps {
+export interface IFieldInputWithFormContextProps {
   label: string;
   name: string;
   type: React.InputHTMLAttributes<unknown>['type'];
@@ -14,23 +14,21 @@ interface IFieldInputProps {
   disabled?: boolean;
 }
 
-export default function FieldInput({ name, disabled, validation, ...props }: IFieldInputProps) {
+export default function FieldInputWithFormContext({ validation, ...props }: IFieldInputWithFormContextProps) {
   const { register, formState: { errors }, getValues } = useFormContext();
   const val = typeof validation === 'function' ? validation(getValues) as RegisterOptions : validation;
 
   return (
-    <TextField
+    <FieldInput
       {...props}
-      fullWidth
-      {...register(name, val)}
-      error={Boolean(errors[name])}
-      helperText={errors[name]?.message ?? ' '}
-      disabled={Boolean(disabled)}
+      errors={errors}
+      register={register}
+      validation={val}
     />
   );
 }
 
-FieldInput.propTypes = {
+FieldInputWithFormContext.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
@@ -38,8 +36,7 @@ FieldInput.propTypes = {
   defaultValue: PropTypes.string,
 };
 
-FieldInput.defaultProps = {
+FieldInputWithFormContext.defaultProps = {
   autoComplete: 'auto',
   defaultValue: '',
-  disabled: false,
 };

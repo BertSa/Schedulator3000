@@ -1,4 +1,4 @@
-import { IRequestDtoShiftsFromTo } from '../../features/schedule/models/IRequestDtoShiftsFromTo';
+import { IRequestDtoShiftsFromTo } from '../../models/IRequestDtoShiftsFromTo';
 import { ShiftWithoutId } from '../../features/schedule/models/ShiftWithoutId';
 import { IShift } from '../../features/schedule/models/IShift';
 import { request } from '../../utilities/request';

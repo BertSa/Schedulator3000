@@ -1,13 +1,11 @@
-import { AvailabilityDay } from './AvailabilityDay';
-
 export interface IAvailabilities {
   id: number;
-  lastModified: Date;
-  sunday: AvailabilityDay;
-  monday: AvailabilityDay;
-  tuesday: AvailabilityDay;
-  wednesday: AvailabilityDay;
-  thursday: AvailabilityDay;
-  friday: AvailabilityDay;
-  saturday: AvailabilityDay;
+  employeeEmail: string;
+  startingDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  nbOfOccurrence: number;
+  weekBetweenOccurrences: number;
+  daysTheEventOccurre: boolean[];
 }

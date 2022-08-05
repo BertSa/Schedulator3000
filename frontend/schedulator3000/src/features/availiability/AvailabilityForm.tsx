@@ -2,24 +2,28 @@ import { Button, Grid, Stack, TextField } from '@mui/material';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { DesktopTimePicker, TimePicker } from '@mui/lab';
 import React from 'react';
-import { startOfToday } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
+import { getDay, parseISO, startOfToday } from 'date-fns';
 import { preferences } from '../../utilities/DateUtilities';
-import { AvailabilityDay } from './models/AvailabilityDay';
+import { IAvailabilities } from './models/IAvailabilities';
+import ToggleDays from './ToggleDays';
+import FieldInput from '../../components/FormInput';
 
 export interface IAvailabilityFormFieldValue {
-  start: Date;
-  end: Date;
+  startTime: Date;
+  endTime: Date;
+  daysOfWeek: number[];
+  nbOfOccurrence: number;
 }
 
 interface IScheduleTableAvailabilityFormProps {
   submit: SubmitHandler<IAvailabilityFormFieldValue>;
   onClose: VoidFunction;
-  availability?: AvailabilityDay;
+  availability?: IAvailabilities;
 }
 
 export default function AvailabilityForm({ submit, onClose, availability }: IScheduleTableAvailabilityFormProps) {
   const {
+    register,
     getValues,
     handleSubmit,
     formState: { errors },
@@ -28,10 +32,17 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     defaultValues: {
-      start: availability?.start ? zonedTimeToUtc(availability?.start, 'utc') : startOfToday(),
-      end: availability?.end ? zonedTimeToUtc(availability?.end, 'utc') : startOfToday(),
+      startTime: availability?.startTime ? new Date(availability.startTime) : startOfToday(),
+      endTime: availability?.endTime ? new Date(availability.endTime) : startOfToday(),
+      daysOfWeek: availability?.startingDate ? [getDay(parseISO(availability.startingDate))] : [],
+      nbOfOccurrence: 1,
     },
   });
+
+  if (!availability) {
+    onClose();
+    return null;
+  }
 
   return (
     <Grid
@@ -48,7 +59,7 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
         xs={6}
       >
         <Controller
-          name="start"
+          name="startTime"
           control={control}
           rules={{
             required: true,
@@ -59,7 +70,7 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
               minutesStep={preferences.calendar.step}
               showToolbar
               shouldDisableTime={(timeValue, clockType) => clockType === 'minutes' && timeValue % preferences.calendar.step !== 0}
-              renderInput={(props) => <TextField {...props} helperText={errors.start ?? ' '} error={Boolean(errors.start)} />}
+              renderInput={(props) => <TextField {...props} helperText={errors.startTime ?? ' '} error={Boolean(errors.startTime)} />}
               {...field}
               {...fieldState}
               {...formState}
@@ -72,11 +83,11 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
         xs={6}
       >
         <Controller
-          name="end"
+          name="endTime"
           control={control}
           rules={{
             required: true,
-            validate: (value) => value > getValues().start || 'End time must be after start time',
+            validate: (value) => value > getValues().startTime || 'End time must be after start time',
           }}
           render={({ fieldState, formState, field }) => (
             <DesktopTimePicker
@@ -86,8 +97,8 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
               shouldDisableTime={(timeValue, clockType) => clockType === 'minutes' && timeValue % preferences.calendar.step !== 0}
               renderInput={(props) => (
                 <TextField
-                  helperText={errors.end?.message ?? ' '}
-                  error={Boolean(errors.end)}
+                  helperText={errors.endTime?.message ?? ' '}
+                  error={Boolean(errors.endTime)}
                   {...props}
                 />
               )}
@@ -96,6 +107,29 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
               {...formState}
             />
           )}
+        />
+      </Grid>
+      <Grid
+        item
+        xs={6}
+      >
+        <Controller
+          name="daysOfWeek"
+          control={control}
+          render={({ field }) => <ToggleDays {...field} />}
+        />
+      </Grid>
+      <Grid
+        item
+        xs={6}
+      >
+        <FieldInput
+          name="nbOfOccurrence"
+          label="Number of Occurrence"
+          type="number"
+          errors={errors}
+          register={register}
+          validation={{ required: 'This field is Required' }}
         />
       </Grid>
       <Grid item alignSelf="center" marginX="auto">

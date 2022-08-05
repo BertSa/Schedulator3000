@@ -2,20 +2,42 @@ import { IAvailabilities } from '../../features/availiability/models/IAvailabili
 import { request } from '../../utilities/request';
 import { ErrorType } from '../../models/ErrorType';
 import useServiceResultHandler from './useServiceResultHandler';
+import { IRequestDtoShiftsFromTo } from '../../models/IRequestDtoShiftsFromTo';
 
 interface IAvailabilitiesService {
-  update: (emailEmployee:string, body: IAvailabilities) => Promise<IAvailabilities>;
-  getByEmployeeEmail: (email: string) => Promise<IAvailabilities>;
+  create:(body: IAvailabilities) => Promise<IAvailabilities>;
+  update: (id:number, body: IAvailabilities) => Promise<IAvailabilities>;
+  getByEmployeeEmail: (body:IRequestDtoShiftsFromTo) => Promise<IAvailabilities[]>;
 }
 
 export default function useAvailabilitiesService(): IAvailabilitiesService {
   const handler = useServiceResultHandler();
 
-  async function update(emailEmployee:string, body: IAvailabilities): Promise<IAvailabilities> {
+  async function create(body: IAvailabilities): Promise<IAvailabilities> {
+    const result = await request<IAvailabilities, ErrorType>(
+      {
+        method: 'POST',
+        url: '/availabilities',
+        expectedStatusCodes: [201],
+        body,
+      },
+    );
+
+    if (!result.ok) {
+      console.log(result.errorData);
+    }
+    return handler({
+      result,
+      messageSuccess: 'Availabilities created!',
+      messageError: true,
+    });
+  }
+
+  async function update(id:number, body: IAvailabilities): Promise<IAvailabilities> {
     const result = await request<IAvailabilities, ErrorType>(
       {
         method: 'PUT',
-        url: `/availabilities/${emailEmployee}`,
+        url: `/availabilities/${id}`,
         body,
       },
     );
@@ -27,11 +49,12 @@ export default function useAvailabilitiesService(): IAvailabilitiesService {
     });
   }
 
-  async function getByEmployeeEmail(emailEmployee:string): Promise<IAvailabilities> {
-    const result = await request<IAvailabilities, ErrorType>(
+  async function getByEmployeeEmail(body: IRequestDtoShiftsFromTo): Promise<IAvailabilities[]> {
+    const result = await request<IAvailabilities[], ErrorType>(
       {
-        method: 'GET',
-        url: `/availabilities/${emailEmployee}`,
+        method: 'POST',
+        url: '/availabilities/employees',
+        body,
       },
     );
 
@@ -43,6 +66,7 @@ export default function useAvailabilitiesService(): IAvailabilitiesService {
   }
 
   return {
+    create,
     update,
     getByEmployeeEmail,
   };

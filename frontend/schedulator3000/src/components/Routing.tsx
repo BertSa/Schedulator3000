@@ -17,6 +17,7 @@ import VacationRequestManagement from '../features/vacation-request/VacationRequ
 import ScheduleCalendarManager from '../features/schedule/ScheduleCalendar/ScheduleCalendarManager';
 import ScheduleCalendarEmployee from '../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee';
 import ScheduleTable from '../features/schedule/ScheduleTable';
+import { CurrentWeekContextProvider } from '../features/schedule/contexts/CurrentWeekContext';
 
 // const ScheduleCalendarEmployee = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarEmployee'));
 // const ScheduleCalendarManager = React.lazy(() => import('../features/schedule/ScheduleCalendar/ScheduleCalendarManager'));
@@ -33,7 +34,14 @@ export default function Routing() {
       <RouteEmployee path="/schedule" component={ScheduleCalendarEmployee} />
       <RouteEmployee path="/schedule" component={() => <h1>loading...</h1>} />
       <RouteEmployee path="/vacation-requests" component={VacationRequestTable} />
-      <RouteEmployee path="/availabilities" component={AvailabilitiesTable} />
+      <RouteEmployee
+        path="/availabilities"
+        component={() => (
+          <CurrentWeekContextProvider>
+            <AvailabilitiesTable />
+          </CurrentWeekContextProvider>
+        )}
+      />
 
       <RouteNewEmployee path="/welcome" component={NewEmployeePage} />
 

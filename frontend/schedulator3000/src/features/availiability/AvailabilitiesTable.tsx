@@ -1,242 +1,180 @@
-import {
-  alpha,
-  Container,
-  Paper,
-  SxProps,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Theme,
-  useTheme,
-} from '@mui/material';
-import React, { useState } from 'react';
+import { Container } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { zonedTimeToUtc } from 'date-fns-tz';
-import { differenceInMinutes, hoursToMinutes, minutesToHours, startOfToday } from 'date-fns';
+import { CalendarProps, Event, SlotInfo } from 'react-big-calendar';
+import { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
+import { addWeeks, format, parseISO } from 'date-fns';
 import { Nullable } from '../../models/Nullable';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDialog } from '../../hooks/useDialog';
 import { AvailabilityDay } from './models/AvailabilityDay';
-import { getTimeInHourMinutesAMPM } from '../../utilities/DateUtilities';
-import TableBodyEmpty from '../../components/TableBodyEmpty';
-import AvailabilitiesTableToolbar from './AvailabilitiesTableToolbar';
+import { localizer } from '../../utilities/DateUtilities';
 import AvailabilityForm, { IAvailabilityFormFieldValue } from './AvailabilityForm';
 import { IAvailabilities } from './models/IAvailabilities';
-import setNull from '../../utilities/setNull';
 import useAvailabilitiesService from '../../hooks/use-services/useAvailabilitiesService';
 import useAsync from '../../hooks/useAsync';
-import useNullableState from '../../hooks/useNullableState';
-import { dayOfWeekMap } from '../../data/dayOfWeekMap';
-import TableBodySkeleton from '../../components/TableSkeleton';
+import { DragAndDropBigCalendar, IResourceType } from '../schedule/lib/BigCalendar';
+import { IShiftEvent } from '../schedule/models/IShiftEvent';
+import useArray from '../../hooks/useArray';
+import { KeyOf } from '../../models/KeyOf';
+import { useCurrentWeek } from '../schedule/contexts/CurrentWeekContext';
+import { OneOf } from '../../models/OneOf';
 
 export interface SelectedAvailabilityTableCell {
   day:number,
   availability:Nullable<AvailabilityDay>,
 }
-
-interface IAvailabilityTableColumnWeekProps {
-  onClick: VoidFunction,
-  isSelected: boolean,
-  day:AvailabilityDay
-}
-
-export function AvailabilityTableColumnWeek({ onClick, isSelected, day }: IAvailabilityTableColumnWeekProps) {
-  const { palette: { primary } } = useTheme();
-  const mySx: SxProps<Theme> = {
-    cursor: 'pointer',
-    ...{
-      bgcolor: (theme) => isSelected ? alpha(primary.main, theme.palette.action.activatedOpacity) : 'unset',
-    },
-    '&:hover': {
-      bgcolor: (theme) => alpha(primary.main, theme.palette.action.hoverOpacity),
-    },
-    '&:active': {
-      bgcolor: (theme) => alpha(primary.main, theme.palette.action.activatedOpacity),
-    },
-  };
-
-  return (
-    <TableCell align="center" onClick={onClick} sx={mySx}>
-      <small>{day?.start ? getTimeInHourMinutesAMPM(zonedTimeToUtc(day.start, 'utc')) : '--:--'}</small>
-      <br />
-      <small>-</small>
-      <br />
-      <small>{day?.end ? getTimeInHourMinutesAMPM(zonedTimeToUtc(day.end, 'utc')) : '--:--'}</small>
-    </TableCell>
-  );
-}
-
 export default function AvailabilitiesTable() {
-  const [selectedItem, setSelectedItem] = useNullableState<SelectedAvailabilityTableCell>();
-  const [availabilities, setAvailabilities] = useState<IAvailabilities>({
-    monday: null,
-    tuesday: null,
-    wednesday: null,
-    thursday: null,
-    friday: null,
-    saturday: null,
-    sunday: null,
-    lastModified: startOfToday(),
-    id: -1,
-  });
+  const availabilities = useArray<IAvailabilities, KeyOf<IAvailabilities>>('id');
   const availabilitiesService = useAvailabilitiesService();
   const [openDialog, closeDialog] = useDialog();
+  const [events, setEvents] = useState<any[]>([]);
+  const currentWeek = useCurrentWeek();
+
   const employee = useAuth().getEmployee();
 
-  const { loading } = useAsync(
+  useEffect(() => {
+    const events1 = availabilities.value.map((value) => {
+      value.
+    });
+
+    setEvents(events1);
+
+    console.table({ ...availabilities.value });
+    console.table({ ...events1 });
+  }, [availabilities.value]);
+
+  useAsync(
     () =>
-      availabilitiesService.getByEmployeeEmail(employee.email)
-        .then(setAvailabilities),
+      availabilitiesService.getByEmployeeEmail(
+        {
+          userEmail: employee.email,
+          from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
+          to: format(addWeeks(currentWeek.value, 2), 'yyyy-MM-dd'),
+        })
+        .then(availabilities.setValue),
     [],
   );
 
-  function TotalTime() {
-    if (!availabilities) {
-      return <span>00:00</span>;
-    }
+  const createAction = (start: OneOf<Date, string>, end: OneOf<Date, string>) => {
+    const s = start as Date;
 
-    const { id, lastModified, ...av } = availabilities;
-    const number: number = Object.values(av).reduce(
-      (acc, curr) => acc + (curr ? differenceInMinutes(new Date(curr.end), new Date(curr.start)) : 0),
-      0,
-    );
-    const hours: number = minutesToHours(number);
-    const minutes: number = number - hoursToMinutes(hours);
-
-    const total: string = `${hours}:${minutes < 10 ? `0${minutes}` : minutes}h`;
-
-    return <span>{total ?? '00:00h'}</span>;
-  }
-
-  function updateSelected(availability: AvailabilityDay) {
-    if (!selectedItem) {
-      return;
-    }
-
-    const body = {
-      ...availabilities,
-      // @ts-ignore
-      [dayOfWeekMap[selectedItem.day]]: availability,
+    const unChangedProps = {
+      id: -1,
+      employeeEmail: employee.email,
+      startingDate: format(s, 'yyyy-MM-dd'),
+      endDate: format(s, 'yyyy-MM-dd'),
+      weekBetweenOccurrences: 0,
     };
 
-    availabilitiesService.update(employee.email, body).then(((value) => {
-      setAvailabilities(value);
-      setSelectedItem((current) => current
-        ? { day: current.day, availability } as SelectedAvailabilityTableCell : null);
-    }));
-  }
-
-  const createAction = () => {
-    if (!selectedItem) {
-      return;
-    }
+    const av:IAvailabilities = {
+      ...unChangedProps,
+      daysTheEventOccurre: [],
+      startTime: start as string,
+      endTime: end as string,
+      nbOfOccurrence: 1,
+    };
 
     const submit : SubmitHandler<IAvailabilityFormFieldValue> = (data) => {
-      closeDialog();
-      updateSelected(data);
-    };
+      const { daysOfWeek, startTime, endTime, nbOfOccurrence } = data;
 
-    openDialog(
-      <AvailabilityForm
-        onClose={closeDialog}
-        submit={submit}
-      />,
-    );
-  };
-
-  const removeAction = setNull(updateSelected);
-
-  const editAction = () => {
-    if (!selectedItem) {
-      return;
-    }
-
-    const submit : SubmitHandler<IAvailabilityFormFieldValue> = (data) => {
-      closeDialog();
-      updateSelected(data);
-    };
-
-    openDialog(
-      <AvailabilityForm
-        onClose={closeDialog}
-        submit={submit}
-        availability={selectedItem.availability}
-      />,
-    );
-  };
-
-  function ScheduleTableBody() {
-    if (loading) {
-      return <TableBodySkeleton />;
-    }
-
-    if (!availabilities) {
-      return <TableBodyEmpty colSpan={7} message="No ava" />;
-    }
-
-    const setSelectedByDay = (day:number, availability: AvailabilityDay) =>
-      setSelectedItem((current) => current?.day === day ? null : {
-        day,
-        availability,
+      let daysTheEventOccurre = new Array(7).fill(false);
+      daysOfWeek.forEach((value) => {
+        daysTheEventOccurre[value] = true;
       });
+      const pop = daysTheEventOccurre.pop();
+      daysTheEventOccurre = [pop, ...daysTheEventOccurre];
 
-    return (
-      <TableBody>
-        <TableRow className="myRow">
-          {
-            Object.values(dayOfWeekMap).map((val, index) => {
-              // @ts-ignore
-              const dayOfWeekMapElement = availabilities[val];
-              return (
-                <AvailabilityTableColumnWeek
-                  key={index}
-                  isSelected={selectedItem?.day === index}
-                  onClick={() => setSelectedByDay(index, dayOfWeekMapElement)}
-                  day={dayOfWeekMapElement}
-                />
-              );
-            })
-          }
-          <TableCell align="right" width="7%">
-            <TotalTime />
-          </TableCell>
-        </TableRow>
-      </TableBody>
+      const returnIng: IAvailabilities = {
+        ...unChangedProps,
+        daysTheEventOccurre,
+        startTime: startTime.toTimeString().slice(0, 9),
+        endTime: endTime.toTimeString().slice(0, 9),
+        nbOfOccurrence: Number(nbOfOccurrence),
+      };
+
+      availabilitiesService.create(returnIng).then(availabilities.add);
+      closeDialog();
+    };
+
+    openDialog(
+      <AvailabilityForm
+        onClose={closeDialog}
+        submit={submit}
+        availability={av}
+      />,
     );
-  }
+  };
+
+  const editAction = (resourceId: number, start: OneOf<Date, string>, end: OneOf<Date, string>) => {
+    const availability = availabilities.getBy('id', resourceId);
+
+    if (!availability) {
+      return;
+    }
+
+    const newAvai: IAvailabilities = {
+      ...availability,
+      startTime: start as string,
+      endTime: end as string,
+    };
+
+    const submit : SubmitHandler<IAvailabilityFormFieldValue> = (data) => {
+      const { daysOfWeek, startTime, endTime, nbOfOccurrence } = data;
+
+      let daysTheEventOccurre = new Array(7).fill(false);
+      daysOfWeek.forEach((value) => {
+        daysTheEventOccurre[value] = true;
+      });
+      const pop = daysTheEventOccurre.pop();
+      daysTheEventOccurre = [pop, ...daysTheEventOccurre];
+
+      const returnIng: IAvailabilities = {
+        ...availability,
+        daysTheEventOccurre,
+        startTime: startTime.toTimeString().slice(0, 9),
+        endTime: endTime.toTimeString().slice(0, 9),
+        nbOfOccurrence: Number(nbOfOccurrence),
+      };
+      availabilitiesService.update(resourceId, returnIng).then(availabilities.update);
+      closeDialog();
+    };
+
+    openDialog(
+      <AvailabilityForm
+        onClose={closeDialog}
+        submit={submit}
+        availability={newAvai}
+      />,
+    );
+  };
+
+  const onEventResize: withDragAndDropProps<IShiftEvent, IResourceType>['onEventResize'] = ({ event: { resourceId, start, end } }) => editAction(resourceId, start as Date, end as Date);
+  const onEventDrop: withDragAndDropProps<IShiftEvent, IResourceType>['onEventDrop'] = ({ event: { resourceId, start, end } }) => editAction(resourceId, start as Date, end as Date);
+  const onSelectEvent: CalendarProps<IShiftEvent, IResourceType>['onSelectEvent'] = ({ resourceId, start, end }) => editAction(resourceId, start as Date, end as Date);
+  // eslint-disable-next-line @typescript-eslint/no-shadow,no-unused-vars,@typescript-eslint/no-unused-vars,no-shadow
+  const handleSelect: CalendarProps['onSelectSlot'] = ({ start, end }: SlotInfo): void => createAction(start, end);
 
   return (
     <Container maxWidth="lg">
-      <TableContainer component={Paper}>
-        <AvailabilitiesTableToolbar
-          selectedItem={selectedItem}
-          actions={{
-            create: createAction,
-            edit: editAction,
-            remove: removeAction,
-          }}
-        />
-        <Table aria-label="collapsible table" size="medium">
-          <TableHead>
-            <TableRow>
-              {
-                Object.values(dayOfWeekMap).map((val) => (
-                  <TableCell key={val} align="center">
-                    {val}
-                  </TableCell>
-                ))
-              }
-              <TableCell align="right" width="7%">
-                Total
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <ScheduleTableBody />
-        </Table>
-      </TableContainer>
+      <DragAndDropBigCalendar
+        events={events}
+        localizer={localizer}
+        showMultiDayTimes
+        popup
+        resizable
+        selectable="ignoreEvents"
+        startAccessor={(event: Event) => new Date(event.start as Date)}
+        onEventDrop={onEventDrop}
+        onEventResize={onEventResize}
+        onSelectEvent={onSelectEvent}
+        onSelectSlot={handleSelect}
+        // onNavigate={(date, view, act) => currentWeek.onNavigate(act)}
+        // dayPropGetter={(date) => getDefaultDayProps(date, secondary, grey)}
+        // eventPropGetter={eventPropGetter}
+        // components={components}
+
+      />
     </Container>
   );
 }

@@ -1,6 +1,7 @@
 package ca.bertsa.schedulator3000.models;
 
 import ca.bertsa.schedulator3000.converters.BooleanListConverter;
+import ca.bertsa.schedulator3000.dtos.TimeSlotDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,8 +28,22 @@ public class TimeSlot {
     private LocalDateTime endDate;
     private LocalTime startTime;
     private LocalTime endTime;
-    private int nbOfOccurrence = -1; // -1 is until delete or change
-    private int weekBetweenOccurrences = 0;
+    private int nbOfOccurrence;
+    private int weekBetweenOccurrences;
     @Convert(converter = BooleanListConverter.class)
     private List<Boolean> daysTheEventOccurre;
+
+    public TimeSlotDto toDto() {
+        final TimeSlotDto dto = new TimeSlotDto();
+        dto.setEmployeeEmail(employee.getEmail());
+        dto.setId(id);
+        dto.setStartingDate(startingDate.toLocalDate());
+        dto.setEndDate(endDate.toLocalDate());
+        dto.setStartTime(startTime);
+        dto.setEndTime(endTime);
+        dto.setNbOfOccurrence(nbOfOccurrence);
+        dto.setWeekBetweenOccurrences(weekBetweenOccurrences);
+        dto.setDaysTheEventOccurre(daysTheEventOccurre);
+        return dto;
+    }
 }
