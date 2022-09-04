@@ -17,11 +17,18 @@ import java.util.List;
 public class AvailabilityController {
     private final AvailabilityService availabilityService;
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public TimeSlotDto getAvailability(@PathVariable Long id) {
+        return availabilityService.getAvailability(id);
+    }
+
     @PostMapping("/employees")
     @ResponseStatus(HttpStatus.OK)
     public List<AvailabilityDto> getAvailabilities(@RequestBody ShiftsFromToDto dto) {
         return availabilityService.getAvailabilities(dto.getUserEmail(), dto.getFrom().atStartOfDay(), dto.getTo().atStartOfDay());
     }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

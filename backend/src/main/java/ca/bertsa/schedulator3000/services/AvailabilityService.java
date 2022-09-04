@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static ca.bertsa.schedulator3000.converters.BooleanListConverter.getFalsyList;
 
@@ -22,51 +23,50 @@ import static ca.bertsa.schedulator3000.converters.BooleanListConverter.getFalsy
 public class AvailabilityService {
     private final AvailabilityRepository availabilityRepository;
     private final EmployeeService employeeService;
+    public TimeSlotDto getAvailability(Long id) {
+        return availabilityRepository.getById(id).toDto();
+    }
 
     public List<AvailabilityDto> getAvailabilities(String email, LocalDateTime start, LocalDateTime end) {
         final List<TimeSlot> timeSlots = availabilityRepository.getAllByEmployee_EmailAndStartingDateBeforeAndEndDateAfter(email, end, start);
 
         return timeSlots.stream()
                 .map(timeSlot -> {
-                    List<AvailabilityDto> availabilityDtos = new ArrayList<>();
-
+                    final List<Boolean> daysTheEventOccurre = timeSlot.getDaysTheEventOccurre();
                     final int nbOfOccurrence = timeSlot.getNbOfOccurrence();
                     final int weekBetweenOccurrences = timeSlot.getWeekBetweenOccurrences();
-                    final LocalDateTime startingDate = timeSlot.getStartingDate();
-                    final List<Boolean> daysTheEventOccurre = timeSlot.getDaysTheEventOccurre();
+                    final LocalDate startingDate = timeSlot.getStartingDate().toLocalDate();
 
-                    final int lastDayOccurenceInWeek = daysTheEventOccurre.lastIndexOf(true);
-                    final int firstDayOccurenceInWeek = daysTheEventOccurre.indexOf(true);
+                    final int[] daysOfTheWeekTheEventOccurre = IntStream
+                            .range(0, daysTheEventOccurre.size())
+                            .filter(daysTheEventOccurre::get)
+                            .toArray();
 
                     int dayOfTheWeek = startingDate.getDayOfWeek().getValue();
                     if (dayOfTheWeek == 7) {
                         dayOfTheWeek = 0;
                     }
 
-                    final LocalDate firstDayOfWeek = startingDate.minusDays(dayOfTheWeek).toLocalDate();
+                    final LocalDate firstDayOfWeek = startingDate.minusDays(dayOfTheWeek + 1);
 
-                    for (int i = 0; i < nbOfOccurrence * weekBetweenOccurrences; i += weekBetweenOccurrences) {
-                        final LocalDate firstDayOfThisWeek = firstDayOfWeek.plusWeeks(i);
+                    List<AvailabilityDto> availabilityDtos = new ArrayList<>();
 
-                        for (int j = firstDayOccurenceInWeek; j <= lastDayOccurenceInWeek; j++) {
-                            if (!daysTheEventOccurre.get(j)) {
+                    for (int week = 0; week < nbOfOccurrence * weekBetweenOccurrences; week += weekBetweenOccurrences) {
+                        final LocalDate firstDayOfThisWeek = firstDayOfWeek.plusWeeks(week);
+
+                        for (int dayOfTheWeekTheEventOccurre : daysOfTheWeekTheEventOccurre) {
+                            final LocalDate day = firstDayOfThisWeek.plusDays(dayOfTheWeekTheEventOccurre);
+
+                            if (day.isAfter(end.toLocalDate())) {
+                                break;
+                            } else if (day.isBefore(start.toLocalDate())) {
                                 continue;
                             }
 
-                            final LocalDate date = firstDayOfThisWeek.plusDays(j);
-                            final LocalDateTime startDateTime = date.atTime(timeSlot.getStartTime());
-                            final LocalDateTime endDateTime = date.atTime(timeSlot.getEndTime());
-
-                            if (startDateTime.isAfter(end)) {
-                                continue;
-                            } else if (endDateTime.isBefore(start)) {
-                                continue;
-                            } else if (endDateTime.isBefore(startingDate)) {
-                                continue;
-                            }
+                            final LocalDateTime startDateTime = day.atTime(timeSlot.getStartTime());
+                            final LocalDateTime endDateTime = day.atTime(timeSlot.getEndTime());
 
                             final AvailabilityDto availabilityDto = new AvailabilityDto();
-
                             availabilityDto.setId(timeSlot.getId());
                             availabilityDto.setStart(startDateTime);
                             availabilityDto.setEnd(endDateTime);
@@ -74,10 +74,13 @@ public class AvailabilityService {
                             availabilityDtos.add(availabilityDto);
                         }
                     }
+
+
                     return availabilityDtos;
                 })
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+
     }
 
     public TimeSlotDto updateAvailabilities(Long id, TimeSlotDto dto) {

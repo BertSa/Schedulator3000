@@ -2,10 +2,7 @@ package ca.bertsa.schedulator3000.models;
 
 import ca.bertsa.schedulator3000.converters.BooleanListConverter;
 import ca.bertsa.schedulator3000.dtos.TimeSlotDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -17,7 +14,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@SequenceGenerator(name = "ts_seq", initialValue = 2)
+@ToString
+@SequenceGenerator(name = "ts_seq", initialValue = 5)
 public class TimeSlot {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ts_seq")

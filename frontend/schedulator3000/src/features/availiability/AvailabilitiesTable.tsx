@@ -1,7 +1,7 @@
 import { Container } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { CalendarProps, Event, SlotInfo } from 'react-big-calendar';
+import { CalendarProps, Event } from 'react-big-calendar';
 import { withDragAndDropProps } from 'react-big-calendar/lib/addons/dragAndDrop';
 import { addWeeks, format, parseISO } from 'date-fns';
 import { Nullable } from '../../models/Nullable';
@@ -19,30 +19,32 @@ import useArray from '../../hooks/useArray';
 import { KeyOf } from '../../models/KeyOf';
 import { useCurrentWeek } from '../schedule/contexts/CurrentWeekContext';
 import { OneOf } from '../../models/OneOf';
+import { AvailabilityDto } from './models/AvailabilityDto';
 
-export interface SelectedAvailabilityTableCell {
+export interface ISelectedAvailabilityTableCell {
   day:number,
   availability:Nullable<AvailabilityDay>,
 }
 export default function AvailabilitiesTable() {
-  const availabilities = useArray<IAvailabilities, KeyOf<IAvailabilities>>('id');
   const availabilitiesService = useAvailabilitiesService();
-  const [openDialog, closeDialog] = useDialog();
-  const [events, setEvents] = useState<any[]>([]);
   const currentWeek = useCurrentWeek();
-
+  const [openDialog, closeDialog] = useDialog();
   const employee = useAuth().getEmployee();
 
+  const availabilities = useArray<IAvailabilities, KeyOf<IAvailabilities>>('id');
+  const availabilitieDtos = useArray<AvailabilityDto, KeyOf<AvailabilityDto>>('id');
+  const [events, setEvents] = useState<IShiftEvent[]>([]);
+
   useEffect(() => {
-    const events1 = availabilities.value.map((value) => {
-      value.
-    });
+    const ev = availabilitieDtos.value.map((value) => ({
+      resourceId: value.id,
+      start: parseISO(value.start as string),
+      end: parseISO(value.end as string),
+      title: '',
+    } as IShiftEvent));
 
-    setEvents(events1);
-
-    console.table({ ...availabilities.value });
-    console.table({ ...events1 });
-  }, [availabilities.value]);
+    setEvents(ev ?? []);
+  }, [availabilitieDtos.value]);
 
   useAsync(
     () =>
@@ -52,7 +54,7 @@ export default function AvailabilitiesTable() {
           from: format(currentWeek.getPreviousWeek(), 'yyyy-MM-dd'),
           to: format(addWeeks(currentWeek.value, 2), 'yyyy-MM-dd'),
         })
-        .then(availabilities.setValue),
+        .then(availabilitieDtos.setValue),
     [],
   );
 
@@ -64,7 +66,7 @@ export default function AvailabilitiesTable() {
       employeeEmail: employee.email,
       startingDate: format(s, 'yyyy-MM-dd'),
       endDate: format(s, 'yyyy-MM-dd'),
-      weekBetweenOccurrences: 0,
+      weekBetweenOccurrences: 1,
     };
 
     const av:IAvailabilities = {
@@ -93,6 +95,7 @@ export default function AvailabilitiesTable() {
         nbOfOccurrence: Number(nbOfOccurrence),
       };
 
+      console.log(returnIng);
       availabilitiesService.create(returnIng).then(availabilities.add);
       closeDialog();
     };
@@ -106,8 +109,8 @@ export default function AvailabilitiesTable() {
     );
   };
 
-  const editAction = (resourceId: number, start: OneOf<Date, string>, end: OneOf<Date, string>) => {
-    const availability = availabilities.getBy('id', resourceId);
+  const editAction = async (resourceId: number, start: OneOf<Date, string>, end: OneOf<Date, string>) => {
+    const availability = await availabilitiesService.getById(resourceId);
 
     if (!availability) {
       return;
@@ -152,8 +155,7 @@ export default function AvailabilitiesTable() {
   const onEventResize: withDragAndDropProps<IShiftEvent, IResourceType>['onEventResize'] = ({ event: { resourceId, start, end } }) => editAction(resourceId, start as Date, end as Date);
   const onEventDrop: withDragAndDropProps<IShiftEvent, IResourceType>['onEventDrop'] = ({ event: { resourceId, start, end } }) => editAction(resourceId, start as Date, end as Date);
   const onSelectEvent: CalendarProps<IShiftEvent, IResourceType>['onSelectEvent'] = ({ resourceId, start, end }) => editAction(resourceId, start as Date, end as Date);
-  // eslint-disable-next-line @typescript-eslint/no-shadow,no-unused-vars,@typescript-eslint/no-unused-vars,no-shadow
-  const handleSelect: CalendarProps['onSelectSlot'] = ({ start, end }: SlotInfo): void => createAction(start, end);
+  const handleSelect: CalendarProps<IShiftEvent, IResourceType>['onSelectSlot'] = ({ start, end }) => createAction(start, end);
 
   return (
     <Container maxWidth="lg">

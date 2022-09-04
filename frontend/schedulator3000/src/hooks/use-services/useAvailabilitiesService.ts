@@ -3,11 +3,13 @@ import { request } from '../../utilities/request';
 import { ErrorType } from '../../models/ErrorType';
 import useServiceResultHandler from './useServiceResultHandler';
 import { IRequestDtoShiftsFromTo } from '../../models/IRequestDtoShiftsFromTo';
+import { AvailabilityDto } from '../../features/availiability/models/AvailabilityDto';
 
 interface IAvailabilitiesService {
-  create:(body: IAvailabilities) => Promise<IAvailabilities>;
+  create: (body: IAvailabilities) => Promise<IAvailabilities>;
   update: (id:number, body: IAvailabilities) => Promise<IAvailabilities>;
-  getByEmployeeEmail: (body:IRequestDtoShiftsFromTo) => Promise<IAvailabilities[]>;
+  getByEmployeeEmail: (body:IRequestDtoShiftsFromTo) => Promise<AvailabilityDto[]>;
+  getById: (id: number) => Promise<IAvailabilities>;
 }
 
 export default function useAvailabilitiesService(): IAvailabilitiesService {
@@ -49,8 +51,8 @@ export default function useAvailabilitiesService(): IAvailabilitiesService {
     });
   }
 
-  async function getByEmployeeEmail(body: IRequestDtoShiftsFromTo): Promise<IAvailabilities[]> {
-    const result = await request<IAvailabilities[], ErrorType>(
+  async function getByEmployeeEmail(body: IRequestDtoShiftsFromTo): Promise<AvailabilityDto[]> {
+    const result = await request<AvailabilityDto[], ErrorType>(
       {
         method: 'POST',
         url: '/availabilities/employees',
@@ -65,9 +67,25 @@ export default function useAvailabilitiesService(): IAvailabilitiesService {
     });
   }
 
+  async function getById(id: number): Promise<IAvailabilities> {
+    const result = await request<IAvailabilities, ErrorType>(
+      {
+        method: 'GET',
+        url: `/availabilities/${id}`,
+      },
+    );
+
+    return handler({
+      result,
+      messageSuccess: false,
+      messageError: false,
+    });
+  }
+
   return {
     create,
     update,
+    getById,
     getByEmployeeEmail,
   };
 }
