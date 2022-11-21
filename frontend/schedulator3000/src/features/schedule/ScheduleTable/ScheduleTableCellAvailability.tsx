@@ -2,10 +2,9 @@ import { TableCell } from '@mui/material';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import React from 'react';
 import { getTimeInHourMinutesAMPM } from '../../../utilities/DateUtilities';
-import { AvailabilityDay } from '../../availiability/models/AvailabilityDay';
 
 interface IAvailabilityCellProps {
-  availability?: AvailabilityDay;
+  availability?: any;
 }
 
 export default function ScheduleTableCellAvailability({ availability }: IAvailabilityCellProps) {

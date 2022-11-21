@@ -4,9 +4,10 @@ import { DesktopTimePicker, TimePicker } from '@mui/lab';
 import React from 'react';
 import { getDay, parseISO, startOfToday } from 'date-fns';
 import { preferences } from '../../utilities/DateUtilities';
-import { IAvailabilities } from './models/IAvailabilities';
 import ToggleDays from './ToggleDays';
 import FieldInput from '../../components/FormInput';
+import { Undefinable } from '../../models/Undefinable';
+import { IAvailability } from './models/IAvailability';
 
 export interface IAvailabilityFormFieldValue {
   startTime: Date;
@@ -18,7 +19,7 @@ export interface IAvailabilityFormFieldValue {
 interface IScheduleTableAvailabilityFormProps {
   submit: SubmitHandler<IAvailabilityFormFieldValue>;
   onClose: VoidFunction;
-  availability?: IAvailabilities;
+  availability: Undefinable<IAvailability>;
 }
 
 export default function AvailabilityForm({ submit, onClose, availability }: IScheduleTableAvailabilityFormProps) {
@@ -78,10 +79,7 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
           )}
         />
       </Grid>
-      <Grid
-        item
-        xs={6}
-      >
+      <Grid item xs={6}>
         <Controller
           name="endTime"
           control={control}
@@ -109,20 +107,14 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
           )}
         />
       </Grid>
-      <Grid
-        item
-        xs={6}
-      >
+      <Grid item xs={6}>
         <Controller
           name="daysOfWeek"
           control={control}
           render={({ field }) => <ToggleDays {...field} />}
         />
       </Grid>
-      <Grid
-        item
-        xs={6}
-      >
+      <Grid item xs={6}>
         <FieldInput
           name="nbOfOccurrence"
           label="Number of Occurrence"
@@ -145,7 +137,3 @@ export default function AvailabilityForm({ submit, onClose, availability }: ISch
     </Grid>
   );
 }
-
-AvailabilityForm.defaultProps = {
-  availability: undefined,
-};

@@ -9,7 +9,7 @@ import { UseArrayType } from '../../../hooks/useArray';
 import { KeyOf } from '../../../models/KeyOf';
 import { Employee } from '../../../models/User';
 import { useAuth } from '../../../contexts/AuthContext';
-import useShiftService from '../../../hooks/use-services/useShiftService';
+import useShiftService from '../hooks/useShiftService';
 import ShiftFormCreate from '../ShiftForm/ShiftFormCreate';
 import ScheduleTableToolbarActions from './ScheduleTableToolbarActions';
 import { useCurrentWeek } from '../contexts/CurrentWeekContext';

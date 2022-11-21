@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { Employee, Manager } from '../models/User';
-import { IPasswordChangeDto } from '../features/authentication/models/PasswordChange';
+import { IPasswordChange, IPasswordChangeDto } from '../features/authentication/models/PasswordChange';
 import { useSessionStorage } from '../hooks/useStorage';
 import { Nullable } from '../models/Nullable';
 import { OneOf } from '../models/OneOf';
@@ -19,7 +19,7 @@ interface ISessionStorageUser {
 }
 
 interface IProviderAuth {
-  updatePassword: (passwordChange: IPasswordChangeDto) => Promise<void>;
+  updatePassword: (passwordChange: IPasswordChange) => Promise<void>;
   signUpManager: (manager: Manager) => Promise<void>;
   signInManager: (email: string, password: string) => Promise<void>;
   signInEmployee: (email: string, password: string) => Promise<void>;
@@ -155,15 +155,16 @@ function useProvideAuth(): IProviderAuth {
 
   const isNewEmployee = useCallback(() => isEmployee() && getEmployee().active === null, [user]);
 
-  const updatePassword = async (passwordChange: IPasswordChangeDto): Promise<void> => {
+  const updatePassword = async (passwordChange: IPasswordChange): Promise<void> => {
     if (!isAuthenticated()) {
       return Promise.reject();
     }
 
     const endpoint: string = isManager() ? 'manager' : 'employees';
+
     const body: IPasswordChangeDto = {
       ...passwordChange,
-      email: user?.email,
+      email: user!.email,
     };
 
     const result = await request<Employee, ErrorType>(

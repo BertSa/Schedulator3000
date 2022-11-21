@@ -1,11 +1,11 @@
-import { IRequestDtoShiftsFromTo } from '../../models/IRequestDtoShiftsFromTo';
-import { ShiftWithoutId } from '../../features/schedule/models/ShiftWithoutId';
-import { IShift } from '../../features/schedule/models/IShift';
-import { request } from '../../utilities/request';
-import { Employee } from '../../models/User';
-import { ErrorType } from '../../models/ErrorType';
-import useConfirmDialog from '../useConfirmDialog';
-import useServiceResultHandler from './useServiceResultHandler';
+import { IRequestDtoShiftsFromTo } from '../models/IRequestDtoShiftsFromTo';
+import { ShiftWithoutId } from '../models/ShiftWithoutId';
+import { IShift } from '../models/IShift';
+import { request } from '../../../utilities/request';
+import { Employee } from '../../../models/User';
+import { ErrorType } from '../../../models/ErrorType';
+import useConfirmDialog from '../../../hooks/useConfirmDialog';
+import useServiceResultHandler from '../../../hooks/use-services/useServiceResultHandler';
 
 const PATH = '/shifts';
 

@@ -12,7 +12,7 @@ import { VacationRequestStatus } from '../../../enums/VacationRequestStatus';
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import { BigCalendar } from '../lib/BigCalendar';
 import getDefaultDayProps from './GetDefaultDayProps';
-import useShiftService from '../../../hooks/use-services/useShiftService';
+import useShiftService from '../hooks/useShiftService';
 import useVacationRequestService from '../../../hooks/use-services/useVacationRequestService';
 import useOnUnmount from '../../../hooks/useOnUnmount';
 import useOnMount from '../../../hooks/useOnMount';

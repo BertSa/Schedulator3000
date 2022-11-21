@@ -9,7 +9,7 @@ import { useToggle } from '../../hooks/useToggle';
 import Form from '../../components/Form';
 
 export default function SignInPage() {
-  const [tab, toggleTab] = useToggle(0, [0, 1]);
+  const [tab, toggleTab] = useToggle(0, [0 as 0, 1 as 1]);
   const history = useHistory();
   const auth = useAuth();
 
@@ -48,7 +48,7 @@ export default function SignInPage() {
         </Typography>
         <Tabs
           value={tab}
-          onChange={(event: React.SyntheticEvent, value: number) => toggleTab(value)}
+          onChange={(_event, value: number) => toggleTab(value)}
           indicatorColor="primary"
           textColor="primary"
           variant="fullWidth"

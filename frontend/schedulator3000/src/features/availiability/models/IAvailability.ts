@@ -1,4 +1,4 @@
-export interface IAvailabilities {
+export interface IAvailability {
   id: number;
   employeeEmail: string;
   startingDate: string;
@@ -7,5 +7,5 @@ export interface IAvailabilities {
   endTime: string;
   nbOfOccurrence: number;
   weekBetweenOccurrences: number;
-  daysTheEventOccurre: boolean[];
+  daysTheEventOccur: boolean[];
 }

@@ -1,10 +1,10 @@
-interface IPasswordChange {
+export interface IPasswordChange {
   currentPassword: string;
   newPassword: string;
 }
 
 export interface IPasswordChangeDto extends IPasswordChange {
-  email?: string;
+  email: string;
 }
 
 export interface IPasswordChangeFieldValues extends IPasswordChange {

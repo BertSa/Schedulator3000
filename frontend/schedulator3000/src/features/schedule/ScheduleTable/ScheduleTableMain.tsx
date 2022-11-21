@@ -7,7 +7,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import ScheduleTableToolbar from './ScheduleTableToolbar';
 import useAsyncDebounce from '../../../hooks/useAsyncDebounce';
 import { IShift } from '../models/IShift';
-import useShiftService from '../../../hooks/use-services/useShiftService';
+import useShiftService from '../hooks/useShiftService';
 import useManagerService from '../../../hooks/use-services/useManagerService';
 import useOnUnmount from '../../../hooks/useOnUnmount';
 import useOnMount from '../../../hooks/useOnMount';

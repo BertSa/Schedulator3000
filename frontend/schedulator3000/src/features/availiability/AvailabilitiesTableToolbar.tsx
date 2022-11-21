@@ -1,11 +1,9 @@
 import { alpha, IconButton, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import { Add, Delete, Edit } from '@mui/icons-material';
 import React from 'react';
-import { ISelectedAvailabilityTableCell } from './AvailabilitiesTable';
-import { Nullable } from '../../models/Nullable';
 
 interface IAvailabilitiesTableToolbarProps {
-  selectedItem: Nullable<ISelectedAvailabilityTableCell>;
+  selectedItem: any;
   actions: {
     create: VoidFunction;
     edit: VoidFunction;

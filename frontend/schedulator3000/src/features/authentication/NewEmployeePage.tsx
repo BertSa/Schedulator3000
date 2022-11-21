@@ -4,7 +4,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import FieldInputWithFormContext from '../../components/FormFields';
 import { useAuth } from '../../contexts/AuthContext';
-import { IPasswordChangeDto, IPasswordChangeFieldValues } from './models/PasswordChange';
+import { IPasswordChange, IPasswordChangeFieldValues } from './models/PasswordChange';
 import Form from '../../components/Form';
 
 export default function NewEmployeePage() {
@@ -16,7 +16,7 @@ export default function NewEmployeePage() {
       return;
     }
 
-    const pwdChange: IPasswordChangeDto = {
+    const pwdChange: IPasswordChange = {
       currentPassword,
       newPassword,
     };

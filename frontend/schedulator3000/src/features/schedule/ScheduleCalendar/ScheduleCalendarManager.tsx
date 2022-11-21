@@ -23,7 +23,7 @@ import stringToHexColor from '../../../utilities/stringToHexColor';
 import { DragAndDropBigCalendar, IResourceType } from '../lib/BigCalendar';
 import getDefaultDayProps from './GetDefaultDayProps';
 import useManagerService from '../../../hooks/use-services/useManagerService';
-import useShiftService from '../../../hooks/use-services/useShiftService';
+import useShiftService from '../hooks/useShiftService';
 import useOnMount from '../../../hooks/useOnMount';
 import useOnUnmount from '../../../hooks/useOnUnmount';
 import { CurrentWeekContextProvider, useCurrentWeek } from '../contexts/CurrentWeekContext';

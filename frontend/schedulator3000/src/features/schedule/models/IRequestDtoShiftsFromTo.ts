@@ -1,4 +1,4 @@
-import { OneOf } from './OneOf';
+import { OneOf } from '../../../models/OneOf';
 
 export interface IRequestDtoShiftsFromTo {
   userEmail: string;
