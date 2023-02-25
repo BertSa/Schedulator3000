@@ -19,7 +19,7 @@ public class VacationRequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public VacationRequestDto create(@RequestBody VacationRequestDto dto) {
-        return vacationRequestService.createVacationRequest(dto);
+        return vacationRequestService.create(dto);
     }
 
     @PutMapping("/{id}")

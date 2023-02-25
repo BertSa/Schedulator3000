@@ -19,7 +19,7 @@ public class VacationRequestService {
     private final VacationRequestRepository vacationRequestRepository;
     private final EmployeeService employeeService;
 
-    public VacationRequestDto createVacationRequest(VacationRequestDto dto) {
+    public VacationRequestDto create(VacationRequestDto dto) {
         final VacationRequest vacationRequest = dto.mapToVacationRequest();
         vacationRequest.setStatus(VacationRequestStatus.PENDING);
         vacationRequest.setId(null);
@@ -65,8 +65,9 @@ public class VacationRequestService {
         Assert.notNull(id, "Id must not be null");
 
         final VacationRequest vacationRequest = vacationRequestRepository.getById(id);
-        vacationRequest.setStartDate(dto.getStartDate());
-        vacationRequest.setEndDate(dto.getEndDate());
+        vacationRequest.setDate(dto.getDate());
+        vacationRequest.setStartTime(dto.getStartTime());
+        vacationRequest.setEndTime(dto.getEndTime());
         vacationRequest.setReason(dto.getReason());
         vacationRequest.setType(dto.getType());
 
